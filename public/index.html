@@ -1,30 +1,33 @@
-<html>
-  <head>
-    <script src="https://cdn.jsdelivr.net/npm/@magenta/music@1.0.0"> </script>
-    <script src="script.js"> </script>
-    <link href='https://fonts.googleapis.com/css?family=Codystar' rel='stylesheet'>
-    <link href='style.css' rel='stylesheet'>
-  </head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piano with Tone.js</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/piano.css">
+</head>
+<body>
+    <div id="brand-name">Harmonix</div>
+<!-- ... rest of your HTML ... -->
 
-  <body>
-    <div class='content' id='wait'>Put on headphones. We'll wait.</div>
-    <div class='content' id='start' onclick="start()">CLICK TO TRIO ENDLESSLY.</div>
-    <div class='content' id='playing'>
-      <marquee scrollamount=15>ENDLESS TRIOS</marquee>
-      <marquee scrollamount=15 direction=right >ENDLESS TRIOS</marquee>
-      <div class='button' id='next' onclick="sampleAndPlayForever()">Next Trios</div> 
-      <marquee behavior=alternate id='count' direction=right>0 TRIOS</marquee>
-      <div class='button' onclick="stop()">END TRIOS</div>
-      <marquee scrollamount=15>ENDLESS TRIOS</marquee>
-      <marquee scrollamount=15 direction=right>ENDLESS TRIOS</marquee>
-      <div class='button' onclick="changeTempo(1)">Faster Trios</div>
-      <marquee behavior=alternate id='tempo'>bpm</marquee>
-      <div class='button' onclick="changeTempo(-1)">Slower Trios</div>
-      <marquee scrollamount=15>ENDLESS TRIOS</marquee>
-      <marquee scrollamount=15 direction=right>ENDLESS TRIOS</marquee>
+    <div id="theme-toggle">
+        <input type="checkbox" id="theme-switch">
+        <label for="theme-switch">Dark Mode</label>
     </div>
-  </body>
-  <footer class='footer'>
-    Plays back real-time generated 3-part (melody, bass, drums) from a miniaturized <a href="https://g.co/magenta/musicvae" target="_blank">MusicVAE</a> model. Listen to samples from the full model on <a href="https://www.youtube.com/watch?v=xU1W3c9p2RU&list=PLBUMAYA6kvGVds2N7HIMQnZc0SMFk99Yl" target="_blank">YouTube</a> or sample your own in <a href="https://goo.gl/magenta/musicvae-colab" target="_blank">Colab</a>.
-  </footer>
+    <div id="control-panel">
+        <label for="synth-select">Choose a synth:</label>
+        <select id="synth-select">
+            <option value="poly">PolySynth</option>
+            <option value="mono">MonoSynth</option>
+            <option value="bass">Bass</option>
+            <!-- Add other synth options here -->
+        </select>
+    </div>
+    <div id="piano">
+        <!-- Generate keys for the piano here -->
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/tone@14.8.34"></script>
+    <script src="js/script.js"></script>
+</body>
 </html>
