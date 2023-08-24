@@ -50,3 +50,18 @@
     z-index: 4;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
+
+.key.active {
+    background-color: #ffdf64; /* bright yellow */
+    transform: scale(1.02);
+    z-index: 2; 
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+
+.key.black.active {
+    background-color: #ffdf64; /* bright yellow for black keys when active */
+    transform: scale(1.07);
+    z-index: 5;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}

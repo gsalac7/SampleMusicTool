@@ -3,7 +3,6 @@ const synthSelect = document.getElementById('synth-select');
 let activeSynth = new Tone.PolySynth(Tone.Synth).toDestination();
 
 synthSelect.addEventListener('change', (event) => {
-    console.log("Finding instrument")
     switch (event.target.value) {
         case 'poly':
             activeSynth = new Tone.PolySynth(Tone.Synth).toDestination();
@@ -84,8 +83,19 @@ function playNote(note) {
             activeSynth.triggerAttackRelease(note, "8n");
             break;
     }
-}
+    // Find the note's index to add the 'active' class on click
+    const noteIndex = notes.indexOf(note);
+    const keyElement = pianoContainer.querySelector(`[data-key-index="${noteIndex}"]`);
 
+    if (keyElement) {
+        keyElement.classList.add('active');
+        
+        // Remove 'active' class after a delay to simulate key release
+        setTimeout(() => {
+            keyElement.classList.remove('active');
+        }, 300);
+    }
+}
 
 const themeSwitch = document.getElementById('theme-switch');
 
@@ -96,8 +106,6 @@ themeSwitch.addEventListener('change', () => {
         document.body.removeAttribute('data-theme');
     }
 });
-
-
 
 // Initialize MIDI
 if (navigator.requestMIDIAccess) {
@@ -119,27 +127,27 @@ function onMIDIFailure() {
     console.warn("Failed to get MIDI access.");
 }
 
-/*
 function onMIDIMessage(event) {
-    console.log("Playing midi key: " + event.data)
-    let note = event.data[1];
+    let midiNote = event.data[1];
     let velocity = event.data[2];
-    let keyIndex = note - 36; 
-
-    var midiNote = event.data[1];
 
     // Find the note string corresponding to the MIDI note number
     var noteString = notes.find(note => Tone.Frequency(note).toMidi() === midiNote);
 
+    console.log(`MIDI Note: ${midiNote}, Note String: ${noteString}, Velocity: ${velocity}`);
+
+    let keyIndex = notes.indexOf(noteString);  // Get the index of the note string in the notes array
 
     const keyElement = pianoContainer.querySelector(`[data-key-index="${keyIndex}"]`);
-    if (!keyElement) return;  // skip if the key doesn't exist
-    console.log("Gets here")
+    if (!keyElement) return;  // skip if the key doesn't exist on the screen
 
-    if (event.data[0] === 144 && velocity > 0) { // note on
-        keyElement.classList.add('active');
-    } else if (event.data[0] === 128 || (event.data[0] === 144 && velocity === 0)) { // note off
-        keyElement.classList.remove('active');
+    if (noteString) {
+        if (event.data[0] === 144 && velocity > 0) { // note on
+            playNote(noteString);  // play the note
+            keyElement.classList.add('active');  // light up the key
+        } else if (event.data[0] === 128 || (event.data[0] === 144 && velocity === 0)) { // note off
+            keyElement.classList.remove('active');  // unlight the key
+        }
     }
 }
-*/
+
