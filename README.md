@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Music Generator with Magenta.js
 
 A simple browser-based web app that leverages the power of [Magenta.js](https://magenta.tensorflow.org/get-started/#magentajs) to generate unique musical compositions.
