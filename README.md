@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Music Generator with Magenta.js
 
 A simple browser-based web app that leverages the power of [Magenta.js](https://magenta.tensorflow.org/get-started/#magentajs) to generate unique musical compositions.
@@ -45,3 +46,6 @@ Ensure you have [Node.js](https://nodejs.org/) and [npm](https://www.npmjs.com/)
    ```
 
 5. Once the server is running, open your browser and navigate to `http://localhost:3000`.
+=======
+# SampleMusicTool
+>>>>>>> main
