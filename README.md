@@ -45,6 +45,3 @@ Ensure you have [Node.js](https://nodejs.org/) and [npm](https://www.npmjs.com/)
    ```
 
 5. Once the server is running, open your browser and navigate to `http://localhost:3000`.
-=======
-# SampleMusicTool
->>>>>>> main
