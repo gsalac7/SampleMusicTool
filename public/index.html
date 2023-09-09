@@ -6,15 +6,16 @@
     <title>Piano with Tone.js</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/piano.css">
+    <script src="https://cdn.jsdelivr.net/npm/@magenta/music@1.23.1/dist/magentamusic.min.js"></script>
 </head>
 <body>
     <div id="brand-name">Harmonix</div>
-<!-- ... rest of your HTML ... -->
-
     <div id="theme-toggle">
         <input type="checkbox" id="theme-switch">
         <label for="theme-switch">Dark Mode</label>
     </div>
+    <canvas id="container"></canvas>
+
     <div id="control-panel">
         <label for="synth-select">Choose a synth:</label>
         <select id="synth-select">
@@ -27,7 +28,8 @@
     <div id="piano">
         <!-- Generate keys for the piano here -->
     </div>
+    <button id="toggleRecording" class="recording-button">Record</button>
     <script src="https://cdn.jsdelivr.net/npm/tone@14.8.34"></script>
-    <script src="js/script.js"></script>
+    <script type="module" src="js/script.js"></script>
 </body>
 </html>

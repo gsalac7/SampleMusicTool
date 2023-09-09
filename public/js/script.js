@@ -39,15 +39,6 @@ synthSelect.addEventListener('change', (event) => {
 });
 
 const pianoContainer = document.getElementById('piano');
-/*
-const notes = [
-    "C2", "C#2", "D2", "D#2", "E2", "F2", "F#2", "G2", "G#2", "A2", "A#2", "B2",
-    "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3",
-    "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4",
-    "C5", "C#5", "D5", "D#5", "E5", "F5", "F#5", "G5", "G#5", "A5", "A#5", "B5",
-    "C6"
-];
-*/
 const notes = [
     "A0", "A#0", "B0",
     "C1", "C#1", "D1", "D#1", "E1", "F1", "F#1", "G1", "G#1", "A1", "A#1", "B1",
@@ -59,7 +50,6 @@ const notes = [
     "C7", "C#7", "D7", "D#7", "E7", "F7", "F#7", "G7", "G#7", "A7", "A#7", "B7",
     "C8"
 ];
-
 notes.forEach((note, index) => {
     const key = document.createElement('div');
     key.setAttribute('data-key-index', index);
@@ -74,6 +64,7 @@ notes.forEach((note, index) => {
     pianoContainer.appendChild(key);
 });
 
+let currentStep = 0; // For tracking the current step while recording
 function playNote(note) {
     console.log("Playing Notes");
     switch (synthSelect.value) {
@@ -95,6 +86,25 @@ function playNote(note) {
             keyElement.classList.remove('active');
         }, 300);
     }
+    // Record the note if we're currently recording
+    if (isRecording) {
+        const pitch = Tone.Frequency(note).toMidi();
+        sequence.notes.push({
+            pitch,
+            quantizedStartStep: currentStep,
+            quantizedEndStep: currentStep + 4 // you can modify this value
+        });
+
+        // Increment the current step
+        currentStep += 4;  // Assuming you're recording 1/4 notes (4 steps per quarter)
+        
+        // Also update the totalQuantizedSteps
+        sequence.totalQuantizedSteps = Math.max(sequence.totalQuantizedSteps, currentStep);
+        console.log("Note Sequence: ", JSON.stringify(sequence));
+
+        // Redraw the visualizer
+        viz.redraw(sequence, viz.config);
+    }
 }
 
 const themeSwitch = document.getElementById('theme-switch');
@@ -107,14 +117,16 @@ themeSwitch.addEventListener('change', () => {
     }
 });
 
-// Initialize MIDI
-if (navigator.requestMIDIAccess) {
-    navigator.requestMIDIAccess({ sysex: false })
-        .then(onMIDISuccess, onMIDIFailure);
-} else {
-    console.warn("WebMIDI is not supported in this browser.");
+// Midi Code
+function initializeMidi() {
+    // Initialize MIDI
+    if (navigator.requestMIDIAccess) {
+        navigator.requestMIDIAccess({ sysex: false })
+            .then(onMIDISuccess, onMIDIFailure);
+    } else {
+        console.warn("WebMIDI is not supported in this browser.");
+    }
 }
-
 function onMIDISuccess(midiAccess) {
     var inputs = midiAccess.inputs.values();
 
@@ -150,4 +162,50 @@ function onMIDIMessage(event) {
         }
     }
 }
+
+
+// Initialize recording state
+let isRecording = false;
+
+// Initialize your note sequence here
+let sequence = {
+    notes: [
+        { pitch: 60, quantizedStartStep: 0, quantizedEndStep: 4 },  // C4
+        { pitch: 64, quantizedStartStep: 4, quantizedEndStep: 8 },  // E4
+        { pitch: 67, quantizedStartStep: 8, quantizedEndStep: 12 }, // G4
+        { pitch: 72, quantizedStartStep: 12, quantizedEndStep: 16 } // C5
+    ],
+    totalQuantizedSteps: 16,
+    quantizationInfo: { stepsPerQuarter: 4 },
+    tempos: [{ time: 0, qpm: 60 }],
+    timeSignatures: [{ time: 0, numerator: 4, denominator: 4 }],
+};
+
+
+const viz = new mm.Visualizer(sequence, document.getElementById('container'));
+console.log("Viz initialized")
+
+// Event Listener for toggle recording
+document.getElementById("toggleRecording").addEventListener("click", () => {
+  isRecording = !isRecording;
+  const buttonElement = document.getElementById("toggleRecording");
+  
+  if (isRecording) {
+    buttonElement.classList.add('recording');
+    buttonElement.innerText = 'Stop Recording';
+    console.log("Stop Recording")
+    currentStep = 0;
+    // Start recording logic here
+    // Add notes to the `sequence.notes` array as they are recorded.
+  } else {
+    buttonElement.classList.remove('recording');
+    buttonElement.innerText = 'Start Recording';
+    console.log("Start Recording")
+    // Stop recording logic here
+    // Redraw the visualizer.
+    viz.redraw(sequence, viz.config);
+    currentStep = 0;
+    sequence.notes = [];
+  }
+});
 
