@@ -120,6 +120,7 @@ themeSwitch.addEventListener('change', () => {
 // Midi Code
 function initializeMidi() {
     // Initialize MIDI
+    console.log("Initializing MIDI");
     if (navigator.requestMIDIAccess) {
         navigator.requestMIDIAccess({ sysex: false })
             .then(onMIDISuccess, onMIDIFailure);
@@ -181,6 +182,7 @@ let sequence = {
     timeSignatures: [{ time: 0, numerator: 4, denominator: 4 }],
 };
 
+initializeMidi();
 
 const viz = new mm.Visualizer(sequence, document.getElementById('container'));
 console.log("Viz initialized")

@@ -169,6 +169,35 @@ body {
     color: white;
 }
 
+/* generate button style */
+/* Modern Button Styles using ID */
+#generateMusic {
+    background: linear-gradient(135deg, #6EE7B7 0%, #3FA7D6 100%); /* Gradient Background */
+    border: none; /* Remove Default Border */
+    color: white; /* Text Color */
+    padding: 10px 20px; /* Padding */
+    border-radius: 30px; /* Rounded Corners */
+    font-size: 16px; /* Text Size */
+    cursor: pointer; /* Hand Cursor on Hover */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle Shadow for Depth */
+    transition: all 0.3s ease; /* Transition Effect for Hover State */
+    outline: none; /* Remove Focus Outline */
+    font-weight: 600; /* Semi-bold Font Weight */
+    text-decoration: none; /* In case you adapt this for anchor tags */
+}
+
+/* Hover State */
+#generateMusic:hover {
+    transform: translateY(-2px); /* Slight Upward Motion */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1); /* Increase Shadow Depth */
+}
+
+/* Active (Pressed) State */
+#generateMusic:active {
+    transform: translateY(1px); /* Slight Downward Motion for Press Effect */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Decrease Shadow Depth */
+}
+
 /*Canvas at the top*/
 canvas#container {
     border: 1px solid black;
