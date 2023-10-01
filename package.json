@@ -18,6 +18,7 @@
   },
   "scripts": {
     "start": "electron main.js",
-    "build": "webpack --mode development"
+    "build": "webpack --mode development",
+    "debug": "node --inspect-brk=0.0.0.0:9229 ./dist/renderer.bundle.js"
   }
 }

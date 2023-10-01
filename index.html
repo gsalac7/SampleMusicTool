@@ -6,15 +6,9 @@
     <title>Piano with Tone.js</title>
     <link rel="stylesheet" href="public/css/styles.css">
     <link rel="stylesheet" href="public/css/piano.css">
-    <!-- magenta.js-->
-    <!--script src="https://cdn.jsdelivr.net/npm/@magenta/music@1.23.1/dist/magentamusic.min.js"></script-->
 </head>
 <body>
     <div id="brand-name">Harmonix</div>
-    <div id="theme-toggle">
-        <input type="checkbox" id="theme-switch">
-        <label for="theme-switch">Dark Mode</label>
-    </div>
     <canvas id="canvas"></canvas>
     <div></div>
 
@@ -32,10 +26,8 @@
     </div>
     <button id="toggleRecording" class="recording-button">Record</button>
     <button id="generateMusic" >Generate Music</button>
+    <button id="exportMidi">Export Recorded MIDI</button>
 
-
-    <!-- Tone js-->
-    <!--script src="https://cdn.jsdelivr.net/npm/tone@14.8.34"></script--->
     <script src="./dist/renderer.bundle.js"></script>
     <script type="module" src="public/js/main.js"></script>
     <script type="module" src="public/js/models/music_rnn.js"></script>

@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug Renderer Process",
+        "type": "chrome",
+        "request": "launch",
+        "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
+        "runtimeArgs": [
+          "--remote-debugging-port=9222",
+          "${workspaceFolder}/main.js" 
+        ],
+        "webRoot": "${workspaceFolder}",
+        "sourceMaps": true,
+        "protocol": "inspector"
+      }
+    ]
+  }
+  

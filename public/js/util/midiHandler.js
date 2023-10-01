@@ -1,6 +1,4 @@
-// Import any required libraries or modules
-import { playNote } from './pianoSynth'; // Adjust the path as needed
-
+import { playNote } from './synthManager'; 
 // Initializing the MIDI
 function initializeMidi() {
     // Check for WebMIDI support
@@ -55,5 +53,6 @@ function convertMidiNoteToString(midiNote) {
     const noteIndex = midiNote % 12;
     return notes[noteIndex] + Math.floor(octave);
 }
+
 
 export { initializeMidi };

@@ -8,6 +8,7 @@ module.exports = {
     filename: 'renderer.bundle.js', // Output bundle file
     path: path.resolve(__dirname, 'dist'), // Output directory
   },
+  devtool: 'source-map',
   module: {
     rules: [
       {

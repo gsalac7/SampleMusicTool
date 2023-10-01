@@ -1,13 +1,32 @@
-import * as Tone from 'tone';
-import * as mm from '@magenta/music';
 import './models/music_rnn.js'
 import { initializeMidi } from './util/midiHandler';
-import { toggleRecording, isRecording, sequence } from './util/recordingManager';
-import {initializePianoUI, initializeSynth}  from './util/pianoSynth';
+import { exportMIDI, toggleRecording } from './util/recordingManager';
+import {initializePianoUI, initializeSynth}  from './util/synthManager';
 
 window.onload = () => {
-  initializeSynth('synth-select');
+  initializeSynth();
   initializePianoUI();
   initializeMidi();
-  document.getElementById("toggleRecording").addEventListener("click", toggleRecording);
+
+  const toggleRecordingButton = document.getElementById("toggleRecording");
+  if (toggleRecordingButton) {
+    console.log("toggleRecordingButton found");
+    toggleRecordingButton.addEventListener('click', toggleRecording);
+  } else {
+    console.error('Toggle recording button not found');
+  }
+  // Add event listener for the music generation button
+  const generateMusicButton = document.getElementById('generateMusic');
+  if (generateMusicButton) {
+    generateMusicButton.addEventListener('click', generateAndPlayMusic);
+  } else {
+    console.error('Generate music button not found');
+  }
+  const exportMidiButton = document.getElementById('exportMidi');
+  if (exportMidiButton) {
+    console.log("exportMidiButton found");
+    exportMidiButton.addEventListener('click', exportMIDI);
+  } else {
+    console.error('Export MIDI button not found');
+  }
 };
