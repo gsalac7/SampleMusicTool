@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piano with Tone.js</title>
+    <link rel="stylesheet" href="public/css/styles.css">
+    <link rel="stylesheet" href="public/css/piano.css">
+    <!-- magenta.js-->
+    <!--script src="https://cdn.jsdelivr.net/npm/@magenta/music@1.23.1/dist/magentamusic.min.js"></script-->
+</head>
+<body>
+    <div id="brand-name">Harmonix</div>
+    <div id="theme-toggle">
+        <input type="checkbox" id="theme-switch">
+        <label for="theme-switch">Dark Mode</label>
+    </div>
+    <canvas id="canvas"></canvas>
+    <div></div>
+
+    <div id="control-panel">
+        <label for="synth-select">Choose a synth:</label>
+        <select id="synth-select">
+            <option value="poly">PolySynth</option>
+            <option value="mono">MonoSynth</option>
+            <option value="bass">Bass</option>
+            <!-- Add other synth options here -->
+        </select>
+    </div>
+    <div id="piano">
+        <!-- Generate keys for the piano here -->
+    </div>
+    <button id="toggleRecording" class="recording-button">Record</button>
+    <button id="generateMusic" >Generate Music</button>
+
+
+    <!-- Tone js-->
+    <!--script src="https://cdn.jsdelivr.net/npm/tone@14.8.34"></script--->
+    <script src="./dist/renderer.bundle.js"></script>
+    <script type="module" src="public/js/main.js"></script>
+    <script type="module" src="public/js/models/music_rnn.js"></script>
+</body>
+</html>

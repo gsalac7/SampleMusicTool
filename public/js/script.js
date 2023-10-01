@@ -1,3 +1,7 @@
+import * as Tone from 'tone';
+import * as mm from '@magenta/music';
+import './models/music_rnn.js'
+
 const synthSelect = document.getElementById('synth-select');
 
 let activeSynth = new Tone.PolySynth(Tone.Synth).toDestination();
@@ -184,7 +188,7 @@ let sequence = {
 
 initializeMidi();
 
-const viz = new mm.Visualizer(sequence, document.getElementById('container'));
+const viz = new mm.PianoRollCanvasVisualizer(sequence, document.getElementById('container'));
 console.log("Viz initialized")
 
 // Event Listener for toggle recording

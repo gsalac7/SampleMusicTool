@@ -1,3 +1,5 @@
+import * as mm from '@magenta/music';
+
 const rnnModel = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/basic_rnn');
 const rnnPlayer = new mm.Player();
 
