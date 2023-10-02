@@ -40,7 +40,7 @@ export async function generateAndPlayMusic() {
     }
 
     // Continue it using the RNN model
-    const continuation = await rnnModel.continueSequence(seq, 32, 1.0);
+    const continuation = await rnnModel.continueSequence(seq, 32, 1.6);
 
     // Ensure the continuation sequence is properly defined
     if (!continuation) {

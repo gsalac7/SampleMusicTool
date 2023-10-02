@@ -1,0 +1,35 @@
+#drum-machine {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .pad {
+    padding: 20px;
+    margin: 10px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    background-color: #ddd;
+  }
+  
+  #sequencer {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .row {
+    display: flex;
+  }
+  
+  .cell {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+  }
+  
+  .cell.active {
+    background-color: #333;
+  }
+  

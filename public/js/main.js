@@ -2,11 +2,13 @@ import './models/music_rnn.js'
 import { initializeMidi } from './util/midiHandler';
 import { exportMIDI, toggleRecording } from './util/recordingManager';
 import {initializePianoUI, initializeSynth}  from './util/synthManager';
+import { createSequencer } from './util/drumManager';
 
 window.onload = () => {
   initializeSynth();
   initializePianoUI();
   initializeMidi();
+  createSequencer();
 
   const toggleRecordingButton = document.getElementById("toggleRecording");
   if (toggleRecordingButton) {

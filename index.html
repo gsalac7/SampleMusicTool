@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Piano with Tone.js</title>
+    <title>Harmonix</title>
     <link rel="stylesheet" href="public/css/styles.css">
     <link rel="stylesheet" href="public/css/piano.css">
 </head>
@@ -27,6 +27,22 @@
     <button id="toggleRecording" class="recording-button">Record</button>
     <button id="generateMusic" >Generate Music</button>
     <button id="exportMidi">Export Recorded MIDI</button>
+
+    <div id="drum-machine">
+        <div id="pads">
+          <div class="pad" data-sound="kick">Kick</div>
+          <div class="pad" data-sound="snare">Snare</div>
+          <div class="pad" data-sound="hihat">Hi-hat</div>
+          <div class="pad" data-sound="hihat">Hi-hat</div>
+          <div class="pad" data-sound="hihat">Hi-hat</div>
+          <!-- add more pads as needed -->
+        </div>
+        <div id="sequencer">
+          <!-- sequencer rows will be generated with JavaScript -->
+        </div>
+      </div>
+      <button id="play-button">Play</button>
+      <script src="drumSequencer.js"></script>
 
     <script src="./dist/renderer.bundle.js"></script>
     <script type="module" src="public/js/main.js"></script>
