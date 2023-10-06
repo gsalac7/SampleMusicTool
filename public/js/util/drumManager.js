@@ -1,45 +1,94 @@
+import Nexus from 'nexusui';
+
 const sounds = {
-    kick: new Audio('../sounds/drum-kit/electronic/kick.mp3'),
-    snare: new Audio('../sounds/drum-kit/electronic/snare.mp3'),
-    hihat: new Audio('../sounds/drum-kit/electronic/hihat.mp3'),
-    // add more sounds as needed
+    0: new Audio('./public/sounds/drum-kits/electronic/kick.mp3'),
+    1: new Audio('./public/sounds/drum-kits/electronic/snare.mp3'),
+    2: new Audio('./public/sounds/drum-kits/electronic/hihat-closed.mp3'),
+    3: new Audio('./public/sounds/drum-kits/electronic/hihat-open.mp3'),
+    4: new Audio('./public/sounds/drum-kits/electronic/ride.mp3'),
+    5: new Audio('./public/sounds/drum-kits/electronic/clap.mp3'),
 };
-const sequencer = document.getElementById('sequencer');
-const playButton = document.getElementById('play-button');
 
-const numRows = 3;
-const numCols = 16;
-const grid = Array.from({ length: numRows }, () => Array(numCols).fill(false));
+let isPlaying = false;
+let intervalID;
+let sequencer;
 
-function createSequencer() {
-    grid.forEach((row, rowIndex) => {
-        const rowDiv = document.createElement('div');
-        rowDiv.className = 'row';
-        sequencer.appendChild(rowDiv); // appending rowDiv to sequencer
+function initializeSequencer() {
+    sequencer = new Nexus.Sequencer('#sequencer', {
+        'size': [800, 400],
+        'mode': 'toggle',
+        'rows': 6,
+        'columns': 16
+    });
+    // Additional JS Code for Styling (if needed)
+    // Add spaces every 4 beats
+    const cells = document.querySelectorAll('#sequencer span');
+    cells.forEach((cell, index) => {
+        if (index % 4 === 3) {
+            cell.style.marginRight = '4px'; // Adjust as needed
+        }
+    });
+    
 
-        row.forEach((cell, colIndex) => {
-            const cellDiv = document.createElement('div');
-            cellDiv.className = 'cell';
-            cellDiv.addEventListener('click', () => {
-                grid[rowIndex][colIndex] = !grid[rowIndex][colIndex];
-                cellDiv.classList.toggle('active');
-            });
-            rowDiv.appendChild(cellDiv);
-        });
+    sequencer.colorize("accent", "#ff0000");
+    sequencer.colorize("fill", "#333");
+
+    sequencer.on('change', function (v) {
+        playSound(v);
     });
 }
 
+function playSound(v) {
+    if (v.state) {
+        sounds[v.row].currentTime = 0;
+        sounds[v.row].play();
+    }
+}
 
-playButton.addEventListener('click', () => {
-    let currentStep = 0;
-    setInterval(() => {
-        grid.forEach((row, rowIndex) => {
-            if (row[currentStep]) {
-                sounds[Object.keys(sounds)[rowIndex]].play();
+function stopLoop() {
+    clearInterval(intervalID);
+}
+
+function toggleLoop(playButton) {
+    if (isPlaying) {
+        stopLoop();
+        playButton.innerText = 'Play';
+        playButton.className = 'play';
+        isPlaying = false;
+    } else {
+        const bpm = 100; // You might want to replace this with a dynamic value
+        startLoop(bpm);
+        playButton.innerText = 'Stop';
+        playButton.className = 'stop';
+        isPlaying = true;
+    }
+}
+
+function startLoop(bpm = 80) {
+    let currentColumn = 0;
+    const interval = (60000 / bpm) / 4;
+
+    intervalID = setInterval(() => {
+        highlightColumn(currentColumn);
+        for (let row = 0; row < 6; row++) {
+            if (sequencer.matrix.pattern[row][currentColumn]) {
+                playSound({ row: row, state: true });
             }
-        });
-        currentStep = (currentStep + 1) % numCols;
-    }, 500); // Set interval duration as desired
-});
+        }
+        currentColumn = (currentColumn + 1) % 16;
+    }, interval);
+}
 
-export { createSequencer};
+
+function highlightColumn(currentColumn) {
+    const allCells = document.querySelectorAll('#sequencer span');
+    allCells.forEach(cell => cell.classList.remove('cell-highlight')); // Reset highlight class
+
+    if (currentColumn < 0) return; // For resetting highlight, no further action needed
+
+    for (let i = currentColumn; i < allCells.length; i += 16) {
+        allCells[i].classList.add('cell-highlight'); // Add class for emphasis
+    }
+}
+
+export { initializeSequencer, toggleLoop };

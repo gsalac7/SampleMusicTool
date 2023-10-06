@@ -14,6 +14,7 @@ const notes = [
     "C8"
 ];
 
+// object to store synths
 const synths = {
     poly: new Tone.PolySynth(Tone.Synth).toDestination(),
     mono: new Tone.MonoSynth({
@@ -83,4 +84,3 @@ export function playNote(note) {
     }
 }
 
-// You can add additional functions as needed to manage the synth and UI

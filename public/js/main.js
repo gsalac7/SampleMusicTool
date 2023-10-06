@@ -1,18 +1,24 @@
 import './models/music_rnn.js'
 import { initializeMidi } from './util/midiHandler';
 import { exportMIDI, toggleRecording } from './util/recordingManager';
-import {initializePianoUI, initializeSynth}  from './util/synthManager';
-import { createSequencer } from './util/drumManager';
+import { initializePianoUI, initializeSynth } from './util/synthManager';
+import { initializeSequencer, toggleLoop } from './util/drumManager';
+import { initializeBpmDial } from './util/bpmManager';
+
+import { generateAndPlayMusic } from './models/music_rnn';
 
 window.onload = () => {
+  // Init UI Elements
   initializeSynth();
   initializePianoUI();
   initializeMidi();
-  createSequencer();
+  initializeSequencer();
+  initializeBpmDial();
 
+
+  // Init buttons
   const toggleRecordingButton = document.getElementById("toggleRecording");
   if (toggleRecordingButton) {
-    console.log("toggleRecordingButton found");
     toggleRecordingButton.addEventListener('click', toggleRecording);
   } else {
     console.error('Toggle recording button not found');
@@ -30,5 +36,15 @@ window.onload = () => {
     exportMidiButton.addEventListener('click', exportMIDI);
   } else {
     console.error('Export MIDI button not found');
+  }
+  console.log("Initialzed");
+  const playButton = document.getElementById("play-button");
+  if (playButton) {
+    console.log("Play pressed");
+    playButton.addEventListener('click', function () {
+      toggleLoop(playButton);
+    });
+  } else {
+    console.error('Play button not found');
   }
 };

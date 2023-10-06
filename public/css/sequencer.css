@@ -1,0 +1,18 @@
+
+#sequencer {
+  border-radius: 10px; /* Add rounded corners to the sequencer container */
+}
+
+#sequencer span {
+  border-radius: 5px; /* Rounded corners for each cell */
+  margin-right: 2px; /* Spacing between cells */
+}
+
+/* Additional spacing every 4 cells (you may need to adjust this selector) */
+#sequencer span:nth-child(4n) {
+  margin-right: 4px; /* Double spacing every 4 cells */
+}
+
+.cell-highlight {
+  box-shadow: 0px 0px 10px 2px yellow;
+}

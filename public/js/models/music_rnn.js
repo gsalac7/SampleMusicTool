@@ -66,7 +66,3 @@ export async function generateAndPlayMusic() {
     // This will redraw the canvas as the music plays
     rnnPlayer.on('samplePlayed', (sample) => viz.redraw(sample));
 }
-
-document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById('generateMusic').addEventListener('click', generateAndPlayMusic);
-});
