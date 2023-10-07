@@ -41,33 +41,54 @@ export function initializePianoUI() {
             key.classList.add('key');
         }
 
-        key.addEventListener('click', () => playNote(note));
+        key.addEventListener('mousedown', () => {
+            activeSynth.triggerAttack(note); // Starts playing the note
+            handleNotePlayed(note);
+            key.classList.add('active');
+        });
+
+        key.addEventListener('mouseup', () => {
+            activeSynth.triggerRelease(note); // Stops playing the specified note
+            key.classList.remove('active');
+        });
+
+        key.addEventListener('mouseleave', () => {
+            activeSynth.triggerRelease(note); // Stops playing the specified note
+            key.classList.remove('active');
+        });
+
+
         pianoContainer.appendChild(key);
     });
 }
 
 export function initializeSynth() {
     const synthSelectElement = document.getElementById('synth-select');
-  
+
     if (!synthSelectElement) {
-      console.error('Synth select element not found');
-      return;
+        console.error('Synth select element not found');
+        return;
     }
-  
+
     // Set the initial active synth based on the select value
     setActiveSynth(synthSelectElement.value);
-  
+
     // Set up event listener on synth-select
     synthSelectElement.addEventListener('change', (event) => {
-      setActiveSynth(event.target.value);
+        setActiveSynth(event.target.value);
     });
-  }
-         
+}
+
 export function setActiveSynth(synthType) {
     activeSynth = synths[synthType];
 }
-export function playNote(note) {
-    activeSynth.triggerAttackRelease(note, "8n");
+
+
+export function playNote(note, velocity = 1) {
+    // Adjust volume or other parameters using velocity
+    // Example: set the volume value or apply it to the gain, etc.
+    activeSynth.volume.value = convertVelocityToVolume(velocity); 
+    activeSynth.triggerAttack(note); // Removed "8n", as the release will be handled by stopNote
 
     // UI feedback for active note
     const noteIndex = notes.indexOf(note);
@@ -76,11 +97,35 @@ export function playNote(note) {
 
     if (keyElement) {
         keyElement.classList.add('active');
+    }
+}
 
-        // Remove 'active' class after delay to simulate key release
-        setTimeout(() => {
-            keyElement.classList.remove('active');
-        }, 300);
+function convertVelocityToVolume(velocity) {
+    // Implement your conversion logic here
+    // Example: linear mapping (adjust as needed)
+    return velocity * maxVolume;
+}
+
+const maxVolume = 0; // 0 dB is full volume in Tone.js
+
+
+export function startNote(noteString, velocity) {
+    // You can incorporate velocity into playNote if necessary
+    playNote(noteString, velocity); // playNote function will handle UI feedback for starting note
+}
+
+export function stopNote(noteString) {
+    // Stop playing the note
+    activeSynth.triggerRelease(noteString); 
+
+    // UI feedback for note off
+    const noteIndex = notes.indexOf(noteString);
+    const keyElement = pianoContainer.querySelector(`[data-key-index="${noteIndex}"]`);
+    
+    if (keyElement) {
+        keyElement.classList.remove('active'); // Remove 'active' class for note off
+    } else {
+        console.warn(`No key element found for note ${noteString}`);
     }
 }
 

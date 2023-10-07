@@ -1,4 +1,4 @@
-import { playNote } from './synthManager'; 
+import { startNote, stopNote} from './synthManager'; 
 // Initializing the MIDI
 function initializeMidi() {
     // Check for WebMIDI support
@@ -30,18 +30,21 @@ function onMIDIFailure(err) {
 }
 
 // Handling MIDI Messages
-function onMIDIMessage(event) {
-    console.log("MIDI Message received", event);
 
+function onMIDIMessage(event) {
     let midiNote = event.data[1];
-    let velocity = event.data[2];
+    let velocity = event.data[2] / 127; // Normalize to [0, 1]
+
+    let noteString = convertMidiNoteToString(midiNote);
+
+    // Debugging lines - Log received MIDI messages to the console
+    console.log('MIDI message received:', event.data);
     
-    // Determine the action based on the MIDI event received
-    if (event.data[0] === 144 && velocity > 0) { // Note on event
-        // Convert the midiNote to its corresponding note string
-        // and play it (you may need to adjust this conversion)
-        let noteString = convertMidiNoteToString(midiNote);
-        playNote(noteString);
+    if (event.data[0] >= 144 && event.data[0] <= 159 && velocity > 0) { // Note On with non-zero velocity
+        startNote(noteString, velocity);
+    } else if (event.data[0] >= 128 && event.data[0] <= 143 || (event.data[0] >= 144 && event.data[0] <= 159 && velocity === 0)) { // Note Off or Note On with zero velocity
+        console.log("Execute stopNote")
+        stopNote(noteString);
     }
 }
 

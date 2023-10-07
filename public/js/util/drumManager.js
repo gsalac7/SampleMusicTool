@@ -13,15 +13,14 @@ let isPlaying = false;
 let intervalID;
 let sequencer;
 
-function initializeSequencer() {
+function initializeSequencer(rows, columns) {
     sequencer = new Nexus.Sequencer('#sequencer', {
         'size': [800, 400],
         'mode': 'toggle',
-        'rows': 6,
-        'columns': 16
+        'rows': rows,
+        'columns': columns 
     });
-    // Additional JS Code for Styling (if needed)
-    // Add spaces every 4 beats
+
     const cells = document.querySelectorAll('#sequencer span');
     cells.forEach((cell, index) => {
         if (index % 4 === 3) {
@@ -91,4 +90,17 @@ function highlightColumn(currentColumn) {
     }
 }
 
-export { initializeSequencer, toggleLoop };
+function handleBarAndBeatChange(bars, beatsPerBar) {
+    const rows = 6; // number of drum sounds
+    const columns = bars * beatsPerBar * 4; // assuming 4 sub-divisions (16th notes) per beat
+    initializeSequencer(rows, columns);
+}
+
+function updateSequencer() {
+    const bars = parseInt(document.getElementById('bars').value, 10);
+    const beatsPerBar = parseInt(document.getElementById('beatsPerBar').value, 10);
+    handleBarAndBeatChange(bars, beatsPerBar);
+}
+
+
+export { initializeSequencer, toggleLoop, updateSequencer};

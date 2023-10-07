@@ -2,9 +2,8 @@ import './models/music_rnn.js'
 import { initializeMidi } from './util/midiHandler';
 import { exportMIDI, toggleRecording } from './util/recordingManager';
 import { initializePianoUI, initializeSynth } from './util/synthManager';
-import { initializeSequencer, toggleLoop } from './util/drumManager';
+import { initializeSequencer, toggleLoop, updateSequencer } from './util/drumManager';
 import { initializeBpmDial } from './util/bpmManager';
-
 import { generateAndPlayMusic } from './models/music_rnn';
 
 window.onload = () => {
@@ -12,7 +11,7 @@ window.onload = () => {
   initializeSynth();
   initializePianoUI();
   initializeMidi();
-  initializeSequencer();
+  initializeSequencer(6, 16);
   initializeBpmDial();
 
 
@@ -46,5 +45,12 @@ window.onload = () => {
     });
   } else {
     console.error('Play button not found');
+  }
+
+  const updateSequencerButton = document.getElementById('updateSequencer');
+  if (updateSequencerButton) {
+    updateSequencerButton.addEventListener('click', updateSequencer);
+  } else {
+    console.error('Update sequencer button not found');
   }
 };

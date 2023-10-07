@@ -38,7 +38,6 @@ function toggleRecording() {
 
 // Record a note
 function recordNote(note) {
-    console.log("Record Note: " + note);
     if (!isRecording) return;
 
     const pitch = note; // Adjust this if needed based on how your note is represented

@@ -1,7 +1,12 @@
 import * as mm from '@magenta/music';
+import * as synthManager from '../util/synthManager'; // Adjust the path as necessary
 
 const rnnModel = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/basic_rnn');
 const rnnPlayer = new mm.Player();
+
+const notesMapping = [
+    "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"
+];
 
 export async function generateAndPlayMusic() {
     if (!rnnModel) {
@@ -9,7 +14,7 @@ export async function generateAndPlayMusic() {
         return;
     }
 
-    // Seed a simple NoteSequence. You can customize this as you like
+    // Seed NoteSequence - customize as needed
     let seq = {
         notes: [
             { pitch: 60, startTime: 0, endTime: 0.5 },     // C4
@@ -30,19 +35,14 @@ export async function generateAndPlayMusic() {
     };
 
 
-    // Quantize the sequence
     seq = mm.sequences.quantizeNoteSequence(seq, 4);
 
-    // Ensure it's properly quantized
     if (!mm.sequences.isQuantizedSequence(seq)) {
         console.error("Sequence is not properly quantized");
         return;
     }
 
-    // Continue it using the RNN model
     const continuation = await rnnModel.continueSequence(seq, 32, 1.6);
-
-    // Ensure the continuation sequence is properly defined
     if (!continuation) {
         console.error("Generated continuation is undefined or invalid");
         return;
@@ -56,13 +56,28 @@ export async function generateAndPlayMusic() {
     };
 
 
+    // Parse continuation sequence, trigger notes and update UI
+    continuation.notes.forEach(note => {
+        const startTime = note.startTime * 1000; // Convert to milliseconds
+        const endTime = note.endTime * 1000; // Convert to milliseconds
+        const noteString = convertPitchToNoteString(note.pitch);
 
-    // Visualize and play the generated music
+        setTimeout(() => synthManager.playNote(noteString), startTime);
+        setTimeout(() => synthManager.stopNote(noteString), endTime);
+    });
+
+    // Visualize the generated music (this is assuming you have some sort of canvas setup for visualization)
+
     const viz = new mm.Visualizer(continuation, document.getElementById('canvas'), config);
     rnnPlayer.start(continuation).then(() => {
         viz.stop();
     });
-
-    // This will redraw the canvas as the music plays
     rnnPlayer.on('samplePlayed', (sample) => viz.redraw(sample));
+}
+
+function convertPitchToNoteString(pitch) {
+    const octave = Math.floor(pitch / 12) - 1;
+    const noteInOctave = pitch % 12;
+    const noteString = notesMapping[noteInOctave] + octave;
+    return noteString;
 }
