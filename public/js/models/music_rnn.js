@@ -1,83 +1,64 @@
 import * as mm from '@magenta/music';
-import * as synthManager from '../util/synthManager'; // Adjust the path as necessary
+import * as Tone from 'tone'; // Ensure Tone.js is imported
+import { activeSynth, playNote, stopNote, convertPitchToNoteString } from '../util/synthManager';
 
 const rnnModel = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/basic_rnn');
-const rnnPlayer = new mm.Player();
 
-const notesMapping = [
-    "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"
-];
-
-export async function generateAndPlayMusic() {
-    if (!rnnModel) {
-        console.warn('Model not initialized');
-        return;
-    }
-
-    // Seed NoteSequence - customize as needed
-    let seq = {
+async function generateSequence() {
+    await rnnModel.initialize();
+    const seedSeq = {
         notes: [
-            { pitch: 60, startTime: 0, endTime: 0.5 },     // C4
-            { pitch: 62, startTime: 0.5, endTime: 1.0 },   // D4
-            { pitch: 64, startTime: 1.0, endTime: 1.5 },   // E4
-            { pitch: 65, startTime: 1.5, endTime: 2.0 },   // F4
-            { pitch: 67, startTime: 2.0, endTime: 2.5 },   // G4
-            { pitch: 69, startTime: 2.5, endTime: 3.0 },   // A4
-            { pitch: 71, startTime: 3.0, endTime: 3.5 },   // B4
-            { pitch: 72, startTime: 3.5, endTime: 4.0 },   // C5
-            { pitch: 71, startTime: 4.0, endTime: 4.5 },   // B4
-            { pitch: 69, startTime: 4.5, endTime: 5.0 },   // A4
-            { pitch: 67, startTime: 5.0, endTime: 5.5 },   // G4
-            { pitch: 65, startTime: 5.5, endTime: 6.0 }    // F4
+            { pitch: 60, startTime: 0, endTime: 0.5 },   // C4
+            { pitch: 64, startTime: 0.5, endTime: 1.0 },  // E4
+            { pitch: 67, startTime: 1.0, endTime: 1.5 },  // G4
+            { pitch: 64, startTime: 1.5, endTime: 2.0 },  // E4
         ],
-        totalTime: 10,
+        totalTime: 2,
         quantizationInfo: { stepsPerQuarter: 4 }
     };
 
+    const quantizedSeq = mm.sequences.quantizeNoteSequence(seedSeq, 4);
+    const generatedSeq = await rnnModel.continueSequence(quantizedSeq, 40, 1.5);
 
-    seq = mm.sequences.quantizeNoteSequence(seq, 4);
+    playGeneratedSequence(generatedSeq);
+}
 
-    if (!mm.sequences.isQuantizedSequence(seq)) {
-        console.error("Sequence is not properly quantized");
-        return;
-    }
+function playGeneratedSequence(seq) {
+    const beatsPerMinute = 120; // Set your desired BPM
+    const stepsPerQuarter = 4; // Retrieve this value from seq if it's dynamic
+    const timePerStep = 1 / ((beatsPerMinute / 60) * stepsPerQuarter);
 
-    const continuation = await rnnModel.continueSequence(seq, 32, 1.6);
-    if (!continuation) {
-        console.error("Generated continuation is undefined or invalid");
-        return;
-    }
+    const startTime = Tone.now();
+
+    // Config for the visualizer
     const config = {
-        noteHeight: 6,
-        noteSpacing: 1,
-        pixelsPerTimeStep: 80,  // This effectively zooms into the notes making them occupy more space.
+        noteHeight: 10, // Adjust the height of each note
+        pixelsPerTimeStep: 150, // Increase space for each time step
         noteRGB: '8, 41, 64',
-        activeNoteRGB: '240, 84, 119'
+        activeNoteRGB: '240, 84, 119',
     };
 
+    // Create a visualizer instance with canvas rendering
+    const visualizer = new mm.PianoRollCanvasVisualizer(seq, document.getElementById('canvas'), config);
 
-    // Parse continuation sequence, trigger notes and update UI
-    continuation.notes.forEach(note => {
-        const startTime = note.startTime * 1000; // Convert to milliseconds
-        const endTime = note.endTime * 1000; // Convert to milliseconds
-        const noteString = convertPitchToNoteString(note.pitch);
+    seq.notes.forEach(note => {
+        const noteString = convertPitchToNoteString(note.pitch); // Convert pitch to note string
+        const noteStartTime = startTime + note.quantizedStartStep * timePerStep;
+        const noteEndTime = startTime + note.quantizedEndStep * timePerStep;
 
-        setTimeout(() => synthManager.playNote(noteString), startTime);
-        setTimeout(() => synthManager.stopNote(noteString), endTime);
+        Tone.Transport.schedule(() => {
+            playNote(noteString); // Trigger note on
+            visualizer.redraw(note, true); // Note On: You might need to modify this line to suit the visualizer's API
+        }, noteStartTime);
+
+        Tone.Transport.schedule(() => {
+            stopNote(noteString); // Trigger note off
+            visualizer.redraw(note, false); // Note Off: You might need to modify this line to suit the visualizer's API
+        }, noteEndTime);
     });
+    
 
-    // Visualize the generated music (this is assuming you have some sort of canvas setup for visualization)
-
-    const viz = new mm.Visualizer(continuation, document.getElementById('canvas'), config);
-    rnnPlayer.start(continuation).then(() => {
-        viz.stop();
-    });
-    rnnPlayer.on('samplePlayed', (sample) => viz.redraw(sample));
+    Tone.Transport.start();
 }
 
-function convertPitchToNoteString(pitch) {
-    const octave = Math.floor(pitch / 12) - 1;
-    const noteInOctave = pitch % 12;
-    const noteString = notesMapping[noteInOctave] + octave;
-    return noteString;
-}
+export { generateSequence };

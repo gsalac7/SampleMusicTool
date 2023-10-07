@@ -21,10 +21,13 @@ const synths = {
         oscillator: { type: 'sawtooth' },
         envelope: { attack: 0.1 }
     }).toDestination(),
-    bass: new Tone.MonoSynth({
-        oscillator: { type: 'fmsquare5' },
-        envelope: { attack: 0.1, decay: 0.3, sustain: 0.4, release: 1.4 }
-    }).toDestination()
+    duo: new Tone.DuoSynth().toDestination(),
+    am: new Tone.AMSynth().toDestination(),
+    fm: new Tone.FMSynth().toDestination(),
+    mem: new Tone.MembraneSynth().toDestination(),
+    metal: new Tone.MetalSynth().toDestination(),
+    pluck: new Tone.PluckSynth().toDestination(),
+    synth: new Tone.Synth().toDestination(),
 };
 
 
@@ -41,22 +44,29 @@ export function initializePianoUI() {
             key.classList.add('key');
         }
 
+        let mouseDown = false; // Global flag indicating if mouse is held down
         key.addEventListener('mousedown', () => {
-            activeSynth.triggerAttack(note); // Starts playing the note
+            mouseDown = true;
+            playNote(note); // Starts playing the note
             handleNotePlayed(note);
             key.classList.add('active');
         });
 
         key.addEventListener('mouseup', () => {
-            activeSynth.triggerRelease(note); // Stops playing the specified note
-            key.classList.remove('active');
+            if (mouseDown == true) {
+                stopNote(note); // Stops playing the specified note
+                key.classList.remove('active');
+                mouseDown = false;
+            }
         });
 
         key.addEventListener('mouseleave', () => {
-            activeSynth.triggerRelease(note); // Stops playing the specified note
-            key.classList.remove('active');
+            if (mouseDown == true) {
+                stopNote(note); // Stops playing the specified note
+                key.classList.remove('active');
+                mouseDown = false;
+            }
         });
-
 
         pianoContainer.appendChild(key);
     });
@@ -77,16 +87,24 @@ export function initializeSynth() {
     synthSelectElement.addEventListener('change', (event) => {
         setActiveSynth(event.target.value);
     });
+    
 }
 
-export function setActiveSynth(synthType) {
+
+// Function to set the active synth
+function setActiveSynth(synthType) {
+    // Check if synth type is valid
+    if (!synths[synthType]) {
+        console.error('Invalid synth type selected:', synthType);
+        return;
+    }
+
+    // Set active synth
     activeSynth = synths[synthType];
 }
 
-
 export function playNote(note, velocity = 1) {
     // Adjust volume or other parameters using velocity
-    // Example: set the volume value or apply it to the gain, etc.
     activeSynth.volume.value = convertVelocityToVolume(velocity); 
     activeSynth.triggerAttack(note); // Removed "8n", as the release will be handled by stopNote
 
@@ -110,13 +128,15 @@ const maxVolume = 0; // 0 dB is full volume in Tone.js
 
 
 export function startNote(noteString, velocity) {
-    // You can incorporate velocity into playNote if necessary
     playNote(noteString, velocity); // playNote function will handle UI feedback for starting note
 }
 
 export function stopNote(noteString) {
-    // Stop playing the note
-    activeSynth.triggerRelease(noteString); 
+    if (activeSynth instanceof Tone.PolySynth) {
+        activeSynth.triggerRelease(noteString); // For PolySynth, release the specific note
+    } else {
+        activeSynth.triggerRelease(); // For MonoSynth or other synths, release the currently active note
+    }
 
     // UI feedback for note off
     const noteIndex = notes.indexOf(noteString);
@@ -129,3 +149,11 @@ export function stopNote(noteString) {
     }
 }
 
+
+
+export function convertPitchToNoteString(pitch) {
+    const notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+    const octave = Math.floor(pitch / 12) - 1;
+    const noteIndex = pitch % 12;
+    return notes[noteIndex] + octave;
+}

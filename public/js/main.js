@@ -1,10 +1,10 @@
 import './models/music_rnn.js'
 import { initializeMidi } from './util/midiHandler';
 import { exportMIDI, toggleRecording } from './util/recordingManager';
-import { initializePianoUI, initializeSynth } from './util/synthManager';
+import { initializePianoUI, initializeSynth} from './util/synthManager';
 import { initializeSequencer, toggleLoop, updateSequencer } from './util/drumManager';
 import { initializeBpmDial } from './util/bpmManager';
-import { generateAndPlayMusic } from './models/music_rnn';
+import { generateSequence} from './models/music_rnn';
 
 window.onload = () => {
   // Init UI Elements
@@ -25,7 +25,7 @@ window.onload = () => {
   // Add event listener for the music generation button
   const generateMusicButton = document.getElementById('generateMusic');
   if (generateMusicButton) {
-    generateMusicButton.addEventListener('click', generateAndPlayMusic);
+    generateMusicButton.addEventListener('click', generateSequence);
   } else {
     console.error('Generate music button not found');
   }
