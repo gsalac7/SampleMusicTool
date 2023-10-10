@@ -64,7 +64,5 @@ function initBPMSlider() {
         setBPM(value);
         setBPMSequencer(value);
     });
-    
-
 }
 

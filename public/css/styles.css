@@ -19,7 +19,7 @@ body {
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
 }
 
-#synth-select {
+#instrument-select {
     background-color: #555;
     color: #fff;
     border: none;
@@ -29,11 +29,11 @@ body {
     outline: none;
 }
 
-#synth-select:hover {
+#instrument-select:hover {
     background-color: #666;
 }
 
-#synth-select:focus {
+#instrument-select:focus {
     background-color: #444;
 }
 

@@ -8,6 +8,26 @@ let BPM = 120;
 let temperature = 1.0;
 let seedSequence = seedSequences['majorScaleUp'];
 let generatedSequence;
+let activeInstrument;
+let visualizer;
+const soundFontUrl = '../SampleMusicTool/public/sounds/soundfont';
+const soundFontData = {
+  "name": "sgm_plus",
+  "instruments": {
+    "0": "acoustic_grand_piano",
+    "1": "acoustic_guitar_steel",
+    "2": "acoustic_bass",
+    "3": "distortion_guitar",
+    "4": "marimba",
+    "5": "synth_bass_1",
+    "6": "xylophone",
+  }
+}
+
+const player = new mm.SoundFontPlayer(soundFontUrl, undefined, undefined, undefined, {
+    run: note => visualizer.redraw(note),
+    stop: () => { }
+});
 
 function setSeedSequence(newSeedSequence) {
     seedSequence = newSeedSequence;
@@ -21,23 +41,10 @@ function initializeModel() {
     });
 }
 
-let visualizer;
-
-// Set up the SoundFont player
-const soundFontUrl = 'https://storage.googleapis.com/magentadata/js/soundfonts/sgm_plus';
-
-const player = new mm.SoundFontPlayer(soundFontUrl, undefined, undefined, undefined, {
-    run: note => visualizer.redraw(note),
-    stop: () => {}
-});
-
 async function generateSequence() {
     const quantizedSeq = mm.sequences.quantizeNoteSequence(seedSequence, 4);
     generatedSequence = await rnnModel.continueSequence(quantizedSeq, 40, temperature);
     if (generatedSequence) {
-        generatedSequence.notes.forEach(note => {
-            note.program = 12;  // Set to the desired instrument index
-        });
         playGeneratedSequence();
         document.getElementById('replay-button').style.display = 'inline-block';
     }
@@ -50,12 +57,18 @@ function playGeneratedSequence() {
         noteRGB: '8, 41, 64',
         activeNoteRGB: '240, 84, 119',
     };
-    
+
     visualizer = new mm.PianoRollCanvasVisualizer(generatedSequence, document.getElementById('canvas'), config);
 
     if (player.isPlaying()) {
         player.stop();
     }
+    let num = setInstrumentNumber();
+
+    generatedSequence.notes.forEach(note => {
+        note.program = num;  // Set to the desired instrument index
+        note.velocity = 127; // set the velocity for everything to 127; max volume
+    });
 
     player.start(generatedSequence);
 }
@@ -69,4 +82,17 @@ function setTemperature(newTemperature) {
     temperature = newTemperature;
 }
 
-export { playGeneratedSequence, initializeModel, generateSequence, setBPM, setTemperature, setSeedSequence };
+function setInstrument(instrument) {
+    activeInstrument = instrument;
+}
+
+function setInstrumentNumber() {
+    for (const [key, value] of Object.entries(soundFontData.instruments)) {
+        if (value === activeInstrument) {
+            return parseInt(key, 10);
+        }
+    }
+    return null; // or you can return -1 or any value that indicates not found
+}
+
+export { setInstrument, playGeneratedSequence, initializeModel, generateSequence, setBPM, setTemperature, setSeedSequence };

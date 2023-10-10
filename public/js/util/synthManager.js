@@ -1,5 +1,7 @@
 import * as Tone from 'tone';
 import { handleNotePlayed } from './recordingManager';
+import { getSample } from './samples';
+import { setInstrument } from '../models/music_rnn';
 
 const pianoContainer = document.getElementById('piano');
 const notes = [
@@ -14,23 +16,17 @@ const notes = [
     "C8"
 ];
 
-// object to store synths
-const synths = {
-    poly: new Tone.PolySynth(Tone.Synth).toDestination(),
-    mono: new Tone.MonoSynth({
-        oscillator: { type: 'sawtooth' },
-        envelope: { attack: 0.1 }
-    }).toDestination(),
-    duo: new Tone.DuoSynth().toDestination(),
-    am: new Tone.AMSynth().toDestination(),
-    fm: new Tone.FMSynth().toDestination(),
-    mem: new Tone.MembraneSynth().toDestination(),
-    metal: new Tone.MetalSynth().toDestination(),
-    pluck: new Tone.PluckSynth().toDestination(),
-    synth: new Tone.Synth().toDestination(),
-};
+//
+const instruments = {
+    acoustic_grand_piano:  new Tone.Sampler(getSample('acoustic_grand_piano')).toDestination(),
+    acoustic_guitar_steel:  new Tone.Sampler(getSample('acoustic_guitar_steel')).toDestination(),
+    synth_bass_1:  new Tone.Sampler(getSample('synth_bass_1')).toDestination(),
+    marimba:  new Tone.Sampler(getSample('marimba')).toDestination(),
+    acoustic_bass:  new Tone.Sampler(getSample('acoustic_bass')).toDestination(),
+    distortion_guitar:  new Tone.Sampler(getSample('distortion_guitar')).toDestination(),
+}
 const maxVolume = 0; // 0 dB is full volume in Tone.js
-let activeSynth = synths.poly; // Default
+let activeInstrument = instruments['acoustic_grand_piano'];
 
 function initializePianoUI() {
     // Iterate over the notes to create piano keys in the UI
@@ -73,40 +69,41 @@ function initializePianoUI() {
 }
 
 function initializeSynth() {
-    const synthSelectElement = document.getElementById('synth-select');
+    const instrumentSelectElement = document.getElementById('instrument-select');
 
-    if (!synthSelectElement) {
+    if (!instrumentSelectElement) {
         console.error('Synth select element not found');
         return;
     }
 
     // Set the initial active synth based on the select value
-    setActiveSynth(synthSelectElement.value);
+    setActiveInstrument(instrumentSelectElement.value);
 
     // Set up event listener on synth-select
-    synthSelectElement.addEventListener('change', (event) => {
-        setActiveSynth(event.target.value);
+    instrumentSelectElement.addEventListener('change', (event) => {
+        setActiveInstrument(event.target.value);
     });
     
 }
 
 
 // Function to set the active synth
-function setActiveSynth(synthType) {
+function setActiveInstrument(instrument) {
     // Check if synth type is valid
-    if (!synths[synthType]) {
-        console.error('Invalid synth type selected:', synthType);
+    if (!instruments[instrument]) {
+        console.error('Invalid synth type selected:', instrument);
         return;
     }
 
     // Set active synth
-    activeSynth = synths[synthType];
+    activeInstrument = instruments[instrument];
+    setInstrument(instrument);
 }
 
 function startNote(note, velocity = 1) {
     // Adjust volume or other parameters using velocity
-    activeSynth.volume.value = convertVelocityToVolume(velocity); 
-    activeSynth.triggerAttack(note); // Removed "8n", as the release will be handled by stopNote
+    //activeSynth.volume.value = convertVelocityToVolume(velocity); 
+    activeInstrument.triggerAttack(note); // Removed "8n", as the release will be handled by stopNote
 
     // UI feedback for active note
     const noteIndex = notes.indexOf(note);
@@ -123,11 +120,7 @@ function convertVelocityToVolume(velocity) {
 }
 
 function stopNote(noteString) {
-    if (activeSynth instanceof Tone.PolySynth) {
-        activeSynth.triggerRelease(noteString); // For PolySynth, release the specific note
-    } else {
-        activeSynth.triggerRelease(); // For MonoSynth or other synths, release the currently active note
-    }
+    activeInstrument.triggerRelease(); // For MonoSynth or other synths, release the currently active note
 
     // UI feedback for note off
     const noteIndex = notes.indexOf(noteString);
@@ -147,4 +140,4 @@ function convertPitchToNoteString(pitch) {
     return notes[noteIndex] + octave;
 }
 
-export {convertPitchToNoteString, convertVelocityToVolume, stopNote, startNote, initializePianoUI, initializeSynth}
+export { convertPitchToNoteString, convertVelocityToVolume, stopNote, startNote, initializePianoUI, initializeSynth}
