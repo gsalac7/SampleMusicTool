@@ -29,10 +29,10 @@ const synths = {
     pluck: new Tone.PluckSynth().toDestination(),
     synth: new Tone.Synth().toDestination(),
 };
-
-
+const maxVolume = 0; // 0 dB is full volume in Tone.js
 let activeSynth = synths.poly; // Default
-export function initializePianoUI() {
+
+function initializePianoUI() {
     // Iterate over the notes to create piano keys in the UI
     notes.forEach((note, index) => {
         const key = document.createElement('div');
@@ -47,7 +47,7 @@ export function initializePianoUI() {
         let mouseDown = false; // Global flag indicating if mouse is held down
         key.addEventListener('mousedown', () => {
             mouseDown = true;
-            playNote(note); // Starts playing the note
+            startNote(note); // Starts playing the note
             handleNotePlayed(note);
             key.classList.add('active');
         });
@@ -72,7 +72,7 @@ export function initializePianoUI() {
     });
 }
 
-export function initializeSynth() {
+function initializeSynth() {
     const synthSelectElement = document.getElementById('synth-select');
 
     if (!synthSelectElement) {
@@ -103,7 +103,7 @@ function setActiveSynth(synthType) {
     activeSynth = synths[synthType];
 }
 
-export function playNote(note, velocity = 1) {
+function startNote(note, velocity = 1) {
     // Adjust volume or other parameters using velocity
     activeSynth.volume.value = convertVelocityToVolume(velocity); 
     activeSynth.triggerAttack(note); // Removed "8n", as the release will be handled by stopNote
@@ -119,19 +119,10 @@ export function playNote(note, velocity = 1) {
 }
 
 function convertVelocityToVolume(velocity) {
-    // Implement your conversion logic here
-    // Example: linear mapping (adjust as needed)
     return velocity * maxVolume;
 }
 
-const maxVolume = 0; // 0 dB is full volume in Tone.js
-
-
-export function startNote(noteString, velocity) {
-    playNote(noteString, velocity); // playNote function will handle UI feedback for starting note
-}
-
-export function stopNote(noteString) {
+function stopNote(noteString) {
     if (activeSynth instanceof Tone.PolySynth) {
         activeSynth.triggerRelease(noteString); // For PolySynth, release the specific note
     } else {
@@ -149,11 +140,11 @@ export function stopNote(noteString) {
     }
 }
 
-
-
-export function convertPitchToNoteString(pitch) {
+function convertPitchToNoteString(pitch) {
     const notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
     const octave = Math.floor(pitch / 12) - 1;
     const noteIndex = pitch % 12;
     return notes[noteIndex] + octave;
 }
+
+export {convertPitchToNoteString, convertVelocityToVolume, stopNote, startNote, initializePianoUI, initializeSynth}

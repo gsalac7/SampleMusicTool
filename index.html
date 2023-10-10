@@ -13,8 +13,13 @@
 
 <body>
   <div id="brand-name">Harmonix</div>
+
+  <div id="loading-screen">
+    <p>Loading...</p>
+  </div>
+
   <canvas id="canvas" style="width:700px; height:300px;"></canvas>
-  
+
   <div></div>
 
   <div id="control-panel">
@@ -29,6 +34,7 @@
       <option value="metal">MetalSynth</option>
       <option value="pluck">PluckSynth</option>
       <option value="synth">Synth</option>
+      <option value="marimba">Marimba</option>
       <!-- Add other synth options here -->
     </select>
   </div>
@@ -37,9 +43,31 @@
   </div>
   <button id="toggleRecording" class="recording-button">Record</button>
   <button id="generateMusic">Generate Music</button>
+  <button id="replay-button" style="display: none;">Replay Generated Sequence</button>
+
+  <div id="Seed-Control-Panel">
+    <label for="seed-select">Seed Sequence:</label>
+    <select id="seed-select">
+      <option value="majorScaleUp">Major Scale Up</option>
+      <option value="majorScaleDown">Major Scale Down</option>
+      <option value="minorScaleUp">Minor Scale Up</option>
+      <option value="minorScaleDown">Minor Scale Down</option>
+    </select>
+  </div>
+
+
+  <div id="temp-slider-container">
+  <label>Temperature: </label>
+  <div id="temp-slider"></div>
+  <span id="temp-value">1.0</span> <!-- Initial value -->
+</div>
+
+<div id="bpm-slider-container">
+  <label>BPM: </label>
+  <div id="bpm-slider"></div>
+  <span id="bpm-value">120</span> <!-- Initial value -->
+</div>
   <button id="exportMidi">Export Recorded MIDI</button>
-
-
   <div id="sequencer-container">
     <div id="sequencer"></div>
   </div>

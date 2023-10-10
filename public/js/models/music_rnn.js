@@ -1,64 +1,72 @@
+
 import * as mm from '@magenta/music';
-import * as Tone from 'tone'; // Ensure Tone.js is imported
-import { activeSynth, playNote, stopNote, convertPitchToNoteString } from '../util/synthManager';
+import { seedSequences } from './seed_sequences';
 
 const rnnModel = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/basic_rnn');
 
-async function generateSequence() {
-    await rnnModel.initialize();
-    const seedSeq = {
-        notes: [
-            { pitch: 60, startTime: 0, endTime: 0.5 },   // C4
-            { pitch: 64, startTime: 0.5, endTime: 1.0 },  // E4
-            { pitch: 67, startTime: 1.0, endTime: 1.5 },  // G4
-            { pitch: 64, startTime: 1.5, endTime: 2.0 },  // E4
-        ],
-        totalTime: 2,
-        quantizationInfo: { stepsPerQuarter: 4 }
-    };
+let BPM = 120;
+let temperature = 1.0;
+let seedSequence = seedSequences['majorScaleUp'];
+let generatedSequence;
 
-    const quantizedSeq = mm.sequences.quantizeNoteSequence(seedSeq, 4);
-    const generatedSeq = await rnnModel.continueSequence(quantizedSeq, 40, 1.5);
-
-    playGeneratedSequence(generatedSeq);
+function setSeedSequence(newSeedSequence) {
+    seedSequence = newSeedSequence;
 }
 
-function playGeneratedSequence(seq) {
-    const beatsPerMinute = 120; // Set your desired BPM
-    const stepsPerQuarter = 4; // Retrieve this value from seq if it's dynamic
-    const timePerStep = 1 / ((beatsPerMinute / 60) * stepsPerQuarter);
+function initializeModel() {
+    rnnModel.initialize().then(function () {
+        console.log('Model initialized');
+    }).catch(function (error) {
+        console.error('Failed to initialize model:', error);
+    });
+}
 
-    const startTime = Tone.now();
+let visualizer;
 
-    // Config for the visualizer
+// Set up the SoundFont player
+const soundFontUrl = 'https://storage.googleapis.com/magentadata/js/soundfonts/sgm_plus';
+
+const player = new mm.SoundFontPlayer(soundFontUrl, undefined, undefined, undefined, {
+    run: note => visualizer.redraw(note),
+    stop: () => {}
+});
+
+async function generateSequence() {
+    const quantizedSeq = mm.sequences.quantizeNoteSequence(seedSequence, 4);
+    generatedSequence = await rnnModel.continueSequence(quantizedSeq, 40, temperature);
+    if (generatedSequence) {
+        generatedSequence.notes.forEach(note => {
+            note.program = 12;  // Set to the desired instrument index
+        });
+        playGeneratedSequence();
+        document.getElementById('replay-button').style.display = 'inline-block';
+    }
+}
+
+function playGeneratedSequence() {
     const config = {
-        noteHeight: 10, // Adjust the height of each note
-        pixelsPerTimeStep: 150, // Increase space for each time step
+        noteHeight: 10,
+        pixelsPerTimeStep: 150,
         noteRGB: '8, 41, 64',
         activeNoteRGB: '240, 84, 119',
     };
-
-    // Create a visualizer instance with canvas rendering
-    const visualizer = new mm.PianoRollCanvasVisualizer(seq, document.getElementById('canvas'), config);
-
-    seq.notes.forEach(note => {
-        const noteString = convertPitchToNoteString(note.pitch); // Convert pitch to note string
-        const noteStartTime = startTime + note.quantizedStartStep * timePerStep;
-        const noteEndTime = startTime + note.quantizedEndStep * timePerStep;
-
-        Tone.Transport.schedule(() => {
-            playNote(noteString); // Trigger note on
-            visualizer.redraw(note, true); // Note On: You might need to modify this line to suit the visualizer's API
-        }, noteStartTime);
-
-        Tone.Transport.schedule(() => {
-            stopNote(noteString); // Trigger note off
-            visualizer.redraw(note, false); // Note Off: You might need to modify this line to suit the visualizer's API
-        }, noteEndTime);
-    });
     
+    visualizer = new mm.PianoRollCanvasVisualizer(generatedSequence, document.getElementById('canvas'), config);
 
-    Tone.Transport.start();
+    if (player.isPlaying()) {
+        player.stop();
+    }
+
+    player.start(generatedSequence);
 }
 
-export { generateSequence };
+function setBPM(newBPM) {
+    BPM = newBPM;
+    player.setTempo(BPM);
+}
+
+function setTemperature(newTemperature) {
+    temperature = newTemperature;
+}
+
+export { playGeneratedSequence, initializeModel, generateSequence, setBPM, setTemperature, setSeedSequence };

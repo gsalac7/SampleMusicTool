@@ -37,6 +37,36 @@ body {
     background-color: #444;
 }
 
+/*Seed Sequence Control Panel*/
+#Seed-Control-Panel {
+    text-align: center;
+    margin-bottom: 20px;
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+}
+
+#seed-select {
+    background-color: #555;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    outline: none;
+}
+
+#seed-select:hover {
+    background-color: #666;
+}
+
+#seed-select:focus {
+    background-color: #444;
+}
+
+
 #piano {
     display: flex;
     align-items: flex-start;

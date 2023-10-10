@@ -12,6 +12,7 @@ const sounds = {
 let isPlaying = false;
 let intervalID;
 let sequencer;
+let currentBpm = 120;
 
 function initializeSequencer(rows, columns) {
     sequencer = new Nexus.Sequencer('#sequencer', {
@@ -55,15 +56,14 @@ function toggleLoop(playButton) {
         playButton.className = 'play';
         isPlaying = false;
     } else {
-        const bpm = 100; // You might want to replace this with a dynamic value
-        startLoop(bpm);
+        startLoop(currentBpm);
         playButton.innerText = 'Stop';
         playButton.className = 'stop';
         isPlaying = true;
     }
 }
 
-function startLoop(bpm = 80) {
+function startLoop(bpm) {
     let currentColumn = 0;
     const interval = (60000 / bpm) / 4;
 
@@ -102,5 +102,9 @@ function updateSequencer() {
     handleBarAndBeatChange(bars, beatsPerBar);
 }
 
+function setBPMSequencer(bpm) {
+    currentBpm = bpm;
+}
 
-export { initializeSequencer, toggleLoop, updateSequencer};
+
+export { initializeSequencer, toggleLoop, updateSequencer, setBPMSequencer};
