@@ -5,65 +5,97 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Harmonix</title>
-  <link rel="stylesheet" href="public/css/styles.css">
+  <link rel="stylesheet" href="public/css/buttons.css">
+  <link rel="stylesheet" href="public/css/global.css">
+  <link rel="stylesheet" href="public/css/controlPanel.css">
   <link rel="stylesheet" href="public/css/piano.css">
-  <link rel="stylesheet" href="public/css/background.css">
   <link rel="stylesheet" href="public/css/sequencer.css">
 </head>
 
 <body>
-  <div id="brand-name">Harmonix</div>
 
-  <div id="loading-screen">
-    <p>Loading...</p>
+  <div id="brand-name">
+    <img src="public/assets/Icon.jpg" alt="Brand Icon" id="brand-icon">
+    Harmonix
   </div>
 
-  <canvas id="canvas" style="width:700px; height:300px;"></canvas>
+  <div class="responsive-container">
+    <div id="svg-wrapper">
+      <svg id="svg-container" >
+        <!-- Your SVG content here -->
+      </svg>
+    </div>
 
-  <div></div>
+    <div id="control-panel">
+      <label for="instrument-select">Choose an instrument:</label>
+      <select id="instrument-select">
+        <option value="acoustic_grand_piano">Acoustic Grand Piano</option>
+        <option value="synth_bass_1">Synth Bass</option>
+        <option value="acoustic_guitar_steel">Steel Guitar</option>
+        <option value="distortion_guitar">DistortionGuitar</option>
+        <option value="marimba">Marimba</option>
+        <!-- Add other synth options here -->
+      </select>
+    </div>
+    <div id="piano">
+      <!-- Generate keys for the piano here -->
+    </div>
+    <button id="toggleRecording" class="recording-button">Record</button>
+    <button id="generateMusic">Generate Music</button>
+    <button id="replay-button" style="display: none;">Replay Generated Sequence</button>
+    <button id="download-link" style="display: none;">Download Generated Sequence</button>
 
-  <div id="control-panel">
-    <label for="instrument-select">Choose an instrument:</label>
-    <select id="instrument-select">
-      <option value="acoustic_grand_piano">Acoustic Grand Piano</option>
-      <option value="synth_bass_1">Synth Bass</option>
-      <option value="acoustic_guitar_steel">Steel Guitar</option>
-      <option value="distortion_guitar">DistortionGuitar</option>
-      <option value="marimba">Marimba</option>
-      <!-- Add other synth options here -->
-    </select>
-  </div>
-  <div id="piano">
-    <!-- Generate keys for the piano here -->
-  </div>
-  <button id="toggleRecording" class="recording-button">Record</button>
-  <button id="generateMusic">Generate Music</button>
-  <button id="replay-button" style="display: none;">Replay Generated Sequence</button>
+    <div id="AI-Control-Panel">
+      <!-- Model Selector -->
+      <div id="model-selector">
+        <input type="radio" id="musicRNN" name="model" value="MusicRNN" checked>
+        <label for="musicRNN">MusicRNN</label>
+        <input type="radio" id="musicVAE" name="model" value="MusicVAE">
+        <label for="musicVAE">MusicVAE</label>
+      </div>
 
-  <div id="Seed-Control-Panel">
-    <label for="seed-select">Seed Sequence:</label>
-    <select id="seed-select">
-      <option value="majorScaleUp">Major Scale Up</option>
-      <option value="majorScaleDown">Major Scale Down</option>
-      <option value="minorScaleUp">Minor Scale Up</option>
-      <option value="minorScaleDown">Minor Scale Down</option>
-      <option value="maryHadALittleLamb">Mary Had a Little Lamb</option>
-    </select>
-  </div>
+      <div id="seed-selector">
+        <label for="seed-select">Seed Sequence:</label>
+        <select id="seed-select">
+          <option value="majorScaleUp">Major Scale Up</option>
+          <option value="majorScaleDown">Major Scale Down</option>
+          <option value="minorScaleUp">Minor Scale Up</option>
+          <option value="minorScaleDown">Minor Scale Down</option>
+          <option value="maryHadALittleLamb">Mary Had a Little Lamb</option>
+          <option value="fourChordProgression">Four Chord Progression</option>
+        </select>
+      </div>
+      <!-- Temperature Slider -->
+      <div id="temp-slider-container">
+        <label>Temperature: </label>
+        <div id="temp-slider"></div>
+        <span id="temp-value">1.0</span>
+      </div>
 
+      <!-- BPM Slider -->
+      <div id="bpm-slider-container">
+        <label>BPM: </label>
+        <div id="bpm-slider"></div>
+        <span id="bpm-value">120</span>
+      </div>
 
-  <div id="temp-slider-container">
-  <label>Temperature: </label>
-  <div id="temp-slider"></div>
-  <span id="temp-value">1.0</span> <!-- Initial value -->
-</div>
+      <!-- Length Input -->
+      <div id="length-input-container">
+        <label for="length-input">Length:</label>
+        <input type="number" id="length-input" min="1" placeholder="Enter length" value="50">
+      </div>
 
-<div id="bpm-slider-container">
-  <label>BPM: </label>
-  <div id="bpm-slider"></div>
-  <span id="bpm-value">120</span> <!-- Initial value -->
-</div>
-  <button id="exportMidi">Export Recorded MIDI</button>
+      <!-- Steps per Quarter Dropdown -->
+      <div id="steps-selector">
+        <label for="steps-select">Steps per Quarter:</label>
+        <select id="steps-select">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="4">4</option>
+          <option value="8">8</option>
+        </select>
+      </div>
+    </div>
   <div id="sequencer-container">
     <div id="sequencer"></div>
   </div>
@@ -83,6 +115,7 @@
   <button id="updateSequencer">Update Sequencer</button>
 
 
+  </div>
   <script src="./dist/renderer.bundle.js"></script>
   <script type="module" src="public/js/main.js"></script>
 </body>

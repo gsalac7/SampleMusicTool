@@ -9,10 +9,8 @@ function getSample(instrument) {
     let instrumentObj = {};
     for (let pitch = 21; pitch <= 108; pitch++) {
         let note = pitchToNote(pitch);
-        console.log("currentNote: " + note)
         instrumentObj[note] = `../SampleMusicTool/public/sounds/soundfont/${instrument}/p${pitch}_v127.mp3`;
     }
-    console.log(instrumentObj);
     return instrumentObj
 }
 

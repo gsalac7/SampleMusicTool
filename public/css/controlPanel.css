@@ -1,0 +1,23 @@
+#control-panel, #AI-Control-Panel, #sequencer-container {
+    background-color: #2C3E50;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    color: white;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+select, input[type="number"] {
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    margin: 5px 0;
+}
+
+#instrument-select, #seed-select, #steps-select, #beatsPerBar {
+    width: 100%;
+}

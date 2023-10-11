@@ -16,7 +16,7 @@ let currentBpm = 120;
 
 function initializeSequencer(rows, columns) {
     sequencer = new Nexus.Sequencer('#sequencer', {
-        'size': [800, 400],
+        'size': [1200, 400],
         'mode': 'toggle',
         'rows': rows,
         'columns': columns 
@@ -25,13 +25,13 @@ function initializeSequencer(rows, columns) {
     const cells = document.querySelectorAll('#sequencer span');
     cells.forEach((cell, index) => {
         if (index % 4 === 3) {
-            cell.style.marginRight = '4px'; // Adjust as needed
+            cell.style.marginRight = '8px'; // Adjust as needed
         }
     });
     
 
-    sequencer.colorize("accent", "#ff0000");
-    sequencer.colorize("fill", "#333");
+    sequencer.colorize("accent", "#FF0000");
+    sequencer.colorize("fill", "#FFFFF");
 
     sequencer.on('change', function (v) {
         playSound(v);

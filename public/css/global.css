@@ -1,0 +1,97 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /*background-color: #d6d6d6;*/  /* Dark background for contrast */
+    color: #fff;  /* Light font color for readability on dark background */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+    background: linear-gradient(45deg, #a0d8f1, #90caf9, #80deea, #7e57c2);
+}
+
+
+.responsive-container {
+    max-width: 1200px;  /* Max-width for content restriction */
+    width: 90%;  /* Responsive width */
+    background: linear-gradient(45deg, #2b2b3f, #1e1e2b, #141421, #0d0d1a);
+    /* other styles */
+    border-radius: 12px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);  /* Shadow for a "lifting" effect */
+    padding: 30px;
+    margin: 30px 0;
+    text-align: center;
+    position: relative;  /* Position relative for absolute positioning of child elements */
+    overflow-x: hidden; 
+}
+
+#brand-name {
+    font-size: 3em;
+    color: #464040;
+    margin: 20px 0;
+    letter-spacing: 2px;  /* Letter spacing for brand name */
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);  /* Text shadow for depth */
+}
+
+#brand-icon {
+    width: 100px;  /* or whatever size you want */
+    height: 100px;  /* maintain the aspect ratio of the icon */
+    margin-right: 2px;  /* space between the icon and the text */
+    vertical-align: middle;  /* aligns the icon with the text */
+    border-radius: 8px;  
+}
+
+
+/* Add a global transition for smoothness in interaction */
+* {
+    transition: all 0.3s ease-in-out;
+}
+
+/* Global button style */
+button {
+    cursor: pointer;
+    background: #ffffff;
+    color: #282c34;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    margin: 10px;
+    font-size: 1em;
+}
+
+button:hover {
+    background: #4286f4;
+    color: #ffffff;
+}
+
+/* Ensure the canvas adapts to the container’s width responsively */
+#svg-wrapper {
+    width: 100%; /* Or whatever width you want for the visible area */
+    height: 100%; /* Or whatever height you want for the visible area */
+    overflow-x: auto; /* This property will add the horizontal scrollbar when the content overflows */
+    overflow-y: hidden; /* Optional: Set to 'hidden' if you only want horizontal scrolling */
+    white-space: nowrap; /* Prevents the inline SVG content from wrapping to the next line */
+  }
+  
+  #svg-container {
+    display: inline-block; /* Ensures the SVG doesn't wrap and respects the white-space property of its container */
+    height: 100%; /* Takes the full height of its container */
+    /* Set the width dynamically based on your SVG content. If the content is too wide, it will overflow the container, and because of the 'overflow-x: auto' property on the container, a scrollbar will appear. */
+    min-width: 1000px; /* Optional: Set a minimum width for the SVG content */
+  }
+
+
+
+
+/* Media Queries for Responsiveness */
+@media screen and (max-width: 768px) {
+    .responsive-container {
+        width: 95%;
+        padding: 20px;
+    }
+
+    #brand-name {
+        font-size: 2.5em;
+    }
+}

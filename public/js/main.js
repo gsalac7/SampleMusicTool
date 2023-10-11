@@ -1,4 +1,5 @@
-import {initializeModel} from './models/music_rnn'
+import { initializeModel } from './models/music_rnn'
+import { initializeMusicVaeModel } from './models/music_vae'
 import { initializeMidi } from './util/midiHandler';
 import { initializePianoUI, initializeSynth} from './util/synthManager';
 import { initializeSequencer} from './util/drumManager';
@@ -9,9 +10,10 @@ window.onload = () => {
   initializeSynth();
   initializePianoUI();
   initializeMidi();
-  initializeSequencer(6, 16);
+  initializeSequencer(6, 32);
   initializeControls();
 
   // Initialize the models
   initializeModel();
+  initializeMusicVaeModel();
 }

@@ -1,7 +1,7 @@
 import * as Nexus from 'nexusui';
 import { toggleRecording, exportMIDI } from './recordingManager';
 import { toggleLoop, updateSequencer, setBPMSequencer } from './drumManager';
-import { generateSequence, setBPM, setTemperature, setSeedSequence, playGeneratedSequence} from '../models/music_rnn';
+import { setLength, setSteps, exportSequence, generateSequence, setBPM, setTemperature, setSeedSequence, playGeneratedSequence} from '../models/music_rnn';
 
 export function initializeControls() {
     initializeButton('toggleRecording', toggleRecording, 'Toggle recording button not found');
@@ -10,11 +10,15 @@ export function initializeControls() {
     initializeButton('play-button', () => toggleLoop(document.getElementById('play-button')), 'Play button not found');
     initializeButton('updateSequencer', updateSequencer, 'Update sequencer button not found');
     initializeButton('replay-button', playGeneratedSequence, 'Replay button not found');
+    initializeButton('download-link', exportSequence, 'Export button not found');
 
+    //initPopup();
     initSeedSequencer();
 
     initTempSlider();
     initBPMSlider();
+    initStepsSelector();
+    initLengthField();
 };
 
 function initializeButton(buttonId, callback, errorMessage) {
@@ -27,16 +31,53 @@ function initializeButton(buttonId, callback, errorMessage) {
 }
 
 
+// Field for the length of the sequence
+function initLengthField() {
+    const field = document.getElementById('length-input');
+    if (field) {
+        field.addEventListener('change', function() {
+            const selectedValue = this.value;
+            /*
+            if (selectedValue < 1 || selectedValue > 50) {
+                showPopup("The Length must be a number between 1 and 50");
+            } 
+            */
+            setLength(selectedValue);
+        });
+    } else {
+        console.error('length select field not found');
+    }
+}
+
+// dropdown to select the amount of steps per quarter
+function initStepsSelector() {
+    const dropdown = document.getElementById('steps-select');
+    if (dropdown) {
+        dropdown.addEventListener('change', function() {
+            const selectedValue = this.value;
+            setSteps(selectedValue);
+        });
+    } else {
+        console.error('Step Selector Dropdown not found');
+    }
+}
 
 function initSeedSequencer() {
     const dropdown = document.getElementById('seed-select');
-    const selectedValue = dropdown.value;
-    setSeedSequence[selectedValue];
+    if (dropdown) {
+        dropdown.addEventListener('change', function() {
+            const selectedValue = this.value;
+            setSeedSequence(selectedValue);
+        });
+    } else {
+        console.error('Dropdown not found');
+    }
 }
+
 
 function initTempSlider() {
     const tempSlider = new Nexus.Slider('#temp-slider', {
-        size: [120, 20],
+        size: [220, 20],
         mode: 'relative',
         min: 0,
         max: 2,
@@ -52,7 +93,7 @@ function initTempSlider() {
 
 function initBPMSlider() {
     const bpmSlider = new Nexus.Slider('#bpm-slider', {
-        size: [120, 20],
+        size: [220, 20],
         mode: 'relative',
         min: 60,
         max: 180,
@@ -66,3 +107,21 @@ function initBPMSlider() {
     });
 }
 
+function initPopup() {
+    document.getElementById('btn').addEventListener('click', function() {
+        // You can change this message to whatever you want the popup to display
+        showPopup("Your custom message goes here");
+      });
+}
+function showPopup(message) {
+    console.log("Execute show popup");
+    var popup = document.getElementById('popup');
+    var popupMessage = document.getElementById('popup-message');
+    popupMessage.innerText = message; // Set the message
+    popup.style.display = 'block'; // Show the popup
+  }
+
+function closePopup() {
+    var popup = document.getElementById('popup');
+    popup.style.display = 'none';
+}

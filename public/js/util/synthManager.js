@@ -30,6 +30,7 @@ let activeInstrument = instruments['acoustic_grand_piano'];
 
 function initializePianoUI() {
     // Iterate over the notes to create piano keys in the UI
+    console.log("Initializing piano ui")
     notes.forEach((note, index) => {
         const key = document.createElement('div');
         key.setAttribute('data-key-index', index);
@@ -120,7 +121,7 @@ function convertVelocityToVolume(velocity) {
 }
 
 function stopNote(noteString) {
-    activeInstrument.triggerRelease(); // For MonoSynth or other synths, release the currently active note
+    activeInstrument.triggerRelease();
 
     // UI feedback for note off
     const noteIndex = notes.indexOf(noteString);
