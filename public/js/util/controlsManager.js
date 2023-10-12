@@ -15,12 +15,30 @@ export function initializeControls() {
     //initPopup();
     initSeedSequencer();
 
+    initModelBtn();
     initTempSlider();
     initBPMSlider();
     initStepsSelector();
     initLengthField();
 };
 
+function initModelBtn() {
+    const buttons = document.querySelectorAll('.model-btn');
+    
+    buttons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Remove 'active' class from all buttons
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            // Add 'active' class to the clicked button
+            this.classList.add('active');
+            
+            // Retrieve the value of the selected button if needed
+            const selectedValue = this.getAttribute('data-value');
+            console.log(selectedValue);
+        });
+    });
+}
 function initializeButton(buttonId, callback, errorMessage) {
     const button = document.getElementById(buttonId);
     if (button) {

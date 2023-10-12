@@ -97,6 +97,7 @@ function handleBarAndBeatChange(bars, beatsPerBar) {
 }
 
 function updateSequencer() {
+    sequencer.destroy();
     const bars = parseInt(document.getElementById('bars').value, 10);
     const beatsPerBar = parseInt(document.getElementById('beatsPerBar').value, 10);
     handleBarAndBeatChange(bars, beatsPerBar);

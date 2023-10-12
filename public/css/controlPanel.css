@@ -1,23 +1,64 @@
-#control-panel, #AI-Control-Panel, #sequencer-container {
+#AI-Control-Panel {
     background-color: #2C3E50;
     padding: 10px;
     margin: 10px 0;
     border-radius: 5px;
     color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;  /* Centers content horizontally */
 }
 
-label {
-    display: block;
-    margin-bottom: 5px;
+#AI-Control-Panel > div {
+    width: 100%;
+    display: flex;
+    flex-direction: column;  /* Stack label and field vertically */
+    align-items: center;     /* Center content horizontally */
+    margin: 5px 0;          /* Some spacing between each item */
 }
 
-select, input[type="number"] {
+#AI-Control-Panel label {
+    margin-bottom: 5px;   /* Space between label and input/field */
+}
+
+#AI-Control-Panel select, 
+#AI-Control-Panel input[type="number"] {
     padding: 8px;
     border: none;
     border-radius: 5px;
-    margin: 5px 0;
+    box-sizing: border-box; 
+    width: 80%;  /* This will make them take up less space and be more centered */
+    max-width: 300px;  /* A cap on the maximum width */
 }
 
-#instrument-select, #seed-select, #steps-select, #beatsPerBar {
+#AI-Control-Panel #instrument-select, 
+#AI-Control-Panel #seed-select, 
+#AI-Control-Panel #steps-select {
     width: 100%;
+}
+
+#AI-Control-Panel #temp-slider, 
+#AI-Control-Panel #bpm-slider {
+    margin-top: 10px;
+    flex-grow: 1;  /* Allow it to take up available space */
+}
+
+#AI-Control-Panel #model-selector {
+    flex-direction: row;  /* Make the buttons sit next to each other */
+    justify-content: center;  /* Center the buttons horizontally within their container */
+}
+
+#AI-Control-Panel .model-btn {
+    margin: 5px;
+    padding: 10px;
+    background-color: #34495E;  /* A darker shade for contrast */
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    width: 120px;  /* Fixed width for consistency */
+}
+
+#AI-Control-Panel .model-btn.active {
+    background-color: #E74C3C;
 }

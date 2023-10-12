@@ -10,7 +10,7 @@ window.onload = () => {
   initializeSynth();
   initializePianoUI();
   initializeMidi();
-  initializeSequencer(6, 32);
+  initializeSequencer(6, 16);
   initializeControls();
 
   // Initialize the models

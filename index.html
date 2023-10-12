@@ -21,37 +21,21 @@
 
   <div class="responsive-container">
     <div id="svg-wrapper">
-      <svg id="svg-container" >
+      <svg id="svg-container">
         <!-- Your SVG content here -->
       </svg>
     </div>
 
-    <div id="control-panel">
-      <label for="instrument-select">Choose an instrument:</label>
-      <select id="instrument-select">
-        <option value="acoustic_grand_piano">Acoustic Grand Piano</option>
-        <option value="synth_bass_1">Synth Bass</option>
-        <option value="acoustic_guitar_steel">Steel Guitar</option>
-        <option value="distortion_guitar">DistortionGuitar</option>
-        <option value="marimba">Marimba</option>
-        <!-- Add other synth options here -->
-      </select>
-    </div>
-    <div id="piano">
-      <!-- Generate keys for the piano here -->
-    </div>
-    <button id="toggleRecording" class="recording-button">Record</button>
     <button id="generateMusic">Generate Music</button>
     <button id="replay-button" style="display: none;">Replay Generated Sequence</button>
     <button id="download-link" style="display: none;">Download Generated Sequence</button>
 
     <div id="AI-Control-Panel">
       <!-- Model Selector -->
+
       <div id="model-selector">
-        <input type="radio" id="musicRNN" name="model" value="MusicRNN" checked>
-        <label for="musicRNN">MusicRNN</label>
-        <input type="radio" id="musicVAE" name="model" value="MusicVAE">
-        <label for="musicVAE">MusicVAE</label>
+        <button id="musicRNN" class="model-btn" data-value="MusicRNN">MusicRNN</button>
+        <button id="musicVAE" class="model-btn" data-value="MusicVAE">MusicVAE</button>
       </div>
 
       <div id="seed-selector">
@@ -95,24 +79,39 @@
           <option value="8">8</option>
         </select>
       </div>
+      <div id="control-panel">
+        <label for="instrument-select">Choose an instrument:</label>
+        <select id="instrument-select">
+          <option value="acoustic_grand_piano">Acoustic Grand Piano</option>
+          <option value="synth_bass_1">Synth Bass</option>
+          <option value="acoustic_guitar_steel">Steel Guitar</option>
+          <option value="distortion_guitar">DistortionGuitar</option>
+          <option value="marimba">Marimba</option>
+          <!-- Add other synth options here -->
+        </select>
+      </div>
     </div>
-  <div id="sequencer-container">
-    <div id="sequencer"></div>
-  </div>
-  <button id="play-button">Play</button>
-  <div id="bpmDial"></div>
+    <div id="piano">
+      <!-- Generate keys for the piano here -->
+    </div>
+    <button id="toggleRecording" class="recording-button">Record</button>
+    <div id="sequencer-container">
+      <div id="sequencer"></div>
+    </div>
+    <button id="play-button">Play</button>
+    <div id="bpmDial"></div>
 
-  <label for="bars">Number of Bars:</label>
-  <input type="number" id="bars" name="bars" min="1" max="8" value="4">
+    <label for="bars">Number of Bars:</label>
+    <input type="number" id="bars" name="bars" min="1" max="8" value="4">
 
-  <label for="beatsPerBar">Beats Per Bar:</label>
-  <select id="beatsPerBar" name="beatsPerBar">
-    <option value="2">2</option>
-    <option value="3">3</option>
-    <option value="4" selected>4</option>
-  </select>
+    <label for="beatsPerBar">Beats Per Bar:</label>
+    <select id="beatsPerBar" name="beatsPerBar">
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4" selected>4</option>
+    </select>
 
-  <button id="updateSequencer">Update Sequencer</button>
+    <button id="updateSequencer">Update Sequencer</button>
 
 
   </div>
