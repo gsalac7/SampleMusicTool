@@ -48,7 +48,16 @@
           <option value="maryHadALittleLamb">Mary Had a Little Lamb</option>
           <option value="fourChordProgression">Four Chord Progression</option>
         </select>
+
+        <!-- Upload MIDI as Seed Sequence -->
+        <div id="midi-upload">
+          <label for="midiFile">Or upload your own MIDI to use:</label>
+          <input type="file" id="midiFile" accept=".midi, .mid">
+          <span id="midi-filename"></span>
+        </div>
       </div>
+
+
       <!-- Temperature Slider -->
       <div id="temp-slider-container">
         <label>Temperature: </label>

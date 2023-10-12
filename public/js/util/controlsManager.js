@@ -1,15 +1,20 @@
 import * as Nexus from 'nexusui';
 import { toggleRecording, exportMIDI } from './recordingManager';
 import { toggleLoop, updateSequencer, setBPMSequencer } from './drumManager';
-import { setLength, setSteps, exportSequence, generateSequence, setBPM, setTemperature, setSeedSequence, playGeneratedSequence} from '../models/music_rnn';
+import { replaySequence, exportSequence, initializeRNNModel, setLength, setSteps, generateMusicRNNSequence, setTemperature, setSeedSequence, readMidi } from '../models/music_rnn';
+import { setBPM, playGeneratedSequence} from '../models/visualizer';
 
+
+let currentModel = 'MusicRNN'; // set the default model
 export function initializeControls() {
     initializeButton('toggleRecording', toggleRecording, 'Toggle recording button not found');
-    initializeButton('generateMusic', generateSequence, 'Generate music button not found');
+    if (currentModel == 'MusicRNN') {
+        initializeButton('generateMusic', generateMusicRNNSequence, 'Generate music button not found');
+    } 
     initializeButton('exportMidi', exportMIDI, 'Export MIDI button not found');
     initializeButton('play-button', () => toggleLoop(document.getElementById('play-button')), 'Play button not found');
     initializeButton('updateSequencer', updateSequencer, 'Update sequencer button not found');
-    initializeButton('replay-button', playGeneratedSequence, 'Replay button not found');
+    initializeButton('replay-button', replaySequence, 'Replay button not found');
     initializeButton('download-link', exportSequence, 'Export button not found');
 
     //initPopup();
@@ -24,18 +29,23 @@ export function initializeControls() {
 
 function initModelBtn() {
     const buttons = document.querySelectorAll('.model-btn');
-    
+
     buttons.forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             // Remove 'active' class from all buttons
             buttons.forEach(btn => btn.classList.remove('active'));
-            
+
             // Add 'active' class to the clicked button
             this.classList.add('active');
-            
+
             // Retrieve the value of the selected button if needed
             const selectedValue = this.getAttribute('data-value');
-            console.log(selectedValue);
+            if (selectedValue == "MusicRNN") {
+                initializeRNNModel();
+                disposeModel();
+            } else if (selectedValue == "MusicVAE") {
+                console.log("TODO: MusicVAE INITIALIZED HERE");
+            }
         });
     });
 }
@@ -48,12 +58,11 @@ function initializeButton(buttonId, callback, errorMessage) {
     }
 }
 
-
 // Field for the length of the sequence
 function initLengthField() {
     const field = document.getElementById('length-input');
     if (field) {
-        field.addEventListener('change', function() {
+        field.addEventListener('change', function () {
             const selectedValue = this.value;
             /*
             if (selectedValue < 1 || selectedValue > 50) {
@@ -71,7 +80,7 @@ function initLengthField() {
 function initStepsSelector() {
     const dropdown = document.getElementById('steps-select');
     if (dropdown) {
-        dropdown.addEventListener('change', function() {
+        dropdown.addEventListener('change', function () {
             const selectedValue = this.value;
             setSteps(selectedValue);
         });
@@ -83,13 +92,20 @@ function initStepsSelector() {
 function initSeedSequencer() {
     const dropdown = document.getElementById('seed-select');
     if (dropdown) {
-        dropdown.addEventListener('change', function() {
+        dropdown.addEventListener('change', function () {
             const selectedValue = this.value;
             setSeedSequence(selectedValue);
         });
     } else {
         console.error('Dropdown not found');
     }
+    document.getElementById('midiFile').addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            document.getElementById('midi-filename').innerText = file.name;
+            readMidi(file);
+        }
+    });
 }
 
 
@@ -126,10 +142,10 @@ function initBPMSlider() {
 }
 
 function initPopup() {
-    document.getElementById('btn').addEventListener('click', function() {
+    document.getElementById('btn').addEventListener('click', function () {
         // You can change this message to whatever you want the popup to display
         showPopup("Your custom message goes here");
-      });
+    });
 }
 function showPopup(message) {
     console.log("Execute show popup");
@@ -137,7 +153,7 @@ function showPopup(message) {
     var popupMessage = document.getElementById('popup-message');
     popupMessage.innerText = message; // Set the message
     popup.style.display = 'block'; // Show the popup
-  }
+}
 
 function closePopup() {
     var popup = document.getElementById('popup');

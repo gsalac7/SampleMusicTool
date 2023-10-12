@@ -1,7 +1,7 @@
 import * as Tone from 'tone';
 import { handleNotePlayed } from './recordingManager';
 import { getSample } from './samples';
-import { setInstrument } from '../models/music_rnn';
+import { setInstrument } from '../models/visualizer';
 
 const pianoContainer = document.getElementById('piano');
 const notes = [
@@ -30,7 +30,6 @@ let activeInstrument = instruments['acoustic_grand_piano'];
 
 function initializePianoUI() {
     // Iterate over the notes to create piano keys in the UI
-    console.log("Initializing piano ui")
     notes.forEach((note, index) => {
         const key = document.createElement('div');
         key.setAttribute('data-key-index', index);

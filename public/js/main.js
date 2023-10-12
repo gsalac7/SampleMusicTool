@@ -14,6 +14,4 @@ window.onload = () => {
   initializeControls();
 
   // Initialize the models
-  initializeModel();
-  initializeMusicVaeModel();
 }

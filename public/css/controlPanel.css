@@ -62,3 +62,54 @@
 #AI-Control-Panel .model-btn.active {
     background-color: #E74C3C;
 }
+
+
+/* Existing styles you provided earlier */
+#AI-Control-Panel, #control-panel, #sequencer-container {
+    background-color: #2C3E50;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    color: white;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+select, input[type="number"] {
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    margin: 5px 0;
+}
+
+#instrument-select, #seed-select, #steps-select, #beatsPerBar {
+    width: 100%;
+}
+
+/* New styles for the MIDI upload section */
+
+#midi-upload {
+    margin-top: 15px;  /* Space it out from the above elements */
+}
+
+input[type="file"] {
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    background-color: #34495E;  /* A slightly darker shade than the panel for differentiation */
+    color: white;
+    cursor: pointer;  /* Show hand cursor to indicate it's clickable */
+}
+
+input[type="file"]::file-selector-button {
+    display: none;  /* Hide the default file selector button */
+}
+
+#midi-filename {
+    display: inline-block;  /* So it doesn't take up the whole width */
+    margin-left: 10px;  /* Space it out from the file input */
+    vertical-align: middle;  /* Align it with the vertical center of the file input */
+}
