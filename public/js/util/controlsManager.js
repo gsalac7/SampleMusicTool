@@ -1,74 +1,135 @@
 import * as Nexus from 'nexusui';
 import { toggleRecording, exportMIDI } from './recordingManager';
 import { toggleLoop, updateSequencer, setBPMSequencer } from './drumManager';
-import { replaySequence, exportSequence, initializeRNNModel, setLength, setSteps, generateMusicRNNSequence, setTemperature, setSeedSequence, readMidi } from '../models/music_rnn';
-import { setBPM, playGeneratedSequence} from '../models/visualizer';
+import { replaySequence, exportSequence, initializeRNNModel, setLength, setSteps, generateMusicRNNSequence, setTemperature, setSeedSequence, readMidi, disposeRNNModel } from '../models/music_rnn';
+import { setBPM } from '../models/visualizer';
+import { initializeMusicVaeModel, generateMusicVAESequence, exportMusicVAESequence, disposeVAEModel} from '../models/music_vae';
+import checkpoints from './configs/checkpoints.json';
 
 
-let currentModel = 'MusicRNN'; // set the default model
+let currentModel = 'MusicRNN'; // default Model to use
 export function initializeControls() {
-    initializeButton('toggleRecording', toggleRecording, 'Toggle recording button not found');
-    if (currentModel == 'MusicRNN') {
-        initializeButton('generateMusic', generateMusicRNNSequence, 'Generate music button not found');
-    } 
-    initializeButton('exportMidi', exportMIDI, 'Export MIDI button not found');
-    initializeButton('play-button', () => toggleLoop(document.getElementById('play-button')), 'Play button not found');
-    initializeButton('updateSequencer', updateSequencer, 'Update sequencer button not found');
-    initializeButton('replay-button', replaySequence, 'Replay button not found');
-    initializeButton('download-link', exportSequence, 'Export button not found');
+    const buttonConfig = {
+        'toggleRecording': [toggleRecording, 'Toggle recording button not found'],
+        'exportMidi': [exportMIDI, 'Export MIDI button not found'],
+        'play-button': [() => toggleLoop(document.getElementById('play-button')), 'Play button not found'],
+        'updateSequencer': [updateSequencer, 'Update sequencer button not found'],
+        'replay-button': [replaySequence, 'Replay button not found'],
+        'download-link': [exportSequence, 'Export button not found']
+    };
 
-    //initPopup();
-    initSeedSequencer();
+    for (const [btnId, config] of Object.entries(buttonConfig)) {
+        initializeButton(btnId, config[0], config[1]);
+    }
 
     initModelBtn();
     initTempSlider();
     initBPMSlider();
     initStepsSelector();
     initLengthField();
-};
+    initCheckpointSelector();
+    initSeedSequencer();
+
+    attachInitializationButtonListener()
+}
+
+const modelConfig = {
+    MusicRNN: {
+        initCallback: initializeRNNModel,
+        generateCallback: generateMusicRNNSequence,
+        logMessage: "Initializing MusicRNN Model"
+    },
+    MusicVAE: {
+        initCallback: initializeMusicVaeModel,
+        generateCallback: generateMusicVAESequence,
+        logMessage: "Initializing MusicVAE Model"
+    }
+}
 
 function initModelBtn() {
     const buttons = document.querySelectorAll('.model-btn');
+    const checkpointDropdown = document.getElementById('checkpoint-select'); // Get the checkpoint dropdown
+    
+    // Get references to the Length and Steps per Quarter containers
+    checkpointDropdown.addEventListener('change', initializeModelWithCheckpoint);
 
     buttons.forEach(button => {
         button.addEventListener('click', function () {
-            // Remove 'active' class from all buttons
+            // Toggle 'active' class for buttons
             buttons.forEach(btn => btn.classList.remove('active'));
-
-            // Add 'active' class to the clicked button
             this.classList.add('active');
 
-            // Retrieve the value of the selected button if needed
             const selectedValue = this.getAttribute('data-value');
-            if (selectedValue == "MusicRNN") {
-                initializeRNNModel();
-                disposeModel();
-            } else if (selectedValue == "MusicVAE") {
-                console.log("TODO: MusicVAE INITIALIZED HERE");
+            const selectedCheckpoint = checkpointDropdown.value; // Get the selected checkpoint value
+
+            if (modelConfig[selectedValue]) {
+                console.log(modelConfig[selectedValue].logMessage);
+                initializeButton('generateMusic', modelConfig[selectedValue].generateCallback, `${selectedValue} generate music button not found`);
+                
+                // Pass the selected checkpoint to the initCallback
+                modelConfig[selectedValue].initCallback(selectedCheckpoint);
             }
         });
     });
 }
+
+function initializeModelWithCheckpoint() {
+    // Get the active model button (either MusicRNN or MusicVAE)
+    const activeButton = document.querySelector('.model-btn.active');
+    if (!activeButton) {
+        console.error('No active model button found');
+        return;
+    }
+
+    const model = activeButton.getAttribute('data-value');
+
+    // Get the selected checkpoint from the dropdown
+    const checkpointDropdown = document.getElementById('checkpoint-select');
+    if (!checkpointDropdown) {
+        console.error('Checkpoint dropdown not found');
+        return;
+    }
+    const selectedCheckpoint = checkpointDropdown.value;
+
+    console.log("selectedCheckpoint: " + selectedCheckpoint)
+
+    // Initialize the chosen model with the selected checkpoint
+    if (modelConfig[model] && typeof modelConfig[model].initCallback === 'function') {
+        console.log("Calling initializeMOdel")
+        modelConfig[model].initCallback(selectedCheckpoint);
+    } else {
+        console.error(`Initialization callback not found for model: ${model}`);
+    }
+}
+
+function attachInitializationButtonListener() {
+    const initModelButton = document.getElementById('init-button');
+    
+    if (!initModelButton) {
+        console.error('Initialize Model button not found');
+        return;
+    }
+    
+    // Attach click listener to the initialization button
+    initModelButton.addEventListener('click', initializeModelWithCheckpoint);
+}
+
 function initializeButton(buttonId, callback, errorMessage) {
     const button = document.getElementById(buttonId);
     if (button) {
+        // Consider removing old event listeners to avoid duplicates
+        button.removeEventListener('click', callback);
         button.addEventListener('click', callback);
     } else {
         console.error(errorMessage);
     }
 }
-
 // Field for the length of the sequence
 function initLengthField() {
     const field = document.getElementById('length-input');
     if (field) {
         field.addEventListener('change', function () {
             const selectedValue = this.value;
-            /*
-            if (selectedValue < 1 || selectedValue > 50) {
-                showPopup("The Length must be a number between 1 and 50");
-            } 
-            */
             setLength(selectedValue);
         });
     } else {
@@ -125,6 +186,25 @@ function initTempSlider() {
 
 }
 
+function initCheckpointSelector() {
+    const selectElement = document.getElementById('checkpoint-select');
+    const descriptionElement = document.getElementById('checkpoint-description');
+
+    checkpoints.forEach(checkpoint => {
+        const optionElement = document.createElement('option');
+        optionElement.value = checkpoint.id;
+        optionElement.textContent = checkpoint.id;
+        optionElement.dataset.description = checkpoint.description;  // Store the description in a data attribute
+        selectElement.appendChild(optionElement);
+    });
+
+    // Event listener to show the description when a checkpoint is selected
+    selectElement.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        descriptionElement.textContent = selectedOption.dataset.description;
+    });
+}
+
 function initBPMSlider() {
     const bpmSlider = new Nexus.Slider('#bpm-slider', {
         size: [220, 20],
@@ -139,23 +219,4 @@ function initBPMSlider() {
         setBPM(value);
         setBPMSequencer(value);
     });
-}
-
-function initPopup() {
-    document.getElementById('btn').addEventListener('click', function () {
-        // You can change this message to whatever you want the popup to display
-        showPopup("Your custom message goes here");
-    });
-}
-function showPopup(message) {
-    console.log("Execute show popup");
-    var popup = document.getElementById('popup');
-    var popupMessage = document.getElementById('popup-message');
-    popupMessage.innerText = message; // Set the message
-    popup.style.display = 'block'; // Show the popup
-}
-
-function closePopup() {
-    var popup = document.getElementById('popup');
-    popup.style.display = 'none';
 }

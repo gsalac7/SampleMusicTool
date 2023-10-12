@@ -1,104 +1,60 @@
 // Import the Magenta.js library
 import * as mm from '@magenta/music';
-import { seedSequences } from './configs/seed_sequences';
+import { playGeneratedSequence } from './visualizer';
 
 // Load the pre-trained MusicVAE model
-const music_vae = new mm.MusicVAE('https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_2bar_small');
+//const music_vae = new mm.MusicVAE('https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_2bar_small');
 //const music_vae = new mm.MusicVAE('https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_q2');
-
-let BPM = 120;
-let temperature = 1.0
-let seedSequence = seedSequences['majorScaleUp'];
+//const music_vae = new mm.MusicVAE('https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/drums_2bar_lokl_small');
+//const music_vae = new mm.MusicVAE('https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/multitrack_med');
+const music_vae = new mm.MusicVAE('https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_lokl_q2');
+//const music_vae = new mm.MusicVAE('https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/groovae_2bar_humanize');
+//const music_vae = new mm.MusicVAE('https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/trio_4bar');
+//let music_vae;
 let generatedSequence;
-let activeInstrument;
-let visualizer;
+let temperature = 1.0;
+let numSequences = 1
 
-const soundFontUrl = '../SampleMusicTool/public/sounds/soundfont';
-const soundFontData = {
-  "name": "sgm_plus",
-  "instruments": {
-    "0": "acoustic_grand_piano",
-    "1": "acoustic_guitar_steel",
-    "2": "acoustic_bass",
-    "3": "distortion_guitar",
-    "4": "marimba",
-    "5": "synth_bass_1",
-    "6": "xylophone",
-  }
-}
-const player = new mm.SoundFontPlayer(soundFontUrl, undefined, undefined, undefined, {
-  run: note => visualizer.redraw(note),
-  stop: () => { }
-});
-
-function setSeedSequence(newSeedSequence) {
-  seedSequence = seedSequences[newSeedSequence];
-  console.log("Seed sequence set to: " + newSeedSequence);
-}
-
-function initializeMusicVaeModel() {
+function initializeMusicVaeModel(checkpoint) {
+  //console.log("Checkpoint: " + checkpoint);
+  //music_vae = new mm.MusicVAE(checkpoint);
   music_vae.initialize().then(function () {
-      console.log('Model initialized');
+    console.log('Model initialized');
   }).catch(function (error) {
-      console.error('Failed to initialize model:', error);
+    console.error('Failed to initialize model:', error);
   });
 }
 
+function disposeVAEModel() {
+  if (music_vae) {
+    music_vae.dispose();
+  }
+}
 
-async function generateSequence() {
-  console.log("seedSequence: " + JSON.stringify(seedSequence));
-  const quantizedSeq = mm.sequences.quantizeNoteSequence(seedSequence, 1);
-  console.log("quantizedSeq: " + JSON.stringify(quantizedSeq));
-  generatedSequence = await rnnModel.continueSequence(quantizedSeq, 40, temperature);
+async function generateMusicVAESequence() {
+  console.log("Generating Music VAE Sequence");
+  generatedSequence = await music_vae.sample(numSequences, temperature);
+  console.log("Music VAE sequence: " + JSON.stringify(generatedSequence));
   if (generatedSequence) {
-      playGeneratedSequence();
-      document.getElementById('replay-button').style.display = 'inline-block';
+    playGeneratedSequence(generatedSequence[0]);
+    // display replay-button and download link
+    document.getElementById('replay-button').style.display = 'inline-block';
+    document.getElementById('download-link').style.display = 'inline-block';
   }
 }
+async function exportMusicVAESequence() {
+  const midiBytes = mm.sequenceProtoToMidi(generatedSequence);
+  const midiBlob = new Blob([new Uint8Array(midiBytes)], { type: 'audio/midi' });
 
-function playGeneratedSequence() {
-  const config = {
-      noteHeight: 10,
-      pixelsPerTimeStep: 150,
-      noteRGB: '8, 41, 64',
-      activeNoteRGB: '240, 84, 119',
-  };
+  // Create a download link and append it to the document
+  const downloadLink = document.createElement('a');
+  downloadLink.href = URL.createObjectURL(midiBlob);
+  downloadLink.download = 'generated-music.mid';
+  document.body.appendChild(downloadLink);
 
-  visualizer = new mm.PianoRollCanvasVisualizer(generatedSequence, document.getElementById('canvas'), config);
+  // Programmatically click the download link to trigger the download, then remove the link
+  downloadLink.click();
+  document.body.removeChild(downloadLink);
 
-  if (player.isPlaying()) {
-      player.stop();
-  }
-  let num = setInstrumentNumber();
-
-  generatedSequence.notes.forEach(note => {
-      note.program = num;  // Set to the desired instrument index
-      note.velocity = 127; // set the velocity for everything to 127; max volume
-  });
-
-  player.start(generatedSequence);
 }
-
-function setBPM(newBPM) {
-  BPM = newBPM;
-  player.setTempo(BPM);
-}
-
-function setTemperature(newTemperature) {
-  temperature = newTemperature;
-}
-
-function setInstrument(instrument) {
-  activeInstrument = instrument;
-}
-
-function setInstrumentNumber() {
-  for (const [key, value] of Object.entries(soundFontData.instruments)) {
-      if (value === activeInstrument) {
-          return parseInt(key, 10);
-      }
-  }
-  return null; // or you can return -1 or any value that indicates not found
-}
-
-export { setInstrument, playGeneratedSequence, initializeMusicVaeModel, generateSequence, setBPM, setTemperature, setSeedSequence };
+export { exportMusicVAESequence, generateMusicVAESequence, initializeMusicVaeModel, disposeVAEModel }

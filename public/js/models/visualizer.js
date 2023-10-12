@@ -18,10 +18,25 @@ const soundFontData = {
     }
 }
 
-const player = new mm.SoundFontPlayer(soundFontUrl, undefined, undefined, undefined, {
+/*
+let player = new mm.SoundFontPlayer(soundFontUrl, undefined, undefined, undefined, {
     run: note => visualizer.redraw(note),
     stop: () => { }
 });
+
+*/
+const player = new mm.Player({
+    run: note => visualizer.redraw(note),
+    stop: () => { }
+});
+
+function initializeVisualizer() {
+    const player = new mm.SoundFontPlayer(soundFontUrl, undefined, undefined, undefined, {
+        run: note => visualizer.redraw(note),
+        stop: () => { }
+    });
+}
+
 
 function setInstrument(instrument) {
     activeInstrument = instrument
@@ -48,14 +63,15 @@ function playGeneratedSequence(generatedSequence) {
     }
     let programNum = setInstrumentNumber();
 
+    /*
     generatedSequence.notes.forEach(note => {
         note.program = programNum;  // Set to the desired instrument index
         note.velocity = 127; // set the velocity for everything to 127; max volume
     });
+    */
 
     player.start(generatedSequence);
 }
-
 
 function setInstrumentNumber() {
     for (const [key, value] of Object.entries(soundFontData.instruments)) {

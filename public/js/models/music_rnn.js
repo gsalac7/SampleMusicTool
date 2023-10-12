@@ -3,9 +3,10 @@ import { seedSequences } from './configs/seed_sequences';
 import { playGeneratedSequence } from './visualizer';
 
 //const rnnModel = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/basic_rnn');
-const rnnModel = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn');
+//const rnnModel = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn');
 //const rnnModel = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv');
 
+let rnnModel;
 let temperature = 1.0;
 let seedSequence = seedSequences['majorScaleUp'];
 let generatedSequence;
@@ -13,7 +14,9 @@ let length = 50; // set default length to 50
 let steps = 4; // set default steps to 4steps
 
 // initialize the AI Model
-function initializeRNNModel() {
+function initializeRNNModel(checkpoint) {
+  console.log("Checkpoint: " + checkpoint);
+    rnnModel = new mm.MusicRNN();
     rnnModel.initialize().then(function () {
         console.log('Model initialized');
     }).catch(function (error) {
@@ -23,8 +26,10 @@ function initializeRNNModel() {
 
 // Generate sequence specific for RNN model
 async function generateMusicRNNSequence() {
+    console.log("Generating Music RNN Sequence");
     const quantizedSeq = mm.sequences.quantizeNoteSequence(seedSequence, steps);
     generatedSequence = await rnnModel.continueSequence(quantizedSeq, length, temperature);
+    console.log("Model musicRNN Sequence: " + JSON.stringify(generatedSequence));
     if (generatedSequence) {
         playGeneratedSequence(generatedSequence);
         // display replay-button and download link
@@ -50,8 +55,10 @@ function readMidi(file) {
         reader.readAsArrayBuffer(file);
     }
 }
-function disposeModel() {
-    rnnModel.dispose();
+function disposeRNNModel() {
+    if (rnnModel) {
+        rnnModel.dispose();
+    }
 }
 
 function setSeedSequence(newSeedSequence) {
@@ -87,10 +94,9 @@ async function exportSequence() {
 }
 
 export {
-    disposeModel,
+    disposeRNNModel,
     setLength,
     setSteps,
-    playGeneratedSequence,
     initializeRNNModel,
     generateMusicRNNSequence,
     setTemperature,

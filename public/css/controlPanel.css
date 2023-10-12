@@ -5,111 +5,113 @@
     border-radius: 5px;
     color: white;
     display: flex;
-    flex-direction: column;
-    align-items: center;  /* Centers content horizontally */
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
 }
 
 #AI-Control-Panel > div {
-    width: 100%;
+    width: calc(50% - 10px);
     display: flex;
-    flex-direction: column;  /* Stack label and field vertically */
-    align-items: center;     /* Center content horizontally */
-    margin: 5px 0;          /* Some spacing between each item */
+    flex-direction: column;
+    align-items: center;
+    margin: 5px;
 }
 
 #AI-Control-Panel label {
-    margin-bottom: 5px;   /* Space between label and input/field */
+    margin-bottom: 3px;
 }
 
 #AI-Control-Panel select, 
 #AI-Control-Panel input[type="number"] {
-    padding: 8px;
+    padding: 6px;
     border: none;
     border-radius: 5px;
     box-sizing: border-box; 
-    width: 80%;  /* This will make them take up less space and be more centered */
-    max-width: 300px;  /* A cap on the maximum width */
-}
-
-#AI-Control-Panel #instrument-select, 
-#AI-Control-Panel #seed-select, 
-#AI-Control-Panel #steps-select {
-    width: 100%;
-}
-
-#AI-Control-Panel #temp-slider, 
-#AI-Control-Panel #bpm-slider {
-    margin-top: 10px;
-    flex-grow: 1;  /* Allow it to take up available space */
+    width: 90%;
+    max-width: 300px;
 }
 
 #AI-Control-Panel #model-selector {
-    flex-direction: row;  /* Make the buttons sit next to each other */
-    justify-content: center;  /* Center the buttons horizontally within their container */
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
 }
 
 #AI-Control-Panel .model-btn {
-    margin: 5px;
-    padding: 10px;
-    background-color: #34495E;  /* A darker shade for contrast */
+    margin: 3px;
+    padding: 8px;
+    background-color: #34495E;
     border: none;
     border-radius: 5px;
     color: white;
     cursor: pointer;
-    width: 120px;  /* Fixed width for consistency */
+    width: 120px;
 }
 
 #AI-Control-Panel .model-btn.active {
     background-color: #E74C3C;
 }
 
-
-/* Existing styles you provided earlier */
-#AI-Control-Panel, #control-panel, #sequencer-container {
-    background-color: #2C3E50;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 5px;
-    color: white;
-}
-
-label {
-    display: block;
-    margin-bottom: 5px;
-}
-
-select, input[type="number"] {
-    padding: 8px;
-    border: none;
-    border-radius: 5px;
-    margin: 5px 0;
-}
-
-#instrument-select, #seed-select, #steps-select, #beatsPerBar {
-    width: 100%;
-}
-
-/* New styles for the MIDI upload section */
+/* MIDI Upload styles */
 
 #midi-upload {
-    margin-top: 15px;  /* Space it out from the above elements */
+    margin-top: 15px;
 }
 
 input[type="file"] {
     padding: 8px;
     border: none;
     border-radius: 5px;
-    background-color: #34495E;  /* A slightly darker shade than the panel for differentiation */
+    background-color: #34495E;
     color: white;
-    cursor: pointer;  /* Show hand cursor to indicate it's clickable */
+    cursor: pointer;
 }
 
 input[type="file"]::file-selector-button {
-    display: none;  /* Hide the default file selector button */
+    display: none;
 }
 
 #midi-filename {
-    display: inline-block;  /* So it doesn't take up the whole width */
-    margin-left: 10px;  /* Space it out from the file input */
-    vertical-align: middle;  /* Align it with the vertical center of the file input */
+    display: inline-block;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+/* Checkpoints styles */
+
+#checkpoint-selector-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#checkpoint-selector {
+    flex: 1.2;
+    background-color: #2C3E50;
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+}
+
+#checkpoint-description {
+    flex: 0.8;
+    background-color: #2C3E50;
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+}
+
+#checkpoint-description p {
+    margin: 0;
+}
+
+#checkpoint-select {
+    width: 100%;
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    margin: 5px 0;
+    color: white;
+    background-color: #34495E;
 }

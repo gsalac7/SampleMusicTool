@@ -37,7 +37,23 @@
         <button id="musicRNN" class="model-btn" data-value="MusicRNN">MusicRNN</button>
         <button id="musicVAE" class="model-btn" data-value="MusicVAE">MusicVAE</button>
       </div>
+      <div id="checkpoint-selector-container">
+        <div id="checkpoint-selector">
+            <label for="checkpoint-select">Checkpoints:</label>
+            <select id="checkpoint-select">
+                <option value="checkpoint1" data-description="Description for checkpoint 1"></option>
+                <!-- Add more options as necessary -->
+            </select>
+        </div>
+        <div id="checkpoint-description">
+            <p>Select a checkpoint to see its description here.</p>
+        </div>
+        <div id="init-button">
+            <button id="init-button">Initialize Model</button>
+        </div>
+    </div>
 
+      <!-- Seed Selector -->
       <div id="seed-selector">
         <label for="seed-select">Seed Sequence:</label>
         <select id="seed-select">
@@ -57,19 +73,17 @@
         </div>
       </div>
 
-
       <!-- Temperature Slider -->
       <div id="temp-slider-container">
         <label>Temperature: </label>
-        <div id="temp-slider"></div>
         <span id="temp-value">1.0</span>
+        <div id="temp-slider"></div>
       </div>
-
       <!-- BPM Slider -->
       <div id="bpm-slider-container">
         <label>BPM: </label>
-        <div id="bpm-slider"></div>
         <span id="bpm-value">120</span>
+        <div id="bpm-slider"></div>
       </div>
 
       <!-- Length Input -->

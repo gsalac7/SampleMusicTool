@@ -102,9 +102,7 @@ function setActiveInstrument(instrument) {
 
 function startNote(note, velocity = 1) {
     // Adjust volume or other parameters using velocity
-    //activeSynth.volume.value = convertVelocityToVolume(velocity); 
     activeInstrument.triggerAttack(note); // Removed "8n", as the release will be handled by stopNote
-
     // UI feedback for active note
     const noteIndex = notes.indexOf(note);
     const keyElement = pianoContainer.querySelector(`[data-key-index="${noteIndex}"]`);
