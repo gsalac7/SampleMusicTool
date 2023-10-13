@@ -1,4 +1,4 @@
-import * from "magenta"
+import * as mm from '@magenta/music';
 // Number of steps to play each chord.
 STEPS_PER_CHORD = 8;
 STEPS_PER_PROG = 4 * STEPS_PER_CHORD;
@@ -102,3 +102,4 @@ const checkChords = () => {
       return false;
     }
   }
+}

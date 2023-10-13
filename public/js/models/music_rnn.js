@@ -1,10 +1,6 @@
 import * as mm from '@magenta/music';
 import { seedSequences } from './configs/seed_sequences';
-import { playGeneratedSequence } from './visualizer';
-
-//const rnnModel = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/basic_rnn');
-//const rnnModel = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn');
-//const rnnModel = new mm.MusicRNN('https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv');
+import { playGeneratedSequenceSoundFont } from './visualizer';
 
 let rnnModel;
 let temperature = 1.0;
@@ -15,8 +11,8 @@ let steps = 4; // set default steps to 4steps
 
 // initialize the AI Model
 function initializeRNNModel(checkpoint) {
-  console.log("Checkpoint: " + checkpoint);
-    rnnModel = new mm.MusicRNN();
+    console.log("Checkpoint: " + checkpoint);
+    rnnModel = new mm.MusicRNN(checkpoint);
     rnnModel.initialize().then(function () {
         console.log('Model initialized');
     }).catch(function (error) {
@@ -26,20 +22,19 @@ function initializeRNNModel(checkpoint) {
 
 // Generate sequence specific for RNN model
 async function generateMusicRNNSequence() {
-    console.log("Generating Music RNN Sequence");
     const quantizedSeq = mm.sequences.quantizeNoteSequence(seedSequence, steps);
     generatedSequence = await rnnModel.continueSequence(quantizedSeq, length, temperature);
     console.log("Model musicRNN Sequence: " + JSON.stringify(generatedSequence));
     if (generatedSequence) {
-        playGeneratedSequence(generatedSequence);
+        playGeneratedSequenceSoundFont(generatedSequence);
         // display replay-button and download link
         document.getElementById('replay-button').style.display = 'inline-block';
         document.getElementById('download-link').style.display = 'inline-block';
     }
 }
 
-function replaySequence() {
-    playGeneratedSequence(generatedSequence);
+function replayMusicRNNSequence() {
+    playGeneratedSequenceSoundFont(generatedSequence);
 }
 
 function readMidi(file) {
@@ -77,7 +72,7 @@ function setSteps(newSteps) {
     steps = parseInt(newSteps, 10);
 }
 
-async function exportSequence() {
+async function exportMusicRNNSequence() {
     const midiBytes = mm.sequenceProtoToMidi(generatedSequence);
     const midiBlob = new Blob([new Uint8Array(midiBytes)], { type: 'audio/midi' });
 
@@ -102,6 +97,6 @@ export {
     setTemperature,
     setSeedSequence,
     readMidi,
-    exportSequence,
-    replaySequence
+    exportMusicRNNSequence,
+    replayMusicRNNSequence
 };

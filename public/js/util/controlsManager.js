@@ -1,28 +1,26 @@
 import * as Nexus from 'nexusui';
 import { toggleRecording, exportMIDI } from './recordingManager';
 import { toggleLoop, updateSequencer, setBPMSequencer } from './drumManager';
-import { replaySequence, exportSequence, initializeRNNModel, setLength, setSteps, generateMusicRNNSequence, setTemperature, setSeedSequence, readMidi, disposeRNNModel } from '../models/music_rnn';
+import { replayMusicRNNSequence, exportMusicRNNSequence, initializeRNNModel, setLength, setSteps, generateMusicRNNSequence, setTemperature, setSeedSequence, readMidi, disposeRNNModel } from '../models/music_rnn';
 import { setBPM } from '../models/visualizer';
-import { initializeMusicVaeModel, generateMusicVAESequence, exportMusicVAESequence, disposeVAEModel} from '../models/music_vae';
+import { initializeMusicVaeModel, generateMusicVAESequence, replayMusicVAESequence, exportMusicVAESequence, disposeVAEModel} from '../models/music_vae';
 import checkpoints from './configs/checkpoints.json';
 
 
-let currentModel = 'MusicRNN'; // default Model to use
+let currentModel; 
+let checkpoint;
 export function initializeControls() {
     const buttonConfig = {
         'toggleRecording': [toggleRecording, 'Toggle recording button not found'],
         'exportMidi': [exportMIDI, 'Export MIDI button not found'],
         'play-button': [() => toggleLoop(document.getElementById('play-button')), 'Play button not found'],
         'updateSequencer': [updateSequencer, 'Update sequencer button not found'],
-        'replay-button': [replaySequence, 'Replay button not found'],
-        'download-link': [exportSequence, 'Export button not found']
     };
 
     for (const [btnId, config] of Object.entries(buttonConfig)) {
         initializeButton(btnId, config[0], config[1]);
     }
 
-    initModelBtn();
     initTempSlider();
     initBPMSlider();
     initStepsSelector();
@@ -30,28 +28,38 @@ export function initializeControls() {
     initCheckpointSelector();
     initSeedSequencer();
 
-    attachInitializationButtonListener()
+    initModelControl();
+    initializationButtonListener();
 }
 
 const modelConfig = {
     MusicRNN: {
         initCallback: initializeRNNModel,
         generateCallback: generateMusicRNNSequence,
+        replayCallback: replayMusicRNNSequence,
+        exportCallback: exportMusicRNNSequence,
+        disposeCallback: disposeRNNModel,
         logMessage: "Initializing MusicRNN Model"
     },
     MusicVAE: {
         initCallback: initializeMusicVaeModel,
         generateCallback: generateMusicVAESequence,
+        replayCallback: replayMusicVAESequence,
+        exportCallback: exportMusicVAESequence,
+        disposeCallback: disposeVAEModel,
         logMessage: "Initializing MusicVAE Model"
     }
 }
 
-function initModelBtn() {
+function initModelControl() {
     const buttons = document.querySelectorAll('.model-btn');
     const checkpointDropdown = document.getElementById('checkpoint-select'); // Get the checkpoint dropdown
     
-    // Get references to the Length and Steps per Quarter containers
-    checkpointDropdown.addEventListener('change', initializeModelWithCheckpoint);
+    // Control Panel will store this value
+    checkpointDropdown.addEventListener('change', ()=> {
+        const selectedValue = checkpointDropdown.value;
+        checkpoint = selectedValue;
+    });
 
     buttons.forEach(button => {
         button.addEventListener('click', function () {
@@ -60,49 +68,17 @@ function initModelBtn() {
             this.classList.add('active');
 
             const selectedValue = this.getAttribute('data-value');
-            const selectedCheckpoint = checkpointDropdown.value; // Get the selected checkpoint value
 
+            // let the controlManager know which model is active
             if (modelConfig[selectedValue]) {
-                console.log(modelConfig[selectedValue].logMessage);
-                initializeButton('generateMusic', modelConfig[selectedValue].generateCallback, `${selectedValue} generate music button not found`);
-                
-                // Pass the selected checkpoint to the initCallback
-                modelConfig[selectedValue].initCallback(selectedCheckpoint);
+                currentModel = selectedValue;
             }
         });
     });
 }
 
-function initializeModelWithCheckpoint() {
-    // Get the active model button (either MusicRNN or MusicVAE)
-    const activeButton = document.querySelector('.model-btn.active');
-    if (!activeButton) {
-        console.error('No active model button found');
-        return;
-    }
 
-    const model = activeButton.getAttribute('data-value');
-
-    // Get the selected checkpoint from the dropdown
-    const checkpointDropdown = document.getElementById('checkpoint-select');
-    if (!checkpointDropdown) {
-        console.error('Checkpoint dropdown not found');
-        return;
-    }
-    const selectedCheckpoint = checkpointDropdown.value;
-
-    console.log("selectedCheckpoint: " + selectedCheckpoint)
-
-    // Initialize the chosen model with the selected checkpoint
-    if (modelConfig[model] && typeof modelConfig[model].initCallback === 'function') {
-        console.log("Calling initializeMOdel")
-        modelConfig[model].initCallback(selectedCheckpoint);
-    } else {
-        console.error(`Initialization callback not found for model: ${model}`);
-    }
-}
-
-function attachInitializationButtonListener() {
+function initializationButtonListener() {
     const initModelButton = document.getElementById('init-button');
     
     if (!initModelButton) {
@@ -111,7 +87,32 @@ function attachInitializationButtonListener() {
     }
     
     // Attach click listener to the initialization button
-    initModelButton.addEventListener('click', initializeModelWithCheckpoint);
+    initModelButton.addEventListener('click', () => {
+        // Get the active model button (either MusicRNN or MusicVAE)
+        if (!currentModel) {
+            // Create an alert if no model is selected
+            alert('Please select a model');
+            return;
+        }
+        if (!checkpoint) {
+            // Create an alert if no checkpoint is selected
+            alert('Please select a checkpoint');
+            return;
+        }
+        if (modelConfig[currentModel] && typeof modelConfig[currentModel].initCallback === 'function') {
+            console.log("Calling initializeMOdel")
+            modelConfig[currentModel].initCallback(checkpoints[checkpoint]['url']);
+            // TODO Create a small Green popup that it is initialized
+            alert("Model Initialized");
+
+            // Now that the model is initialized we set the generateMusic Button and its callback
+            initializeButton('generateMusic', modelConfig[currentModel].generateCallback, 'Generate Music button not found')
+            initializeButton('replay-button', modelConfig[currentModel].replayCallback, 'Replay button not found')
+            initializeButton('download-link', modelConfig[currentModel].exportCallback, 'export button not found')
+        } else {
+            console.error(`Initialization callback not found for model: ${currentModel}`);
+        }
+    });
 }
 
 function initializeButton(buttonId, callback, errorMessage) {
@@ -190,11 +191,14 @@ function initCheckpointSelector() {
     const selectElement = document.getElementById('checkpoint-select');
     const descriptionElement = document.getElementById('checkpoint-description');
 
-    checkpoints.forEach(checkpoint => {
+    // Loop over the keys of the checkpoints object
+    Object.keys(checkpoints).forEach(key => {
+        const checkpoint = checkpoints[key];
+
         const optionElement = document.createElement('option');
-        optionElement.value = checkpoint.id;
-        optionElement.textContent = checkpoint.id;
-        optionElement.dataset.description = checkpoint.description;  // Store the description in a data attribute
+        optionElement.value = key;  // The key is now the ID
+        optionElement.textContent = key;
+        optionElement.dataset.description = checkpoint.description;  // Access the description using the key
         selectElement.appendChild(optionElement);
     });
 
