@@ -22,6 +22,11 @@ function initializeRNNModel(checkpoint) {
 
 // Generate sequence specific for RNN model
 async function generateMusicRNNSequence() {
+    // Normalize the Tempo
+    seedSequence.tempos.forEach((tempo) => {
+        tempo.qpm = 120; // Set to your desired tempo
+    });
+
     const quantizedSeq = mm.sequences.quantizeNoteSequence(seedSequence, steps);
     generatedSequence = await rnnModel.continueSequence(quantizedSeq, length, temperature);
     console.log("Model musicRNN Sequence: " + JSON.stringify(generatedSequence));
