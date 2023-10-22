@@ -14,6 +14,7 @@ function initializeRNNModel(checkpoint) {
     console.log("Checkpoint: " + checkpoint);
     rnnModel = new mm.MusicRNN(checkpoint);
     rnnModel.initialize().then(function () {
+        alert("MusicRNN Model Initialized");
         console.log('Model initialized');
     }).catch(function (error) {
         console.error('Failed to initialize model:', error);
@@ -57,6 +58,7 @@ function readMidi(file) {
 }
 function disposeRNNModel() {
     if (rnnModel) {
+        console.log("Disposing Music RNN Model");
         rnnModel.dispose();
     }
 }
@@ -65,11 +67,13 @@ function setSeedSequence(newSeedSequence) {
     seedSequence = seedSequences[newSeedSequence];
 }
 
-function setTemperature(newTemperature) {
+function setMusicRNNTemperature(newTemperature) {
+    console.log("Temperature: " + newTemperature);
     temperature = newTemperature;
 }
 
 function setLength(newLength) {
+    console.log("Length: " + newTemperature);
     length = parseInt(newLength, 10);
 }
 
@@ -99,7 +103,7 @@ export {
     setSteps,
     initializeRNNModel,
     generateMusicRNNSequence,
-    setTemperature,
+    setMusicRNNTemperature,
     setSeedSequence,
     readMidi,
     exportMusicRNNSequence,

@@ -31,13 +31,9 @@
     <button id="download-link" style="display: none;">Download Generated Sequence</button>
 
     <div id="AI-Control-Panel">
-      <!-- Model Selector -->
-
-      <div id="model-selector">
-        <button id="musicRNN" class="model-btn" data-value="MusicRNN">MusicRNN</button>
-        <button id="musicVAE" class="model-btn" data-value="MusicVAE">MusicVAE</button>
-      </div>
-      <div id="checkpoint-selector-container">
+      <!-- Checkpoint and Initialize Model Group -->
+    
+       <div id="checkpoint-group">
         <div id="checkpoint-selector">
             <label for="checkpoint-select">Checkpoints:</label>
             <select id="checkpoint-select">
@@ -52,6 +48,7 @@
             <button id="init-button">Initialize Model</button>
         </div>
     </div>
+
 
       <!-- Seed Selector -->
       <div id="seed-selector">

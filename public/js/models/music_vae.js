@@ -10,12 +10,13 @@ let player = "soundfont";
 function initializeMusicVaeModel(checkpoint) {
   music_vae = new mm.MusicVAE(checkpoint);
   music_vae.initialize().then(function () {
+    alert("MusicVAE Model Initialized")
     console.log('Model initialized');
   }).catch(function (error) {
     console.error('Failed to initialize model:', error);
   });
 
-  if (checkpoint.includes('groovae') || checkpoint.includes('drum') || checkpoint.includes('trio')) {
+  if (checkpoint.includes('multi')) {
     player = "default"
   }
 }
@@ -27,13 +28,13 @@ function disposeVAEModel() {
 }
 
 async function generateMusicVAESequence() {
-  console.log("Generating Music VAE Sequence");
+  console.log("Gnerating musicvae with Temperature: " + temperature);
   generatedSequence = await music_vae.sample(numSequences, temperature);
   if (generatedSequence) {
-    if (player == "default") {
-      playGeneratedSequenceDefault(generatedSequence[0])
-    } else {
+    if (player == "soundfont") {
       playGeneratedSequenceSoundFont(generatedSequence[0])
+    } else {
+      playGeneratedSequenceDefault(generatedSequence[0]);
     }
     // display replay-button and download link
     document.getElementById('replay-button').style.display = 'inline-block';
@@ -45,11 +46,12 @@ function replayMusicVAESequence() {
   if (player == "default") {
     playGeneratedSequenceDefault(generatedSequence[0])
   } else {
-    playGeneratedSequenceSoundFont(generatedSequence[0])
+    playGeneratedSequenceSoundFont(generatedSequence[0], false) // should no longer be normalized
   }
 }
 
 async function exportMusicVAESequence() {
+  console.log("Exporting MusicVAE Sequence");
   const midiBytes = mm.sequenceProtoToMidi(generatedSequence[0]);
   const midiBlob = new Blob([new Uint8Array(midiBytes)], { type: 'audio/midi' });
 
@@ -62,6 +64,10 @@ async function exportMusicVAESequence() {
   // Programmatically click the download link to trigger the download, then remove the link
   downloadLink.click();
   document.body.removeChild(downloadLink);
-
 }
-export { exportMusicVAESequence, generateMusicVAESequence, initializeMusicVaeModel, disposeVAEModel, replayMusicVAESequence }
+function setMusicVAETemperature(newTemperature) {
+    console.log("Temperature: " + newTemperature);
+    temperature = newTemperature;
+}
+
+export { exportMusicVAESequence, generateMusicVAESequence, initializeMusicVaeModel, disposeVAEModel, replayMusicVAESequence, setMusicVAETemperature }

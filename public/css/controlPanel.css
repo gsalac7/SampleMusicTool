@@ -7,7 +7,7 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: center;
 }
 
 #AI-Control-Panel > div {
@@ -30,27 +30,6 @@
     box-sizing: border-box; 
     width: 90%;
     max-width: 300px;
-}
-
-#AI-Control-Panel #model-selector {
-    flex-direction: row;
-    justify-content: center;
-    width: 100%;
-}
-
-#AI-Control-Panel .model-btn {
-    margin: 3px;
-    padding: 8px;
-    background-color: #34495E;
-    border: none;
-    border-radius: 5px;
-    color: white;
-    cursor: pointer;
-    width: 120px;
-}
-
-#AI-Control-Panel .model-btn.active {
-    background-color: #E74C3C;
 }
 
 /* MIDI Upload styles */
@@ -79,6 +58,21 @@ input[type="file"]::file-selector-button {
 }
 
 /* Checkpoints styles */
+/* ...existing styles... */
+
+#checkpoint-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;  /* Adjust this value to control spacing */
+}
+
+/* If you want to specifically reduce the spacing between label and dropdown or description, you can target them like this */
+#checkpoint-selector label,
+#checkpoint-description p {
+    margin-bottom: 5px;  /* Adjust this value */
+}
+
 
 #checkpoint-selector-container {
     display: flex;

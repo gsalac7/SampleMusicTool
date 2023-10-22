@@ -1,9 +1,9 @@
 import * as Nexus from 'nexusui';
 import { toggleRecording, exportMIDI } from './recordingManager';
 import { toggleLoop, updateSequencer, setBPMSequencer } from './drumManager';
-import { replayMusicRNNSequence, exportMusicRNNSequence, initializeRNNModel, setLength, setSteps, generateMusicRNNSequence, setTemperature, setSeedSequence, readMidi, disposeRNNModel } from '../models/music_rnn';
+import { replayMusicRNNSequence, exportMusicRNNSequence, initializeRNNModel, setLength, setSteps, generateMusicRNNSequence, setMusicRNNTemperature, setSeedSequence, readMidi, disposeRNNModel } from '../models/music_rnn';
 import { setBPM } from '../models/visualizer';
-import { initializeMusicVaeModel, generateMusicVAESequence, replayMusicVAESequence, exportMusicVAESequence, disposeVAEModel} from '../models/music_vae';
+import { initializeMusicVaeModel, generateMusicVAESequence, replayMusicVAESequence, exportMusicVAESequence, disposeVAEModel, setMusicVAETemperature} from '../models/music_vae';
 import checkpoints from './configs/checkpoints.json';
 
 
@@ -39,7 +39,8 @@ const modelConfig = {
         replayCallback: replayMusicRNNSequence,
         exportCallback: exportMusicRNNSequence,
         disposeCallback: disposeRNNModel,
-        logMessage: "Initializing MusicRNN Model"
+        logMessage: "Initializing MusicRNN Model",
+        setTemperature: setMusicRNNTemperature
     },
     MusicVAE: {
         initCallback: initializeMusicVaeModel,
@@ -47,7 +48,8 @@ const modelConfig = {
         replayCallback: replayMusicVAESequence,
         exportCallback: exportMusicVAESequence,
         disposeCallback: disposeVAEModel,
-        logMessage: "Initializing MusicVAE Model"
+        logMessage: "Initializing MusicVAE Model",
+        setTemperature: setMusicVAETemperature
     }
 }
 
@@ -80,40 +82,49 @@ function initModelControl() {
 
 function initializationButtonListener() {
     const initModelButton = document.getElementById('init-button');
-    
+
     if (!initModelButton) {
         console.error('Initialize Model button not found');
         return;
     }
-    
+
     // Attach click listener to the initialization button
     initModelButton.addEventListener('click', () => {
-        // Get the active model button (either MusicRNN or MusicVAE)
-        if (!currentModel) {
-            // Create an alert if no model is selected
-            alert('Please select a model');
-            return;
-        }
         if (!checkpoint) {
-            // Create an alert if no checkpoint is selected
             alert('Please select a checkpoint');
             return;
         }
-        if (modelConfig[currentModel] && typeof modelConfig[currentModel].initCallback === 'function') {
-            console.log("Calling initializeMOdel")
-            modelConfig[currentModel].initCallback(checkpoints[checkpoint]['url']);
-            // TODO Create a small Green popup that it is initialized
-            alert("Model Initialized");
 
-            // Now that the model is initialized we set the generateMusic Button and its callback
-            initializeButton('generateMusic', modelConfig[currentModel].generateCallback, 'Generate Music button not found')
-            initializeButton('replay-button', modelConfig[currentModel].replayCallback, 'Replay button not found')
-            initializeButton('download-link', modelConfig[currentModel].exportCallback, 'export button not found')
+        // Determine the new model based on the checkpoint
+        let newModel;
+        if (checkpoint.includes("rnn")) {
+            newModel = "MusicRNN";
         } else {
-            console.error(`Initialization callback not found for model: ${currentModel}`);
+            newModel = "MusicVAE";
+        }
+
+        // Dispose of the current model if it exists
+        if (currentModel) {
+            if (modelConfig[currentModel] && typeof modelConfig[currentModel].disposeCallback === 'function') {
+                modelConfig[currentModel].disposeCallback();
+            }
+        }
+
+        // Initialize the new model
+        if (modelConfig[newModel] && typeof modelConfig[newModel].initCallback === 'function') {
+            modelConfig[newModel].initCallback(checkpoints[checkpoint]['url']);
+            initializeButton('generateMusic', modelConfig[newModel].generateCallback, 'Generate Music button not found');
+            initializeButton('replay-button', modelConfig[newModel].replayCallback, 'Replay button not found');
+            initializeButton('download-link', modelConfig[newModel].exportCallback, 'Export button not found');
+            // Update currentModel to be the newModel for the next iteration
+            currentModel = newModel;
+        } else {
+            console.error(`Initialization callback not found for model: ${newModel}`);
         }
     });
 }
+
+
 
 function initializeButton(buttonId, callback, errorMessage) {
     const button = document.getElementById(buttonId);
@@ -170,7 +181,7 @@ function initSeedSequencer() {
     });
 }
 
-
+// applies to specific model
 function initTempSlider() {
     const tempSlider = new Nexus.Slider('#temp-slider', {
         size: [220, 20],
@@ -182,7 +193,9 @@ function initTempSlider() {
     });
     tempSlider.on('change', function (value) {
         document.getElementById('temp-value').textContent = value.toFixed(1);
-        setTemperature(value);
+        // set the temperature for the model
+
+        modelConfig[currentModel].setTemperature(parseFloat(value));
     });
 
 }
@@ -194,7 +207,6 @@ function initCheckpointSelector() {
     // Loop over the keys of the checkpoints object
     Object.keys(checkpoints).forEach(key => {
         const checkpoint = checkpoints[key];
-
         const optionElement = document.createElement('option');
         optionElement.value = key;  // The key is now the ID
         optionElement.textContent = key;
@@ -209,6 +221,7 @@ function initCheckpointSelector() {
     });
 }
 
+// APplies to the visualizer
 function initBPMSlider() {
     const bpmSlider = new Nexus.Slider('#bpm-slider', {
         size: [220, 20],
