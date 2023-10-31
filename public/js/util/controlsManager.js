@@ -1,14 +1,16 @@
 import * as Nexus from 'nexusui';
 import { toggleRecording, exportMIDI } from './recordingManager';
-import { toggleLoop, updateSequencer, setBPMSequencer } from './drumManager';
-import { replayMusicRNNSequence, exportMusicRNNSequence, initializeRNNModel, setLength, setSteps, generateMusicRNNSequence, setMusicRNNTemperature, setSeedSequence, readMidi, disposeRNNModel } from '../models/music_rnn';
-import { setBPM } from '../models/visualizer';
-import { initializeMusicVaeModel, generateMusicVAESequence, replayMusicVAESequence, exportMusicVAESequence, disposeVAEModel, setMusicVAETemperature} from '../models/music_vae';
+import { toggleLoop, updateSequencer } from './drumManager';
+import { replayMusicRNNSequence, exportMusicRNNSequence, initializeRNNModel, generateMusicRNNSequence, setSeedSequence, readMidi, disposeRNNModel } from '../models/music_rnn';
+import { initializeMusicVaeModel, generateMusicVAESequence, replayMusicVAESequence, exportMusicVAESequence, disposeVAEModel } from '../models/music_vae';
+import { initializeChordModel, generateChordSequence, replayChordSequence, exportChordSequence, disposeChordModel } from '../models/chord_improv';
+import { initializeArpModel, generateArpSequence, disposeArpModel, replayArpSequence, exportArpSequence } from '../models/arp_rnn';
 import checkpoints from './configs/checkpoints.json';
+import { instrumentConfig } from './configs/instrumentConfig';
 
+let currentModel = instrumentConfig['currentModel']; 
+let checkpoint = instrumentConfig['checkpoint'];
 
-let currentModel; 
-let checkpoint;
 export function initializeControls() {
     const buttonConfig = {
         'toggleRecording': [toggleRecording, 'Toggle recording button not found'],
@@ -27,7 +29,6 @@ export function initializeControls() {
     initLengthField();
     initCheckpointSelector();
     initSeedSequencer();
-
     initModelControl();
     initializationButtonListener();
 }
@@ -40,7 +41,6 @@ const modelConfig = {
         exportCallback: exportMusicRNNSequence,
         disposeCallback: disposeRNNModel,
         logMessage: "Initializing MusicRNN Model",
-        setTemperature: setMusicRNNTemperature
     },
     MusicVAE: {
         initCallback: initializeMusicVaeModel,
@@ -49,7 +49,23 @@ const modelConfig = {
         exportCallback: exportMusicVAESequence,
         disposeCallback: disposeVAEModel,
         logMessage: "Initializing MusicVAE Model",
-        setTemperature: setMusicVAETemperature
+    },
+    ArpRNN: {
+        initCallback: initializeArpModel,
+        generateCallback: generateArpSequence,
+        replayCallback: replayArpSequence,
+        exportCallback: exportArpSequence,
+        disposeCallback:  disposeArpModel,
+        logMessage: "Initializing Arp RNN Model",
+    },
+    ChordImprov: {
+        initCallback: initializeChordModel,
+        generateCallback: generateChordSequence,
+        replayCallback: replayChordSequence,
+        exportCallback: exportChordSequence,
+        disposeCallback:  disposeChordModel,
+        logMessage: "Initializing Chord Improv Model",
+
     }
 }
 
@@ -61,21 +77,7 @@ function initModelControl() {
     checkpointDropdown.addEventListener('change', ()=> {
         const selectedValue = checkpointDropdown.value;
         checkpoint = selectedValue;
-    });
-
-    buttons.forEach(button => {
-        button.addEventListener('click', function () {
-            // Toggle 'active' class for buttons
-            buttons.forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
-
-            const selectedValue = this.getAttribute('data-value');
-
-            // let the controlManager know which model is active
-            if (modelConfig[selectedValue]) {
-                currentModel = selectedValue;
-            }
-        });
+        instrumentConfig['checkpoint'] = checkpoint;
     });
 }
 
@@ -99,9 +101,14 @@ function initializationButtonListener() {
         let newModel;
         if (checkpoint.includes("rnn")) {
             newModel = "MusicRNN";
+        } else if (checkpoint.includes("Arpeggiator Improv")){
+            newModel = "ArpRNN";
+        } else if (checkpoint.includes("Chord Melody Improv")) {
+            newModel = "ChordImprov";
         } else {
             newModel = "MusicVAE";
         }
+        instrumentConfig['currentModel'] = newModel;
 
         // Dispose of the current model if it exists
         if (currentModel) {
@@ -121,10 +128,43 @@ function initializationButtonListener() {
         } else {
             console.error(`Initialization callback not found for model: ${newModel}`);
         }
+        // Unhide the proper controls for the specific model
+        if (newModel == "MusicRNN") {
+            document.getElementById('seed-selector').style.display = 'block';
+            document.getElementById('Arp-Chord-Selector').style.display = 'none';
+            // Set Event Listener for seed-selector
+        } else if (newModel == "ArpRNN") {
+            document.getElementById('seed-selector').style.display = 'none';
+            document.getElementById('Arp-Chord-Selector').style.display = 'block';
+            // set Event listener for arp-chord-selector
+            const arpField = document.getElementById('chordInput');
+            if (arpField) {
+                arpField.addEventListener('change', function () {
+                    const selectedValue = this.value;
+                    instrumentConfig['arpChord'] = selectedValue;
+                });
+            } else {
+                console.error('Arp Chord select field not found');
+            }
+        } else if (newModel == "ChordImprov") {
+            document.getElementById('seed-selector').style.display = 'none';
+            document.getElementById('Arp-Chord-Selector').style.display = 'none';
+            document.getElementById('Chord-Melody-Selector').style.display = 'block';
+            // set Event listener for arp-chord-selector
+            const chordField = document.getElementById('chordInput');
+            if (chordField) {
+                chordField.addEventListener('change', function () {
+                    const selectedValue = this.value;
+                    instrumentConfig['arpChord'] = selectedValue;
+                });
+                // probably create a list of the chords set here
+            } else {
+                console.error('Arp Chord select field not found');
+            }
+
+        }
     });
 }
-
-
 
 function initializeButton(buttonId, callback, errorMessage) {
     const button = document.getElementById(buttonId);
@@ -136,13 +176,14 @@ function initializeButton(buttonId, callback, errorMessage) {
         console.error(errorMessage);
     }
 }
+
 // Field for the length of the sequence
 function initLengthField() {
     const field = document.getElementById('length-input');
     if (field) {
         field.addEventListener('change', function () {
             const selectedValue = this.value;
-            setLength(selectedValue);
+            instrumentConfig['length'] = parseInt(selectedValue, 10);
         });
     } else {
         console.error('length select field not found');
@@ -155,7 +196,9 @@ function initStepsSelector() {
     if (dropdown) {
         dropdown.addEventListener('change', function () {
             const selectedValue = this.value;
-            setSteps(selectedValue);
+            instrumentConfig['stepsPerQuarter'] = parseInt(selectedValue, 10);
+            // convert to int
+
         });
     } else {
         console.error('Step Selector Dropdown not found');
@@ -194,8 +237,7 @@ function initTempSlider() {
     tempSlider.on('change', function (value) {
         document.getElementById('temp-value').textContent = value.toFixed(1);
         // set the temperature for the model
-
-        modelConfig[currentModel].setTemperature(parseFloat(value));
+        instrumentConfig['temperature'] = parseFloat(value);
     });
 
 }
@@ -233,7 +275,7 @@ function initBPMSlider() {
     });
     bpmSlider.on('change', function (value) {
         document.getElementById('bpm-value').textContent = value.toFixed(1);
-        setBPM(value);
-        setBPMSequencer(value);
+        // Set the instrument Config BPM
+        instrumentConfig['bpm'] = value;
     });
 }

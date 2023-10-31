@@ -1,13 +1,14 @@
 import * as mm from '@magenta/music';
 import { playGeneratedSequenceSoundFont, playGeneratedSequenceDefault } from './visualizer';
+import { instrumentConfig } from '../util/configs/instrumentConfig';
 
 let music_vae;
 let generatedSequence;
-let temperature = 1.0;
-let numSequences = 1
+let numSequences = 1;
 let player = "soundfont";
 
 function initializeMusicVaeModel(checkpoint) {
+  instrumentConfig['currentModel'] = "MusicVAE";
   music_vae = new mm.MusicVAE(checkpoint);
   music_vae.initialize().then(function () {
     alert("MusicVAE Model Initialized")
@@ -24,11 +25,12 @@ function initializeMusicVaeModel(checkpoint) {
 function disposeVAEModel() {
   if (music_vae) {
     music_vae.dispose();
+    instrumentConfig['currentModel'] = '';
   }
 }
 
 async function generateMusicVAESequence() {
-  console.log("Gnerating musicvae with Temperature: " + temperature);
+  let temperature = instrumentConfig['temperature'];
   generatedSequence = await music_vae.sample(numSequences, temperature);
   if (generatedSequence) {
     if (player == "soundfont") {
@@ -51,7 +53,6 @@ function replayMusicVAESequence() {
 }
 
 async function exportMusicVAESequence() {
-  console.log("Exporting MusicVAE Sequence");
   const midiBytes = mm.sequenceProtoToMidi(generatedSequence[0]);
   const midiBlob = new Blob([new Uint8Array(midiBytes)], { type: 'audio/midi' });
 
@@ -65,9 +66,5 @@ async function exportMusicVAESequence() {
   downloadLink.click();
   document.body.removeChild(downloadLink);
 }
-function setMusicVAETemperature(newTemperature) {
-    console.log("Temperature: " + newTemperature);
-    temperature = newTemperature;
-}
 
-export { exportMusicVAESequence, generateMusicVAESequence, initializeMusicVaeModel, disposeVAEModel, replayMusicVAESequence, setMusicVAETemperature }
+export { exportMusicVAESequence, generateMusicVAESequence, initializeMusicVaeModel, disposeVAEModel, replayMusicVAESequence }

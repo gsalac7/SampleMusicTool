@@ -1,27 +1,12 @@
 import * as mm from '@magenta/music';
+import { instrumentConfig } from '../util/configs/instrumentConfig';
 
 let visualizer;
-let activeInstrument;
-let BPM = 120;
-
-const soundFontUrl = '../SampleMusicTool/public/sounds/soundfont';
-const soundFontData = {
-  "name": "sgm_plus",
-  "instruments": {
-    "0": "acoustic_grand_piano",
-    "1": "acoustic_guitar_steel",
-    "2": "acoustic_bass",
-    "3": "distortion_guitar",
-    "4": "marimba",
-    "5": "synth_bass_1",
-    "6": "xylophone",
-    "7": "acoustic_grand_piano",
-    "8": "synth_drum",
-    "9": "percussion",
-    "10": "pad_3_polysynth"
-  }
-}
+let BPM = instrumentConfig['bpm'];
+const soundFontUrl = instrumentConfig['soundFontUrl'];
+const soundFontData = instrumentConfig['soundFontData'];
 let player;
+let activeInstrument;
 
 // Use the custom soundfont
 function initializeVisualizerSoundFont() {
@@ -43,12 +28,7 @@ function setInstrument(instrument) {
     activeInstrument = instrument
 }
 
-function setBPM(newBPM) {
-    BPM = parseInt(newBPM, 10);
-    player.setTempo(BPM);
-}
-
-
+// Assign instruments to each trio
 function normalizeSequence(sequence, shouldNormalize = true) {
     if (!shouldNormalize) return;
     sequence.notes.forEach(note => {
@@ -59,23 +39,24 @@ function normalizeSequence(sequence, shouldNormalize = true) {
             // You can use a switch or if-else blocks to assign instruments
             switch (note.instrument) {
                 case 0:  // melody
-                    note.program = setInstrumentNumber('pad_3_polysynth');
+                    note.program = setInstrumentNumber('acoustic_grand_piano');
                     break;
                 case 1:  // bassline
-                    note.program = setInstrumentNumber('synth_bass_1');
+                    note.program = setInstrumentNumber('acoustic_bass');
                     break;
                 default:
                     note.program = 0;  // fallback to piano
             }
         }
-        note.velocity = 127;  // Max velocity
     });
 }
 
-
-
 function playGeneratedSequenceSoundFont(generatedSequence, shouldNormalize = true) {
     initializeVisualizerSoundFont();
+    player.setTempo(BPM);
+    generatedSequence.notes.forEach(note => {
+        note.velocity = 127;  // Max velocity
+    });
 
     const config = {
         noteHeight: 10,
@@ -91,8 +72,10 @@ function playGeneratedSequenceSoundFont(generatedSequence, shouldNormalize = tru
         player.stop();
     }
 
-     if (shouldNormalize) {
+    if (shouldNormalize) {
         normalizeSequence(generatedSequence);
+    } else {
+        setActiveInstrumentNumber();
     }
     // Start the player
     player.start(generatedSequence);
@@ -100,8 +83,8 @@ function playGeneratedSequenceSoundFont(generatedSequence, shouldNormalize = tru
 
 
 function playGeneratedSequenceDefault(generatedSequence) {
-    console.log(generatedSequence);
     initializeVisualizerDefault();
+    player.setTempo(BPM);
     const config = {
         noteHeight: 10,
         pixelsPerTimeStep: 150,
@@ -114,7 +97,7 @@ function playGeneratedSequenceDefault(generatedSequence) {
     if (player.isPlaying()) {
         player.stop();
     }
-     player.start(generatedSequence);
+    player.start(generatedSequence);
 }
 
 function setInstrumentNumber(instrumentName) {
@@ -126,8 +109,7 @@ function setInstrumentNumber(instrumentName) {
     return null;
 }
 
-/*
-function setInstrumentNumber() {
+function setActiveInstrumentNumber() {
     for (const [key, value] of Object.entries(soundFontData.instruments)) {
         if (value === activeInstrument) {
             return parseInt(key, 10);  // Also fixed a typo here: parseint -> parseInt
@@ -135,6 +117,5 @@ function setInstrumentNumber() {
     }
     return null;
 }
-*/
 
-export { setInstrument, playGeneratedSequenceSoundFont, playGeneratedSequenceDefault, setBPM }
+export { setInstrument, playGeneratedSequenceSoundFont, playGeneratedSequenceDefault }

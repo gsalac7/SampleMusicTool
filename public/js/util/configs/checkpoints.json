@@ -160,5 +160,17 @@
         "description": "A 9-class onehot DrumsRNN model. Converted from http://download.magenta.tensorflow.org/models/drum_kit_rnn.mag.",
         "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/drum_kit_rnn",
         "size_mb": 11.9
+    },
+    "Arpeggiator Improv": {
+        "model": "MusicRNN",
+        "description": "Generate an Arpeggiated Sequence",
+        "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv",
+        "size_mb": 5.6
+    },
+    "Chord Melody Improv": {
+        "model": "MusicRNN",
+        "description": "Generate a melody over a chord progression. Simply input the chord progression and have the model generate the music",
+        "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv",
+        "size_mb": 5.6
     }
 }

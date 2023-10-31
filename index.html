@@ -32,26 +32,26 @@
 
     <div id="AI-Control-Panel">
       <!-- Checkpoint and Initialize Model Group -->
-    
-       <div id="checkpoint-group">
+
+      <div id="checkpoint-group">
         <div id="checkpoint-selector">
-            <label for="checkpoint-select">Checkpoints:</label>
-            <select id="checkpoint-select">
-                <option value="checkpoint1" data-description="Description for checkpoint 1"></option>
-                <!-- Add more options as necessary -->
-            </select>
+          <label for="checkpoint-select">Checkpoints:</label>
+          <select id="checkpoint-select">
+            <option value="checkpoint1" data-description="Description for checkpoint 1"></option>
+            <!-- Add more options as necessary -->
+          </select>
         </div>
         <div id="checkpoint-description">
-            <p>Select a checkpoint to see its description here.</p>
+          <p>Select a checkpoint to see its description here.</p>
         </div>
         <div id="init-button">
-            <button id="init-button">Initialize Model</button>
+          <button id="init-button">Initialize Model</button>
         </div>
-    </div>
+      </div>
 
 
       <!-- Seed Selector -->
-      <div id="seed-selector">
+      <div id="seed-selector" style="display:none">
         <label for="seed-select">Seed Sequence:</label>
         <select id="seed-select">
           <option value="majorScaleUp">Major Scale Up</option>
@@ -68,6 +68,21 @@
           <input type="file" id="midiFile" accept=".midi, .mid">
           <span id="midi-filename"></span>
         </div>
+      </div>
+
+      <!-- ARP Chord Selector -->
+      <div id="Arp-Chord-Selector" style="display:none">
+        <label for="chordInput">Enter a chord to create an arpeggiated sequence: </label>
+        <input type="text" id="chordInput" placeholder="e.g., C">
+      </div>
+
+      <!-- Chord Selector Improv Melody-->
+      <div id="Chord-Melody-Selector" style="display:none">
+        <label for="chordInput">Enter a Chord Progression to improvise over: </label>
+        <input type="text" id="chordInput1" placeholder="e.g., C">
+        <input type="text" id="chordInput2" placeholder="e.g., C">
+        <input type="text" id="chordInput3" placeholder="e.g., C">
+        <input type="text" id="chordInput4" placeholder="e.g., C">
       </div>
 
       <!-- Temperature Slider -->

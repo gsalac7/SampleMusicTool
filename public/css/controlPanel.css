@@ -5,8 +5,9 @@
     border-radius: 5px;
     color: white;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     flex-wrap: wrap;
+    align-items: center;
     justify-content: center;
 }
 
@@ -23,7 +24,7 @@
 }
 
 #AI-Control-Panel select, 
-#AI-Control-Panel input[type="number"] {
+#AI-Control-Panel input {
     padding: 6px;
     border: none;
     border-radius: 5px;
@@ -32,6 +33,15 @@
     max-width: 300px;
 }
 
+#AI-Control-Panel > div > label,
+#AI-Control-Panel > div > select,
+#AI-Control-Panel > div > input,
+#AI-Control-Panel > div > button,
+#AI-Control-Panel > div > span,
+#AI-Control-Panel > div > p {
+  display: inline-block;
+  margin: 5px;
+}
 /* MIDI Upload styles */
 
 #midi-upload {

@@ -16,14 +16,13 @@ const notes = [
     "C8"
 ];
 
-//
 const instruments = {
-    acoustic_grand_piano:  new Tone.Sampler(getSample('acoustic_grand_piano')).toDestination(),
-    acoustic_guitar_steel:  new Tone.Sampler(getSample('acoustic_guitar_steel')).toDestination(),
-    synth_bass_1:  new Tone.Sampler(getSample('synth_bass_1')).toDestination(),
-    marimba:  new Tone.Sampler(getSample('marimba')).toDestination(),
-    acoustic_bass:  new Tone.Sampler(getSample('acoustic_bass')).toDestination(),
-    distortion_guitar:  new Tone.Sampler(getSample('distortion_guitar')).toDestination(),
+    acoustic_grand_piano: new Tone.Sampler(getSample('acoustic_grand_piano')).toDestination(),
+    acoustic_guitar_steel: new Tone.Sampler(getSample('acoustic_guitar_steel')).toDestination(),
+    synth_bass_1: new Tone.Sampler(getSample('synth_bass_1')).toDestination(),
+    marimba: new Tone.Sampler(getSample('marimba')).toDestination(),
+    acoustic_bass: new Tone.Sampler(getSample('acoustic_bass')).toDestination(),
+    distortion_guitar: new Tone.Sampler(getSample('distortion_guitar')).toDestination(),
 }
 const maxVolume = 0; // 0 dB is full volume in Tone.js
 let activeInstrument = instruments['acoustic_grand_piano'];
@@ -39,7 +38,6 @@ function initializePianoUI() {
         } else {
             key.classList.add('key');
         }
-
         let mouseDown = false; // Global flag indicating if mouse is held down
         key.addEventListener('mousedown', () => {
             mouseDown = true;
@@ -63,7 +61,6 @@ function initializePianoUI() {
                 mouseDown = false;
             }
         });
-
         pianoContainer.appendChild(key);
     });
 }
@@ -83,9 +80,7 @@ function initializeSynth() {
     instrumentSelectElement.addEventListener('change', (event) => {
         setActiveInstrument(event.target.value);
     });
-    
 }
-
 
 // Function to set the active synth
 function setActiveInstrument(instrument) {
@@ -100,9 +95,10 @@ function setActiveInstrument(instrument) {
     setInstrument(instrument);
 }
 
-function startNote(note, velocity = 1) {
-    // Adjust volume or other parameters using velocity
-    activeInstrument.triggerAttack(note); // Removed "8n", as the release will be handled by stopNote
+async function startNote(note, velocity = 1) {
+    // Normal piano behavior if ARP model isn't initialized
+    activeInstrument.triggerAttack(note);
+
     // UI feedback for active note
     const noteIndex = notes.indexOf(note);
     const keyElement = pianoContainer.querySelector(`[data-key-index="${noteIndex}"]`);
@@ -123,7 +119,7 @@ function stopNote(noteString) {
     // UI feedback for note off
     const noteIndex = notes.indexOf(noteString);
     const keyElement = pianoContainer.querySelector(`[data-key-index="${noteIndex}"]`);
-    
+
     if (keyElement) {
         keyElement.classList.remove('active'); // Remove 'active' class for note off
     } else {
@@ -138,4 +134,4 @@ function convertPitchToNoteString(pitch) {
     return notes[noteIndex] + octave;
 }
 
-export { convertPitchToNoteString, convertVelocityToVolume, stopNote, startNote, initializePianoUI, initializeSynth}
+export { convertPitchToNoteString, convertVelocityToVolume, stopNote, startNote, initializePianoUI, initializeSynth }

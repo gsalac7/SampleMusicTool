@@ -1,4 +1,5 @@
-import { startNote, stopNote} from './synthManager'; 
+import { startNote, stopNote } from './synthManager'; 
+
 // Initializing the MIDI
 function initializeMidi() {
     // Check for WebMIDI support
@@ -6,7 +7,6 @@ function initializeMidi() {
         console.warn("WebMIDI is not supported in this browser.");
         return;
     }
-
     // Request MIDI access
     navigator.requestMIDIAccess({ sysex: false })
         .then(onMIDISuccess, onMIDIFailure);
@@ -14,8 +14,7 @@ function initializeMidi() {
 
 // Function to be called when MIDI access is successfully obtained
 function onMIDISuccess(midiAccess) {
-    console.log("MIDI Access Object", midiAccess);
-
+    console.log("Midi Success")
     // Get inputs
     var inputs = midiAccess.inputs.values();
     for (var input = inputs.next(); input && !input.done; input = inputs.next()) {
@@ -30,20 +29,15 @@ function onMIDIFailure(err) {
 }
 
 // Handling MIDI Messages
-
 function onMIDIMessage(event) {
     let midiNote = event.data[1];
     let velocity = event.data[2] / 127; // Normalize to [0, 1]
 
     let noteString = convertMidiNoteToString(midiNote);
 
-    // Debugging lines - Log received MIDI messages to the console
-    console.log('MIDI message received:', event.data);
-    
     if (event.data[0] >= 144 && event.data[0] <= 159 && velocity > 0) { // Note On with non-zero velocity
         startNote(noteString, velocity);
     } else if (event.data[0] >= 128 && event.data[0] <= 143 || (event.data[0] >= 144 && event.data[0] <= 159 && velocity === 0)) { // Note Off or Note On with zero velocity
-        console.log("Execute stopNote")
         stopNote(noteString);
     }
 }
@@ -56,6 +50,5 @@ function convertMidiNoteToString(midiNote) {
     const noteIndex = midiNote % 12;
     return notes[noteIndex] + Math.floor(octave);
 }
-
 
 export { initializeMidi };
