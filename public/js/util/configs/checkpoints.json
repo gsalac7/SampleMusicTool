@@ -35,18 +35,6 @@
         "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_2bar_small",
         "size_mb": 17.7
     },
-    "mel_4bar_med_q2": {
-        "model": "MusicVAE",
-        "description": "A medium-sized 4-bar, 90-class onehot melody model. Quantized to 2-byte weights.",
-        "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_q2",
-        "size_mb": 65.4
-    },
-    "mel_4bar_med_lokl_q2": {
-        "model": "MusicVAE",
-        "description": "A medium-sized 4-bar, 90-class onehot melody model.  Trained with a strong prior (low KL divergence), which is better for sampling. Quantized to 2-byte weights.",
-        "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_lokl_q2",
-        "size_mb": 65.4
-    },
     "mel_4bar_small_q2": {
         "model": "MusicVAE",
         "description": "A 4-bar, 90-class onehot melody model. Less accurate, but smaller in size than full model. Quantized to 2-byte weights.",
@@ -77,12 +65,6 @@
         "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/multitrack",
         "size_mb": 26.4
     },
-    "multitrack_med": {
-        "model": "MusicVAE",
-        "description": "A larger 1-bar multitrack model, trained with 64 free bits. Quantized to 1-byte weights.",
-        "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/multitrack_med",
-        "size_mb": 95.9
-    },
     "multitrack_med_fb256": {
         "model": "MusicVAE",
         "description": "A larger 1-bar multitrack model, trained with 256 free bits. Quantized to 1-byte weights.",
@@ -94,18 +76,6 @@
         "description": "A 1-bar chord-conditioned multitrack model, trained with 64 free bits. Quantized to 1-byte weights.",
         "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/multitrack_chords",
         "size_mb": 26.9
-    },
-    "multitrack_med_chords": {
-        "model": "MusicVAE",
-        "description": "A larger 1-bar chord-conditioned multitrack model, trained with 64 free bits. Quantized to 1-byte weights.",
-        "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/multitrack_med_chords",
-        "size_mb": 96.9
-    },
-    "multitrack_med_chords_fb256": {
-        "model": "MusicVAE",
-        "description": "A larger 1-bar chord-conditioned multitrack model, trained with 256 free bits. Quantized to 1-byte weights.",
-        "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/multitrack_med_chords_fb256",
-        "size_mb": 96.9
     },
     "groovae_2bar_humanize": {
         "model": "MusicVAE",
@@ -149,13 +119,13 @@
         "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/basic_rnn",
         "size_mb": 13.0
     },
-    "melody_rnn": {
+    "Continue a Sequence": {
         "model": "MusicRNN",
         "description": "A 128-class onehot MelodyRNN model.",
         "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn",
         "size_mb": 13.4
     },
-    "drum_kit_rnn": {
+    "Continue a Drum Sequence": {
         "model": "MusicRNN",
         "description": "A 9-class onehot DrumsRNN model. Converted from http://download.magenta.tensorflow.org/models/drum_kit_rnn.mag.",
         "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/drum_kit_rnn",

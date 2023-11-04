@@ -18,10 +18,11 @@ function initializeVisualizerSoundFont() {
 
 // USe the default instruments 
 function initializeVisualizerDefault() {
-    player = new mm.Player({
+    player = new mm.Player(false, {
         run: note => visualizer.redraw(note),
         stop: () => { }
-    });
+
+});
 }
 
 function setInstrument(instrument) {
@@ -52,6 +53,7 @@ function normalizeSequence(sequence, shouldNormalize = true) {
 }
 
 function playGeneratedSequenceSoundFont(generatedSequence, shouldNormalize = true) {
+    console.log(generatedSequence);
     initializeVisualizerSoundFont();
     player.setTempo(BPM);
     generatedSequence.notes.forEach(note => {
@@ -97,6 +99,7 @@ function playGeneratedSequenceDefault(generatedSequence) {
     if (player.isPlaying()) {
         player.stop();
     }
+    // Play the sequence and use the callbacks to highlight the notes.
     player.start(generatedSequence);
 }
 

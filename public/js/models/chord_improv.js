@@ -4,7 +4,6 @@ import { playGeneratedSequenceDefault, playGeneratedSequenceSoundFont } from './
 
 let rnnModel;
 let generatedSequence;
-let currentChords = undefined;
 
 let STEPS_PER_CHORD = 8;
 let STEPS_PER_PROG = 4 * STEPS_PER_CHORD;
@@ -29,9 +28,10 @@ async function generateChordSequence() {
     document.getElementById('chordInput2').value,
     document.getElementById('chordInput3').value,
     document.getElementById('chordInput4').value
-  ];
+  ].filter(Boolean);;
+
   const steps = 4; // Replace with your specific steps per quarter
-  const temperature = 0.9; // Replace with your specific temperature
+  const temperature = instrumentConfig['temperature']; // Replace with your specific temperature
   const length = STEPS_PER_PROG + (NUM_REPS - 1) * STEPS_PER_PROG - 1;
 
   // Prime with root note of the first chord.
@@ -43,11 +43,8 @@ async function generateChordSequence() {
     totalQuantizedSteps: 1
   };
 
-  console.log("CurrentChords: " + chords);
-
   console.log("Generated sequence with Temperature: " + temperature + " and Length: " + length + " and Steps: " + steps);
-
-  const generatedSequence = await rnnModel.continueSequence(initialSeq, length, temperature, chords);
+  generatedSequence = await rnnModel.continueSequence(initialSeq, length, temperature, chords);
 
   // Add the continuation to the original sequence
   generatedSequence.notes.forEach((note) => {
@@ -57,45 +54,36 @@ async function generateChordSequence() {
   });
 
   const roots = chords.map(mm.chords.ChordSymbols.root);
-  // Add additional logic here (e.g., bass progression)
-  for (var i = 0; i < NUM_REPS; i++) {
-    // Add the bass progression.
-    initialSeq.notes.push({
-      instrument: 1,
-      program: 32,
-      pitch: 36 + roots[0],
-      quantizedStartStep: i * STEPS_PER_PROG,
-      quantizedEndStep: i * STEPS_PER_PROG + STEPS_PER_CHORD
-    });
-    initialSeq.notes.push({
-      instrument: 1,
-      program: 32,
-      pitch: 36 + roots[1],
-      quantizedStartStep: i * STEPS_PER_PROG + STEPS_PER_CHORD,
-      quantizedEndStep: i * STEPS_PER_PROG + 2 * STEPS_PER_CHORD
-    });
-    initialSeq.notes.push({
-      instrument: 1,
-      program: 32,
-      pitch: 36 + roots[2],
-      quantizedStartStep: i * STEPS_PER_PROG + 2 * STEPS_PER_CHORD,
-      quantizedEndStep: i * STEPS_PER_PROG + 3 * STEPS_PER_CHORD
-    });
-    initialSeq.notes.push({
-      instrument: 1,
-      program: 32,
-      pitch: 36 + roots[3],
-      quantizedStartStep: i * STEPS_PER_PROG + 3 * STEPS_PER_CHORD,
-      quantizedEndStep: i * STEPS_PER_PROG + 4 * STEPS_PER_CHORD
-    });
+
+  // Determine the steps for each chord based on how many chords there are
+  const stepsPerChord = STEPS_PER_PROG / roots.length;
+
+  console.log("Steps Per Chord: " + stepsPerChord);
+
+  // Add the bass progression
+  for (let i = 0; i < NUM_REPS; i++) {
+    for (let j = 0; j < roots.length; j++) {
+      // Calculate the start and end steps for each bass note
+      const startStep = i * STEPS_PER_PROG + j * stepsPerChord;
+      const endStep = startStep + stepsPerChord;
+
+      // Add the bass note for the current chord
+      initialSeq.notes.push({
+        instrument: 1,
+        program: 32,
+        pitch: 36 + roots[j], // Add the correct bass note for the chord
+        quantizedStartStep: startStep,
+        quantizedEndStep: endStep
+      });
+    }
   }
 
   // Set total sequence length
   initialSeq.totalQuantizedSteps = STEPS_PER_PROG * NUM_REPS;
 
-
   if (initialSeq) {
     playGeneratedSequenceDefault(initialSeq);
+    generatedSequence = initialSeq;
     //playGeneratedSequenceSoundFont(initialSeq, false);
     // Display replay-button and download link
     document.getElementById('replay-button').style.display = 'inline-block';
@@ -142,12 +130,12 @@ async function exportChordSequence() {
 }
 
 function replayChordSequence() {
-  playGeneratedSequenceSoundFont(generatedSequence, false);
+  playGeneratedSequenceDefault(generatedSequence);
 }
 
 function disposeChordModel() {
   if (rnnModel) {
-    console.log("Disposing arp RNN Model");
+    console.log("Disposing Chord RNN Model");
     rnnModel.dispose();
     instrumentConfig['currentModel'] = ''
   }

@@ -1,6 +1,7 @@
 import * as mm from '@magenta/music';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
 import { playGeneratedSequenceSoundFont } from './visualizer';
+import { note } from 'tonal';
 
 let rnnModel;
 let generatedSequence;
@@ -17,27 +18,18 @@ function initializeArpModel(checkpoint) {
 }
 
 async function generateArpSequence() {
-  console.log("Exeucte Genrate Arp Sequence")
-  let length = instrumentConfig['length'];
-  let steps = instrumentConfig['stepsPerQuarter'];
   let temperature = instrumentConfig['temperature'];
   let chord = instrumentConfig['arpChord'];
-  //mm.chords.ChordSymbols.root(chord);
-  const seedSequence = {
+  let note = noteToPitch(chord);
+
+  const quantizedSeq= {
     quantizationInfo: { stepsPerQuarter: 4 },
-    notes: [],
-    totalTime: 4,
-    timeSignatures: [{ time: 0, numerator: 4, denominator: 4 }],
+    notes: [{pitch: note, quantizedStartStep: 0, quantizedEndStep: 1}],
     totalQuantizedSteps: 1
   };
 
-  const quantizedSeq = mm.sequences.quantizeNoteSequence(seedSequence, steps);
-  console.log("This is the quantizedSeq: " + JSON.stringify(quantizedSeq) + " With Chord: " + chord);
-  generatedSequence = await rnnModel.continueSequence(quantizedSeq, 40, temperature, [chord]);
-  console.log(JSON.stringify(generatedSequence))
-
+  generatedSequence = await rnnModel.continueSequence(quantizedSeq, 20, temperature, [chord]);
   let normalizedSequence= extendSequence(generatedSequence, chord);
-
 
   if (generatedSequence) {
     // Normalize to an arpeggiated sequence
@@ -47,6 +39,37 @@ async function generateArpSequence() {
     document.getElementById('replay-button').style.display = 'inline-block';
     document.getElementById('download-link').style.display = 'inline-block';
   }
+}
+
+function noteToPitch(note, octave = 4) {
+  const noteMap = {
+    'C': 0,
+    'Cm': 0,
+    'C#': 1,
+    'Db': 1,
+    'Dm': 1,
+    'D': 2,
+    'D#': 3,
+    'Eb': 3,
+    'Em': 3,
+    'E': 4,
+    'F': 5,
+    'Fm': 5,
+    'F#': 6,
+    'Gb': 6,
+    'G': 7,
+    'Gm': 7,
+    'G#': 8,
+    'Ab': 8,
+    'A': 9,
+    'Am': 9,
+    'A#': 10,
+    'Bb': 10,
+    'B': 11,
+    'Bm': 11
+  };
+
+  return 12 * (octave + 1) + noteMap[note.toUpperCase()];
 }
 
 function extendSequence(generatedSequence) {
