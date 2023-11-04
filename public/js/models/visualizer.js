@@ -40,10 +40,10 @@ function normalizeSequence(sequence, shouldNormalize = true) {
             // You can use a switch or if-else blocks to assign instruments
             switch (note.instrument) {
                 case 0:  // melody
-                    note.program = setInstrumentNumber('acoustic_grand_piano');
+                    note.program = setInstrumentNumber('pad_3_polysynth');
                     break;
                 case 1:  // bassline
-                    note.program = setInstrumentNumber('acoustic_bass');
+                    note.program = setInstrumentNumber('synth_bass_1');
                     break;
                 default:
                     note.program = 0;  // fallback to piano
