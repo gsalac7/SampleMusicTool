@@ -1,0 +1,42 @@
+#sequencer {
+  transform: scale(0.95);
+  transform-origin: center;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);  /* Adds a subtle shadow around the sequencer */
+}
+
+#sequencer span {
+  border-radius: 5px;
+  margin-right: 2px;
+  transition: background-color 0.15s ease-in-out;  /* Smoothens background color transition */
+}
+
+/* Additional spacing every 4 cells */
+#sequencer span:nth-child(4n) {
+  margin-right: 4px;
+}
+
+#sequencer-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;  /* Adding some padding gives the sequencer more breathing space */
+  background-color: rgba(0,0,0,0.05);  /* A very light background can help the sequencer stand out */
+  border-radius: 10px;  /* Match the sequencer's border radius */
+}
+
+.cell {
+  transition: transform 0.15s ease-in, background-color 0.15s ease-in-out;  /* Makes the 'jumping' animation smoother */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);  /* Subtle shadow for each cell */
+  cursor: pointer;  /* Indicates that the cell is clickable */
+}
+
+.cell-highlight {
+  box-shadow: 0px 0px 12px 2px rgba(255, 253, 253, 0.8);
+  transform: translateY(-10px);
+}
+
+.cell-highlight.active {
+  background-color: #e74c3c;  /* A suggestion to change the active cell's color for better visibility */
+  transition: none;
+}

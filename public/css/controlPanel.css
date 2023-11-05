@@ -1,0 +1,121 @@
+#AI-Control-Panel {
+    background-color: #2C3E50;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+
+#AI-Control-Panel > div {
+    width: calc(50% - 10px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 5px;
+}
+
+#AI-Control-Panel label {
+    margin-bottom: 3px;
+}
+
+#AI-Control-Panel select, 
+#AI-Control-Panel input {
+    padding: 6px;
+    border: none;
+    border-radius: 5px;
+    box-sizing: border-box; 
+    width: 90%;
+    max-width: 300px;
+}
+
+#AI-Control-Panel > div > label,
+#AI-Control-Panel > div > select,
+#AI-Control-Panel > div > input,
+#AI-Control-Panel > div > button,
+#AI-Control-Panel > div > span,
+#AI-Control-Panel > div > p {
+  display: inline-block;
+  margin: 5px;
+}
+/* MIDI Upload styles */
+
+#midi-upload {
+    margin-top: 15px;
+}
+
+input[type="file"] {
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    background-color: #34495E;
+    color: white;
+    cursor: pointer;
+}
+
+input[type="file"]::file-selector-button {
+    display: none;
+}
+
+#midi-filename {
+    display: inline-block;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+/* Checkpoints styles */
+/* ...existing styles... */
+
+#checkpoint-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;  /* Adjust this value to control spacing */
+}
+
+/* If you want to specifically reduce the spacing between label and dropdown or description, you can target them like this */
+#checkpoint-selector label,
+#checkpoint-description p {
+    margin-bottom: 5px;  /* Adjust this value */
+}
+
+
+#checkpoint-selector-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#checkpoint-selector {
+    flex: 1.2;
+    background-color: #2C3E50;
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+}
+
+#checkpoint-description {
+    flex: 0.8;
+    background-color: #2C3E50;
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+}
+
+#checkpoint-description p {
+    margin: 0;
+}
+
+#checkpoint-select {
+    width: 100%;
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    margin: 5px 0;
+    color: white;
+    background-color: #34495E;
+}

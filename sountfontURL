@@ -1,0 +1,3 @@
+https://storage.googleapis.com/magentadata/js/soundfonts/sgm_plus/sountfont.json -> to download the soundfont.json
+https://storage.googleapis.com/magentadata/js/soundfonts/sgm_plus/<instrument>/instrument.json -> to download the specific instrument.json
+https://storage.googleapis.com/magentadata/js/soundfonts/sgm_plus/<instrument>/p<pitch>_v<velocity>.mp3 -> to download the specific mp3 file
