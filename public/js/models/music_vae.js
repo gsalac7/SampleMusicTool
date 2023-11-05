@@ -5,7 +5,7 @@ import { instrumentConfig } from '../util/configs/instrumentConfig';
 let music_vae;
 let generatedSequence;
 let numSequences = 1;
-let player = "soundfont";
+let player = "default";
 
 function initializeMusicVaeModel(checkpoint) {
   instrumentConfig['currentModel'] = "MusicVAE";
@@ -31,9 +31,9 @@ function disposeVAEModel() {
 
 async function generateMusicVAESequence() {
   let temperature = instrumentConfig['temperature'];
-  let chords = ['C'];
+  let chords = ['C', 'Am', 'F', 'G'];
   console.log("Generating with chords: " + chords + " and temperature: " + temperature)
-  generatedSequence = await music_vae.sample(1, temperature);
+  generatedSequence = await music_vae.sample(1, null, {"chordProgression": chords}, 16);
   if (generatedSequence) {
     if (player == "soundfont") {
       playGeneratedSequenceSoundFont(generatedSequence[0])

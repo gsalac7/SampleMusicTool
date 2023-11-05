@@ -4,6 +4,7 @@ import { toggleLoop, updateSequencer } from './drumManager';
 import { replayMusicRNNSequence, exportMusicRNNSequence, initializeRNNModel, generateMusicRNNSequence, setSeedSequence, readMidi, disposeRNNModel } from '../models/music_rnn';
 import { initializeMusicVaeModel, generateMusicVAESequence, replayMusicVAESequence, exportMusicVAESequence, disposeVAEModel } from '../models/music_vae';
 import { initializeChordModel, generateChordSequence, replayChordSequence, exportChordSequence, disposeChordModel } from '../models/chord_improv';
+import { initializeMultiTrackModel, generateMultiTrackSequence, replayMultiTrackSequence, exportMultiTrackSequence, disposeMultiTrackModel} from '../models/multitrack';
 import { initializeArpModel, generateArpSequence, disposeArpModel, replayArpSequence, exportArpSequence } from '../models/arp_rnn';
 import checkpoints from './configs/checkpoints.json';
 import { instrumentConfig } from './configs/instrumentConfig';
@@ -65,7 +66,14 @@ const modelConfig = {
         exportCallback: exportChordSequence,
         disposeCallback:  disposeChordModel,
         logMessage: "Initializing Chord Improv Model",
-
+    },
+    MultiTrack: {
+        initCallback: initializeMultiTrackModel,
+        generateCallback: generateMultiTrackSequence,
+        replayCallback: replayMultiTrackSequence,
+        exportCallback: exportMultiTrackSequence,
+        disposeCallback:  disposeMultiTrackModel,
+        logMessage: "Initializing MultiTrack Model",
     }
 }
 
@@ -105,6 +113,8 @@ function initializationButtonListener() {
             newModel = "ArpRNN";
         } else if (checkpoint.includes("Chord Melody Improv")) {
             newModel = "ChordImprov";
+        } else if (checkpoint.includes("MultiTrack")) {
+            newModel = "MultiTrack";
         } else {
             newModel = "MusicVAE";
         }
@@ -146,7 +156,7 @@ function initializationButtonListener() {
             } else {
                 console.error('Arp Chord select field not found');
             }
-        } else if (newModel == "ChordImprov") {
+        } else if (newModel == "ChordImprov" || newModel == "MultiTrack") {
             document.getElementById('seed-selector').style.display = 'none';
             document.getElementById('Arp-Chord-Selector').style.display = 'none';
             document.getElementById('Chord-Melody-Selector').style.display = 'block';

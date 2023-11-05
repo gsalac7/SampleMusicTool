@@ -86,6 +86,7 @@ function playGeneratedSequenceSoundFont(generatedSequence, shouldNormalize = tru
 
 function playGeneratedSequenceDefault(generatedSequence) {
     initializeVisualizerDefault();
+    console.log(generatedSequence);
     player.setTempo(BPM);
     const config = {
         noteHeight: 10,
