@@ -2,6 +2,7 @@ import * as mm from '@magenta/music';
 import { seedSequences } from './configs/seed_sequences';
 import { playGeneratedSequenceSoundFont } from './visualizer';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
+import { hideLoader, showNotification } from '../util/controlsManager';
 
 let rnnModel;
 let generatedSequence;
@@ -12,8 +13,9 @@ function initializeRNNModel(checkpoint) {
     instrumentConfig['currentModel'] = "MusicRNN";
     rnnModel = new mm.MusicRNN(checkpoint);
     rnnModel.initialize().then(function () {
-        alert("MusicRNN Model Initialized");
         console.log('Model initialized');
+        hideLoader();
+        showNotification("MusicRNN Model Initialized");
     }).catch(function (error) {
         console.error('Failed to initialize model:', error);
     });

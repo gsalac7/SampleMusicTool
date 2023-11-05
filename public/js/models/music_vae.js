@@ -1,18 +1,20 @@
 import * as mm from '@magenta/music';
 import { playGeneratedSequenceSoundFont, playGeneratedSequenceDefault } from './visualizer';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
+import { hideLoader, showNotification } from '../util/controlsManager';
 
 let music_vae;
 let generatedSequence;
 let numSequences = 1;
-let player = "default";
+let player = "soundfont";
 
 function initializeMusicVaeModel(checkpoint) {
   instrumentConfig['currentModel'] = "MusicVAE";
   music_vae = new mm.MusicVAE(checkpoint);
   music_vae.initialize().then(function () {
-    alert("MusicVAE Model Initialized")
     console.log('Model initialized');
+    hideLoader();
+    showNotification("MusicVAE Model initialized Successfully!");
   }).catch(function (error) {
     console.error('Failed to initialize model:', error);
   });
@@ -31,9 +33,13 @@ function disposeVAEModel() {
 
 async function generateMusicVAESequence() {
   let temperature = instrumentConfig['temperature'];
+  /*
   let chords = ['C', 'Am', 'F', 'G'];
   console.log("Generating with chords: " + chords + " and temperature: " + temperature)
   generatedSequence = await music_vae.sample(1, null, {"chordProgression": chords}, 16);
+  */
+  generatedSequence = await music_vae.sample(1, temperature);
+
   if (generatedSequence) {
     if (player == "soundfont") {
       playGeneratedSequenceSoundFont(generatedSequence[0])

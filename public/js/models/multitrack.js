@@ -1,6 +1,7 @@
 import * as mm from '@magenta/music';
 import { playGeneratedSequenceSoundFont, playGeneratedSequenceDefault } from './visualizer';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
+import { hideLoader, showNotification } from '../util/controlsManager';
 
 let music_vae;
 let generatedSequence;
@@ -12,6 +13,8 @@ function initializeMultiTrackModel(checkpoint) {
     music_vae = new mm.MusicVAE(checkpoint);
     music_vae.initialize().then(function () {
         console.log('MultiTrack Model initialized');
+        hideLoader();
+        showNotification("MultiTrack MOdel initialized Successfully!");
     }).catch(function (error) {
         console.error('Failed to initialize model:', error);
     });

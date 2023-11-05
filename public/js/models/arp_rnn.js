@@ -1,7 +1,8 @@
 import * as mm from '@magenta/music';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
 import { playGeneratedSequenceSoundFont } from './visualizer';
-import { note } from 'tonal';
+import { hideLoader, showNotification } from '../util/controlsManager';
+
 
 let rnnModel;
 let generatedSequence;
@@ -12,6 +13,8 @@ function initializeArpModel(checkpoint) {
   rnnModel = new mm.MusicRNN(checkpoint);
   rnnModel.initialize().then(function () {
     console.log('Arp Model initialized');
+    hideLoader();
+    showNotification("Arp Model Initialized");
   }).catch(function (error) {
     console.error('Failed to initialize model:', error);
   });

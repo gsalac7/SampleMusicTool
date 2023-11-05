@@ -1,6 +1,7 @@
 import * as mm from '@magenta/music';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
 import { playGeneratedSequenceDefault, playGeneratedSequenceSoundFont } from './visualizer';
+import { hideLoader, showNotification } from '../util/controlsManager';
 
 let rnnModel;
 let generatedSequence;
@@ -17,6 +18,8 @@ function initializeChordModel(checkpoint) {
   rnnModel = new mm.MusicRNN(checkpoint);
   rnnModel.initialize().then(function () {
     console.log('Model initialized');
+    hideLoader();
+    showNotification("Chord Model Initialized");
   }).catch(function (error) {
     console.error('Failed to initialize model:', error);
   });

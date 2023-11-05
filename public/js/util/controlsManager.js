@@ -90,6 +90,29 @@ function initModelControl() {
 }
 
 
+function showLoader() {
+  document.getElementById('loader').style.display = 'flex';
+}
+
+export function hideLoader() {
+  document.getElementById('loader').style.display = 'none';
+}
+
+
+export function showNotification(message) {
+  const notificationBanner = document.getElementById('notificationBanner');
+  const notificationMessage = document.getElementById('notificationMessage');
+  
+  notificationMessage.textContent = message;
+  notificationBanner.style.display = 'block'; // Make sure this is 'block' or 'flex' as per your CSS
+  notificationBanner.classList.add('show');
+  
+  // Automatically hide the notification after 3 seconds
+  setTimeout(() => {
+    notificationBanner.classList.remove('show');
+  }, 3000);
+}
+
 function initializationButtonListener() {
     const initModelButton = document.getElementById('init-button');
 
@@ -100,6 +123,7 @@ function initializationButtonListener() {
 
     // Attach click listener to the initialization button
     initModelButton.addEventListener('click', () => {
+        showLoader();
         if (!checkpoint) {
             alert('Please select a checkpoint');
             return;
@@ -107,7 +131,7 @@ function initializationButtonListener() {
 
         // Determine the new model based on the checkpoint
         let newModel;
-        if (checkpoint.includes("rnn")) {
+        if (checkpoint.includes("Sequence")) {
             newModel = "MusicRNN";
         } else if (checkpoint.includes("Arpeggiator Improv")){
             newModel = "ArpRNN";
@@ -171,7 +195,6 @@ function initializationButtonListener() {
             } else {
                 console.error('Arp Chord select field not found');
             }
-
         }
     });
 }
