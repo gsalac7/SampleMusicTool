@@ -33,11 +33,6 @@ function disposeVAEModel() {
 
 async function generateMusicVAESequence() {
   let temperature = instrumentConfig['temperature'];
-  /*
-  let chords = ['C', 'Am', 'F', 'G'];
-  console.log("Generating with chords: " + chords + " and temperature: " + temperature)
-  generatedSequence = await music_vae.sample(1, null, {"chordProgression": chords}, 16);
-  */
   generatedSequence = await music_vae.sample(1, temperature);
 
   if (generatedSequence) {

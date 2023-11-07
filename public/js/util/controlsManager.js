@@ -131,13 +131,13 @@ function initializationButtonListener() {
 
         // Determine the new model based on the checkpoint
         let newModel;
-        if (checkpoint.includes("Sequence")) {
+        if (checkpoint.includes("Drum Pattern Expander") || checkpoint.includes("Melody Extender")) {
             newModel = "MusicRNN";
-        } else if (checkpoint.includes("Arpeggiator Improv")){
+        } else if (checkpoint.includes("Arpeggio Assistant")){
             newModel = "ArpRNN";
-        } else if (checkpoint.includes("Chord Melody Improv")) {
+        } else if (checkpoint.includes("Chord Melody Mixer")) {
             newModel = "ChordImprov";
-        } else if (checkpoint.includes("MultiTrack")) {
+        } else if (checkpoint.includes("Chord-Based Multi-Instrumentalist")) {
             newModel = "MultiTrack";
         } else {
             newModel = "MusicVAE";

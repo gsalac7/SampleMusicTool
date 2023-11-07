@@ -143,7 +143,7 @@ async function generateMultiTrackSequence() {
     ].filter(chord => chord !== ""); // Filter out empty chords
 
     // Generate the initial sequence based on the first chord
-    let generatedSequences = await music_vae.sample(1, null, { chordProgression: [chords[0]] }, 24);
+    let generatedSequences = await music_vae.sample(1, temperature, { chordProgression: [chords[0]] }, 24);
     let generatedSequence = generatedSequences[0];
     console.log("Current generatedSequence")
     console.log(generatedSequence)
