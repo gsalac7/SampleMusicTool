@@ -70,5 +70,9 @@
         "description": "Craft melodies over chord progressions. Perfect for songwriting and composition.",
         "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/chord_pitches_improv",
         "size_mb": 5.6
+    },
+    "Generative Music": {
+        "model": "Markov Chain",
+        "description": "Create music through generative algorithmic compositions using Markov Chains."
     }
 }

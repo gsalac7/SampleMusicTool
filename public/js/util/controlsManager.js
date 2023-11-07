@@ -6,6 +6,7 @@ import { initializeMusicVaeModel, generateMusicVAESequence, replayMusicVAESequen
 import { initializeChordModel, generateChordSequence, replayChordSequence, exportChordSequence, disposeChordModel } from '../models/chord_improv';
 import { initializeMultiTrackModel, generateMultiTrackSequence, replayMultiTrackSequence, exportMultiTrackSequence, disposeMultiTrackModel} from '../models/multitrack';
 import { initializeArpModel, generateArpSequence, disposeArpModel, replayArpSequence, exportArpSequence } from '../models/arp_rnn';
+import { initializeMarkovModel, playGenerativeSequence, replayGenerativeSequence, exportGenerativeSequence } from '../models/generative';
 import checkpoints from './configs/checkpoints.json';
 import { instrumentConfig } from './configs/instrumentConfig';
 
@@ -74,6 +75,15 @@ const modelConfig = {
         exportCallback: exportMultiTrackSequence,
         disposeCallback:  disposeMultiTrackModel,
         logMessage: "Initializing MultiTrack Model",
+    },
+    MarkovChain: {
+        initCallback: initializeMarkovModel,
+        generateCallback: playGenerativeSequence,
+        replayCallback: replayGenerativeSequence,
+        exportCallback: exportGenerativeSequence,
+        disposeCallback:  () => {},
+        logMessage: "Initializing Markov Chain",
+
     }
 }
 
@@ -139,6 +149,8 @@ function initializationButtonListener() {
             newModel = "ChordImprov";
         } else if (checkpoint.includes("Chord-Based Multi-Instrumentalist")) {
             newModel = "MultiTrack";
+        } else if (checkpoint.includes("Generative")){
+            newModel = "MarkovChain";
         } else {
             newModel = "MusicVAE";
         }
