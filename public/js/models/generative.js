@@ -2,23 +2,19 @@ import { playGeneratedSequenceSoundFont, playGeneratedSequenceDefault } from './
 import { instrumentConfig } from '../util/configs/instrumentConfig';
 import { hideLoader, showNotification } from '../util/controlsManager';
 
-// Define Markov chains for melody and harmony
 const melodyChain = {
-    72: { 72: 0.2, 74: 0.2, 76: 0.2, 77: 0.2, 79: 0.1, 81: 0.1 },
-    74: { 72: 0.1, 74: 0.2, 76: 0.3, 77: 0.2, 79: 0.1, 81: 0.1 },
-    76: { 72: 0.1, 74: 0.2, 76: 0.2, 77: 0.2, 79: 0.2, 81: 0.1 },
-    77: { 72: 0.1, 74: 0.1, 76: 0.3, 77: 0.2, 79: 0.2, 81: 0.1 },
-    79: { 72: 0.1, 74: 0.1, 76: 0.2, 77: 0.3, 79: 0.2, 81: 0.1 },
-    81: { 72: 0.1, 74: 0.1, 76: 0.1, 77: 0.2, 79: 0.3, 81: 0.2 }
+    69: { 69: 0.3, 71: 0.25, 72: 0.25, 74: 0.15, 76: 0.05 }, // A
+    71: { 69: 0.2, 71: 0.3, 72: 0.25, 74: 0.15, 76: 0.1 }, // B
+    72: { 71: 0.15, 72: 0.4, 74: 0.25, 76: 0.15, 77: 0.05 }, // C
+    73: { 72: 0.3, 73: 0.4, 74: 0.2, 76: 0.1 }, // C# (chromatic passing tone)
+    74: { 72: 0.2, 73: 0.1, 74: 0.4, 76: 0.2, 77: 0.1 }, // D
+    75: { 74: 0.3, 75: 0.4, 76: 0.2, 77: 0.1 }, // Eb (chromatic passing tone)
+    76: { 74: 0.15, 75: 0.05, 76: 0.4, 77: 0.25, 79: 0.15 }, // E
+    77: { 76: 0.2, 77: 0.4, 79: 0.3, 71: 0.1 }, // F
+    79: { 77: 0.25, 79: 0.4, 71: 0.2, 72: 0.15 }  // G
 };
 
-const harmonyChain = {
-    60: { 60: 0.25, 64: 0.25, 67: 0.25, 69: 0.15, 71: 0.10 },
-    64: { 60: 0.20, 64: 0.30, 67: 0.30, 69: 0.10, 71: 0.10 },
-    67: { 60: 0.25, 64: 0.25, 67: 0.20, 69: 0.15, 71: 0.15 },
-    69: { 60: 0.15, 64: 0.20, 67: 0.35, 69: 0.20, 71: 0.10 },
-    71: { 60: 0.10, 64: 0.15, 67: 0.25, 69: 0.25, 71: 0.25 }
-};
+
 
 let generatedSequence;
 
@@ -27,41 +23,40 @@ function initializeMarkovModel() {
     showNotification("Markov Chain initialized Successfully!");
 }
 
-// Function to generate a music sequence for a given Markov chain
 function generateMusicSequence(startPitch, totalSteps, stepsPerQuarter, chain) {
     let currentStep = 0;
     let currentPitch = startPitch;
     const sequence = [];
-    const noteLengths = [1, 2, 4, 8]; // Possible note lengths as fractions of a quarter note
-    const restProbability = 0.15; // 15% chance of a rest
+    const noteLengths = [1, 2, 4]; // Including 16th, 8th, and quarter notes
+    const restProbability = 0.05; // Reduced chance of a rest
+    const rootNote = startPitch; // Assuming the startPitch is the root note
 
     while (currentStep < totalSteps) {
-        // Decide whether to add a rest or a note
         if (Math.random() < restProbability) {
-            // Add a rest
-            const restLength = noteLengths[Math.floor(Math.random() * noteLengths.length)];
-            const restDuration = stepsPerQuarter / restLength;
-            currentStep += restDuration; // Skip ahead by the rest duration
+            currentStep += stepsPerQuarter / noteLengths[Math.floor(Math.random() * noteLengths.length)];
         } else {
-            // Add a note
-            const nextPitch = chooseNextPitch(currentPitch, chain);
-            const noteLength = noteLengths[Math.floor(Math.random() * noteLengths.length)];
-            const duration = stepsPerQuarter / noteLength; // Duration based on the selected note length
+            let nextPitch;
+            const noteLengthIndex = Math.random() < 0.5 ? 2 : (Math.random() < 0.75 ? 1 : 0);
+            const duration = stepsPerQuarter / noteLengths[noteLengthIndex];
             let nextStep = currentStep + duration;
 
-            // Adjust nextStep to not exceed the totalSteps
-            if (nextStep > totalSteps) {
+            // Check if this is the last note in the sequence
+            if (nextStep >= totalSteps) {
                 nextStep = totalSteps;
+                nextPitch = rootNote; // Set the last note to the root note
+            } else {
+                nextPitch = chooseNextPitch(currentPitch, chain);
             }
 
             sequence.push({
                 pitch: nextPitch,
                 quantizedStartStep: currentStep,
-                quantizedEndStep: nextStep
+                quantizedEndStep: nextStep,
+                velocity: currentStep % stepsPerQuarter === 0 ? 100 : 70
             });
 
-            currentPitch = nextPitch; // Update the current pitch for the next iteration
-            currentStep = nextStep; // Move to the next step
+            currentPitch = nextPitch;
+            currentStep = nextStep;
         }
     }
 
@@ -71,27 +66,13 @@ function generateMusicSequence(startPitch, totalSteps, stepsPerQuarter, chain) {
 
 function playGenerativeSequence() {
     // Generate a new music sequence for melody and harmony
-    const melodySequence = generateMusicSequence(72, 128, 4, melodyChain);
-    let harmonySequence;
-    //const harmonySequence = generateMusicSequence(60, 128, 4, harmonyChain);
-
-    if (harmonySequence) {
-        // Combine melody and harmony sequences
-        generatedSequence = {
-            quantizationInfo: { stepsPerQuarter: 4 },
-            notes: melodySequence.concat(harmonySequence),
-            totalQuantizedSteps: 128
-        };
-    }
-    else {
-        // Combine melody and harmony sequences
-        generatedSequence = {
-            quantizationInfo: { stepsPerQuarter: 4 },
-            notes: melodySequence,
-            totalQuantizedSteps: 128
-        };
-        
-    }
+    const melodySequence = generateMusicSequence(72, 64, 4, melodyChain);
+    // Combine melody and harmony sequences
+    generatedSequence = {
+        quantizationInfo: { stepsPerQuarter: 4 },
+        notes: melodySequence,
+        totalQuantizedSteps:64 
+    };
 
     // Assuming playGeneratedSequenceDefault and playGeneratedSequenceSoundFont are defined elsewhere
     // playGeneratedSequenceDefault(generatedSequence);

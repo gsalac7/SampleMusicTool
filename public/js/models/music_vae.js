@@ -6,7 +6,7 @@ import { hideLoader, showNotification } from '../util/controlsManager';
 let music_vae;
 let generatedSequence;
 let numSequences = 1;
-let player = "soundfont";
+let player = "default";
 
 function initializeMusicVaeModel(checkpoint) {
   instrumentConfig['currentModel'] = "MusicVAE";
