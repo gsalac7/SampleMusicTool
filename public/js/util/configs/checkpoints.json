@@ -11,23 +11,11 @@
         "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/drums_4bar_med_lokl_q2",
         "size_mb": 68.2
     },
-    "mel_4bar_med_q2": {
-        "model": "MusicVAE",
-        "description": "A medium-sized 4-bar, 90-class onehot melody model. Quantized to 2-byte weights.",
-        "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_q2",
-        "size_mb": 65.4
-    },
-    "mel_4bar_med_lokl_q2": {
+    "Quick Melody Maker (4-Bar)": {
         "model": "MusicVAE",
         "description": "A medium-sized 4-bar, 90-class onehot melody model.  Trained with a strong prior (low KL divergence), which is better for sampling. Quantized to 2-byte weights.",
         "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_lokl_q2",
         "size_mb": 65.4
-    },
-    "Quick Melody Maker (4-Bar)": {
-        "model": "MusicVAE",
-        "description": "Generate catchy 4-bar melodies. Streamlined and easy, perfect for short tunes.",
-        "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_small_q2",
-        "size_mb": 26.5
     },
     "Extended Melody Composer (16-Bar)": {
         "model": "MusicVAE",
@@ -41,22 +29,28 @@
         "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/trio_4bar",
         "size_mb": 17.6
     },
-    "Chord-Based Multi-Instrumentalist": {
+    "Chord-Based Multi-Instrumentalist Mini (4-Bar)": {
         "model": "MusicVAE",
         "description": "Create multi-instrument tracks based on chords. Build a full track with harmonizing instruments.",
         "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/multitrack_chords",
         "size_mb": 26.9
     },
-    "Tap to Full Drum Groove (4-Bar)": {
+    "Chord-Based Multi-Instrumentalist Medium (4-Bar)": {
         "model": "MusicVAE",
-        "description": "Turn simple taps into complex drum grooves. Great for bringing a rhythm in mind to life.",
-        "url": "https://storage.googleapis.com/magentadata/js/checkpoints/groovae/tap2drum_4bar",
-        "size_mb": 15.6
+        "description": "A larger 1-bar chord-conditioned multitrack model, trained with 64 free bits. Quantized to 1-byte weights.",
+        "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/multitrack_med_chords",
+        "size_mb": 96.9
+    },
+    "Chord-Based Multi-Instrumentalist Large (4-Bar)": {
+        "model": "MusicVAE",
+        "description": "A larger 1-bar chord-conditioned multitrack model, trained with 256 free bits. Quantized to 1-byte weights.",
+        "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/multitrack_med_chords_fb256",
+        "size_mb": 96.9
     },
     "Groove Enhancer (4-Bar)": {
         "model": "MusicVAE",
         "description": "Add groove to your 4-bar drum patterns. Infuse your music with a special groove.",
-        "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/groovae_4bar",
+        "url": "https://storage.googleapis.com/magentadata/js/checkpoints/groovae/tap2drum_4bar",
         "size_mb": 15.8
     },
     "Melody Extender": {
@@ -64,12 +58,6 @@
         "description": "Continue your melodies seamlessly. Like having a co-writer who never runs out of ideas.",
         "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/melody_rnn",
         "size_mb": 13.4
-    },
-    "Drum Pattern Expander": {
-        "model": "MusicRNN",
-        "description": "Elongate and enhance your drum beats. Create longer and more complex rhythms.",
-        "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_rnn/drum_kit_rnn",
-        "size_mb": 11.9
     },
     "Arpeggio Assistant": {
         "model": "MusicRNN",

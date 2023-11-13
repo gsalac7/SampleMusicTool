@@ -2,11 +2,12 @@ import * as mm from '@magenta/music';
 import { playGeneratedSequenceSoundFont, playGeneratedSequenceDefault } from './visualizer';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
 import { hideLoader, showNotification } from '../util/controlsManager';
+import seedSequences from './configs/seed_sequences';
 
 let music_vae;
 let generatedSequence;
 let numSequences = 1;
-let player = "default";
+let player = "soundfont";
 
 function initializeMusicVaeModel(checkpoint) {
   instrumentConfig['currentModel'] = "MusicVAE";
@@ -26,6 +27,7 @@ function initializeMusicVaeModel(checkpoint) {
 
 function disposeVAEModel() {
   if (music_vae) {
+    console.log("Disposing MusicVAE Model");
     music_vae.dispose();
     instrumentConfig['currentModel'] = '';
   }

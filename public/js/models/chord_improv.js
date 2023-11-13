@@ -85,7 +85,8 @@ async function generateChordSequence() {
   initialSeq.totalQuantizedSteps = STEPS_PER_PROG * NUM_REPS;
 
   if (initialSeq) {
-    playGeneratedSequenceDefault(initialSeq);
+    //playGeneratedSequenceDefault(initialSeq);
+    playGeneratedSequenceSoundFont(initialSeq, false);
     generatedSequence = initialSeq;
     //playGeneratedSequenceSoundFont(initialSeq, false);
     // Display replay-button and download link

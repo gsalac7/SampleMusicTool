@@ -4,13 +4,14 @@ import { toggleLoop, updateSequencer } from './drumManager';
 import { replayMusicRNNSequence, exportMusicRNNSequence, initializeRNNModel, generateMusicRNNSequence, setSeedSequence, readMidi, disposeRNNModel } from '../models/music_rnn';
 import { initializeMusicVaeModel, generateMusicVAESequence, replayMusicVAESequence, exportMusicVAESequence, disposeVAEModel } from '../models/music_vae';
 import { initializeChordModel, generateChordSequence, replayChordSequence, exportChordSequence, disposeChordModel } from '../models/chord_improv';
-import { initializeMultiTrackModel, generateMultiTrackSequence, replayMultiTrackSequence, exportMultiTrackSequence, disposeMultiTrackModel} from '../models/multitrack';
+import { initializeMultiTrackModel, generateMultiTrackSequence, replayMultiTrackSequence, exportMultiTrackSequence, disposeMultiTrackModel } from '../models/multitrack';
 import { initializeArpModel, generateArpSequence, disposeArpModel, replayArpSequence, exportArpSequence } from '../models/arp_rnn';
 import { initializeMarkovModel, playGenerativeSequence, replayGenerativeSequence, exportGenerativeSequence } from '../models/generative';
+import { initializeGroovaeModel, generateGroovaeSequence, replayGroovaeSequence, exportGroovaeSequence, disposeGroovaeModel, } from '../models/groovae';
 import checkpoints from './configs/checkpoints.json';
 import { instrumentConfig } from './configs/instrumentConfig';
 
-let currentModel = instrumentConfig['currentModel']; 
+let currentModel = instrumentConfig['currentModel'];
 let checkpoint = instrumentConfig['checkpoint'];
 
 export function initializeControls() {
@@ -57,7 +58,7 @@ const modelConfig = {
         generateCallback: generateArpSequence,
         replayCallback: replayArpSequence,
         exportCallback: exportArpSequence,
-        disposeCallback:  disposeArpModel,
+        disposeCallback: disposeArpModel,
         logMessage: "Initializing Arp RNN Model",
     },
     ChordImprov: {
@@ -65,7 +66,7 @@ const modelConfig = {
         generateCallback: generateChordSequence,
         replayCallback: replayChordSequence,
         exportCallback: exportChordSequence,
-        disposeCallback:  disposeChordModel,
+        disposeCallback: disposeChordModel,
         logMessage: "Initializing Chord Improv Model",
     },
     MultiTrack: {
@@ -73,26 +74,34 @@ const modelConfig = {
         generateCallback: generateMultiTrackSequence,
         replayCallback: replayMultiTrackSequence,
         exportCallback: exportMultiTrackSequence,
-        disposeCallback:  disposeMultiTrackModel,
+        disposeCallback: disposeMultiTrackModel,
         logMessage: "Initializing MultiTrack Model",
+    },
+    Groovae: {
+        initCallback: initializeGroovaeModel,
+        generateCallback: generateGroovaeSequence,
+        replayCallback: replayGroovaeSequence,
+        exportCallback: exportGroovaeSequence,
+        disposeCallback: disposeGroovaeModel,
+        logMessage: "Initializing Groovae Model",
+
     },
     MarkovChain: {
         initCallback: initializeMarkovModel,
         generateCallback: playGenerativeSequence,
         replayCallback: replayGenerativeSequence,
         exportCallback: exportGenerativeSequence,
-        disposeCallback:  () => {},
+        disposeCallback: () => { },
         logMessage: "Initializing Markov Chain",
-
     }
 }
 
 function initModelControl() {
     const buttons = document.querySelectorAll('.model-btn');
     const checkpointDropdown = document.getElementById('checkpoint-select'); // Get the checkpoint dropdown
-    
+
     // Control Panel will store this value
-    checkpointDropdown.addEventListener('change', ()=> {
+    checkpointDropdown.addEventListener('change', () => {
         const selectedValue = checkpointDropdown.value;
         checkpoint = selectedValue;
         instrumentConfig['checkpoint'] = checkpoint;
@@ -101,26 +110,26 @@ function initModelControl() {
 
 
 function showLoader() {
-  document.getElementById('loader').style.display = 'flex';
+    document.getElementById('loader').style.display = 'flex';
 }
 
 export function hideLoader() {
-  document.getElementById('loader').style.display = 'none';
+    document.getElementById('loader').style.display = 'none';
 }
 
 
 export function showNotification(message) {
-  const notificationBanner = document.getElementById('notificationBanner');
-  const notificationMessage = document.getElementById('notificationMessage');
-  
-  notificationMessage.textContent = message;
-  notificationBanner.style.display = 'block'; // Make sure this is 'block' or 'flex' as per your CSS
-  notificationBanner.classList.add('show');
-  
-  // Automatically hide the notification after 3 seconds
-  setTimeout(() => {
-    notificationBanner.classList.remove('show');
-  }, 3000);
+    const notificationBanner = document.getElementById('notificationBanner');
+    const notificationMessage = document.getElementById('notificationMessage');
+
+    notificationMessage.textContent = message;
+    notificationBanner.style.display = 'block'; // Make sure this is 'block' or 'flex' as per your CSS
+    notificationBanner.classList.add('show');
+
+    // Automatically hide the notification after 3 seconds
+    setTimeout(() => {
+        notificationBanner.classList.remove('show');
+    }, 3000);
 }
 
 function initializationButtonListener() {
@@ -143,14 +152,16 @@ function initializationButtonListener() {
         let newModel;
         if (checkpoint.includes("Drum Pattern Expander") || checkpoint.includes("Melody Extender")) {
             newModel = "MusicRNN";
-        } else if (checkpoint.includes("Arpeggio Assistant")){
+        } else if (checkpoint.includes("Arpeggio Assistant")) {
             newModel = "ArpRNN";
         } else if (checkpoint.includes("Chord Melody Mixer")) {
             newModel = "ChordImprov";
         } else if (checkpoint.includes("Chord-Based Multi-Instrumentalist")) {
             newModel = "MultiTrack";
-        } else if (checkpoint.includes("Generative")){
+        } else if (checkpoint.includes("Generative")) {
             newModel = "MarkovChain";
+        } else if (checkpoint.includes("Groove")) {
+            newModel = "Groovae";
         } else {
             newModel = "MusicVAE";
         }
@@ -176,12 +187,22 @@ function initializationButtonListener() {
         }
         // Unhide the proper controls for the specific model
         if (newModel == "MusicRNN") {
-            document.getElementById('seed-selector').style.display = 'block';
-            document.getElementById('Arp-Chord-Selector').style.display = 'none';
-            // Set Event Listener for seed-selector
-        } else if (newModel == "ArpRNN") {
+            // display Seed Selector choices and hide other options
             document.getElementById('seed-selector').style.display = 'none';
+            document.getElementById('sample-selector').style.display = 'block';
+            document.getElementById('Arp-Chord-Selector').style.display = 'none';
+            document.getElementById('Chord-Melody-Selector').style.display = 'none';
+        } else if (newModel == "Groovae") {
+            document.getElementById('seed-selector').style.display = 'none';
+            document.getElementById('sample-selector').style.display = 'block';
+            document.getElementById('Arp-Chord-Selector').style.display = 'none';
+            document.getElementById('Chord-Melody-Selector').style.display = 'none';
+        }
+        else if (newModel == "ArpRNN") {
+            document.getElementById('seed-selector').style.display = 'none';
+            document.getElementById('sample-selector').style.display = 'none';
             document.getElementById('Arp-Chord-Selector').style.display = 'block';
+            document.getElementById('Chord-Melody-Selector').style.display = 'none';
             // set Event listener for arp-chord-selector
             const arpField = document.getElementById('chordInput');
             if (arpField) {
@@ -194,6 +215,7 @@ function initializationButtonListener() {
             }
         } else if (newModel == "ChordImprov" || newModel == "MultiTrack") {
             document.getElementById('seed-selector').style.display = 'none';
+            document.getElementById('sample-selector').style.display = 'none';
             document.getElementById('Arp-Chord-Selector').style.display = 'none';
             document.getElementById('Chord-Melody-Selector').style.display = 'block';
             // set Event listener for arp-chord-selector
@@ -263,9 +285,18 @@ function initSeedSequencer() {
     document.getElementById('midiFile').addEventListener('change', (event) => {
         const file = event.target.files[0];
         if (file) {
+            document.getElementById('clear-midi').style.display = 'inline';
             document.getElementById('midi-filename').innerText = file.name;
             readMidi(file);
         }
+    });
+    document.getElementById('clear-midi').addEventListener('click', function () {
+        // Clear the file input
+        document.getElementById('midiFile').value = '';
+        document.getElementById('midi-filename').textContent = '';
+
+        // Hide the "X" button
+        this.style.display = 'none';
     });
 }
 
@@ -302,7 +333,7 @@ function initCheckpointSelector() {
     });
 
     // Event listener to show the description when a checkpoint is selected
-    selectElement.addEventListener('change', function() {
+    selectElement.addEventListener('change', function () {
         const selectedOption = this.options[this.selectedIndex];
         descriptionElement.textContent = selectedOption.dataset.description;
     });

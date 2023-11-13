@@ -1,6 +1,6 @@
 import { playGeneratedSequenceSoundFont, playGeneratedSequenceDefault } from './visualizer';
-import { instrumentConfig } from '../util/configs/instrumentConfig';
 import { hideLoader, showNotification } from '../util/controlsManager';
+import * as mm from '@magenta/music';
 
 const melodyChain = {
     69: { 69: 0.3, 71: 0.25, 72: 0.25, 74: 0.15, 76: 0.05 }, // A
@@ -13,7 +13,6 @@ const melodyChain = {
     77: { 76: 0.2, 77: 0.4, 79: 0.3, 71: 0.1 }, // F
     79: { 77: 0.25, 79: 0.4, 71: 0.2, 72: 0.15 }  // G
 };
-
 
 
 let generatedSequence;
@@ -77,6 +76,9 @@ function playGenerativeSequence() {
     // Assuming playGeneratedSequenceDefault and playGeneratedSequenceSoundFont are defined elsewhere
     // playGeneratedSequenceDefault(generatedSequence);
     playGeneratedSequenceSoundFont(generatedSequence, false); // should no longer be normalized
+       // display replay-button and download link
+    document.getElementById('replay-button').style.display = 'inline-block';
+    document.getElementById('download-link').style.display = 'inline-block';
 }
 
 // Function to choose the next pitch based on the current pitch and a Markov chain
@@ -96,11 +98,7 @@ function chooseNextPitch(currentPitch, chain) {
 }
 
 function replayGenerativeSequence() {
-    if (player == "default") {
-        playGeneratedSequenceDefault(generatedSequence)
-    } else {
-        playGeneratedSequenceSoundFont(generatedSequence, false) // should no longer be normalized
-    }
+    playGeneratedSequenceSoundFont(generatedSequence, false) // should no longer be normalized
 }
 
 async function exportGenerativeSequence() {

@@ -53,7 +53,7 @@ function normalizeSequence(sequence, shouldNormalize = true) {
 }
 
 function playGeneratedSequenceSoundFont(generatedSequence, shouldNormalize = true) {
-    console.log(generatedSequence);
+    console.log("PLaying using soundfont");
     initializeVisualizerSoundFont();
     player.setTempo(BPM);
     generatedSequence.notes.forEach(note => {
