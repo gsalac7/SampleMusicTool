@@ -36,6 +36,7 @@ function disposeVAEModel() {
 async function generateMusicVAESequence() {
   let temperature = instrumentConfig['temperature'];
   generatedSequence = await music_vae.sample(1, temperature);
+  console.log("Generated Sequence: " + JSON.stringify(generatedSequence, null, 2));
 
   if (generatedSequence) {
     if (player == "soundfont") {

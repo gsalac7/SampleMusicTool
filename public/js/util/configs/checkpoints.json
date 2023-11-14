@@ -47,9 +47,27 @@
         "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/multitrack_med_chords_fb256",
         "size_mb": 96.9
     },
+    "Groove Enhancer (1-Bar)": {
+        "model": "MusicVAE",
+        "description": "Add groove to your 1-bar melodic patterns. Infuse your music with a special groove.",
+        "url": "https://storage.googleapis.com/magentadata/js/checkpoints/groovae/tap2drum_4bar",
+        "size_mb": 15.8
+    },
+    "Groove Enhancer (2-Bar)": {
+        "model": "MusicVAE",
+        "description": "Add groove to your 4-bar melodic patterns. Infuse your music with a special groove.",
+        "url": "https://storage.googleapis.com/magentadata/js/checkpoints/groovae/tap2drum_4bar",
+        "size_mb": 15.8
+    },
+    "Groove Enhancer (3-Bar)": {
+        "model": "MusicVAE",
+        "description": "Add groove to your 4-bar melodic patterns. Infuse your music with a special groove.",
+        "url": "https://storage.googleapis.com/magentadata/js/checkpoints/groovae/tap2drum_4bar",
+        "size_mb": 15.8
+    },
     "Groove Enhancer (4-Bar)": {
         "model": "MusicVAE",
-        "description": "Add groove to your 4-bar drum patterns. Infuse your music with a special groove.",
+        "description": "Add groove to your 4-bar melodic patterns. Infuse your music with a special groove.",
         "url": "https://storage.googleapis.com/magentadata/js/checkpoints/groovae/tap2drum_4bar",
         "size_mb": 15.8
     },

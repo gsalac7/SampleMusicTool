@@ -8,6 +8,7 @@ export const instrumentConfig = {
     checkpoint: "",
     arpChord: "",
     chordMelodySeq: "",
+    seedSequence: "",
     soundFontUrl: "../SampleMusicTool/public/sounds/soundfont",
     soundFontData: {
         "name": "sgm_plus",

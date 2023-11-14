@@ -60,7 +60,7 @@
       </div>
 
 
-      <!-- Seed Selector -->
+      <!-- Seed Selector For use of Melody Extender-->
       <div id="seed-selector" style="display:none">
         <label for="seed-select">Seed Sequence:</label>
         <select id="seed-select">
@@ -71,19 +71,17 @@
           <option value="maryHadALittleLamb">Mary Had a Little Lamb</option>
           <option value="fourChordProgression">Four Chord Progression</option>
         </select>
-
-        <!-- Upload MIDI as Seed Sequence -->
+        <!-- Upload MIDI as Sample Sequence -->
         <div id="midi-upload">
-          <label for="midiFile">Or upload your own MIDI to use:</label>
-          <input type="file" id="midiFile" accept=".midi, .mid">
-          <span id="midi-filename"></span>
-          <button type="button" id="clear-midi" style="display: none;">X</button>
+          <label for="midiSeedFile">Or upload your own MIDI to use as a seed:</label>
+          <input type="file" id="midiSeedFile" accept=".midi, .mid">
+          <span id="midiSeed-filename"></span>
         </div>
       </div>
 
-      <!-- Sample Selector -->
+      <!-- Sample Selector for use of Groovae-->
       <div id="sample-selector" style="display:none">
-        <label for="seed-select">Seed Sequence:</label>
+        <label for="seed-select">Sample Sequence:</label>
         <select id="seed-select">
           <option value="majorScaleUp">Major Scale</option>
           <option value="maryHadALittleLamb">Mary Had a Little Lamb</option>
@@ -91,10 +89,9 @@
         </select>
         <!-- Upload MIDI as Sample Sequence -->
         <div id="midi-upload">
-          <label for="midiFile">Or upload your own MIDI to use:</label>
-          <input type="file" id="midiFile" accept=".midi, .mid">
-          <span id="midi-filename"></span>
-          <button type="button" id="clear-midi" style="display: none;">X</button>
+          <label for="midiSampleFile">Or upload your own MIDI to use:</label>
+          <input type="file" id="midiSampleFile" accept=".midi, .mid">
+          <span id="midiSample-filename"></span>
         </div>
       </div>
 
@@ -113,7 +110,7 @@
         <input type="text" id="chordInput4" placeholder="e.g., C">
       </div>
 
-      <div id="Model-Controls" style="display:none">
+      <div id="Model-Controls">
         <!-- Temperature Slider -->
         <div id="temp-slider-container">
           <label>Temperature: </label>

@@ -26,14 +26,13 @@ async function generateMusicRNNSequence() {
     let length = instrumentConfig['length']; 
     let steps = instrumentConfig['stepsPerQuarter']; 
     let temperature = instrumentConfig['temperature'];
-    seedSequence = seedSequences['majorScaleUp'];
     // Normalize the Tempo
     seedSequence.tempos.forEach((tempo) => {
         tempo.qpm = 120; // Set to your desired tempo
     });
 
 
-    console.log("Generated sequence with Temperature: " + temperature + " and Length: " + length + " and Steps: " + steps);
+    console.log("Seed Sequence; " + JSON.stringify(seedSequence, null, 2));
 
     const quantizedSeq = mm.sequences.quantizeNoteSequence(seedSequence, steps);
     generatedSequence = await rnnModel.continueSequence(quantizedSeq, length, temperature);
@@ -50,7 +49,7 @@ function replayMusicRNNSequence() {
     playGeneratedSequenceSoundFont(generatedSequence, false);
 }
 
-function readMidi(file) {
+function readSeedMidi(file) {
     if (file) {
         const reader = new FileReader();
         reader.onload = async (event) => {
@@ -59,6 +58,7 @@ function readMidi(file) {
             const noteSequence = await mm.midiToSequenceProto(midi);
             // Use noteSequence as your seed
             seedSequence = noteSequence;
+            console.log("Setting this as seedSequence: " + seedSequence)
         };
         reader.readAsArrayBuffer(file);
     }
@@ -94,7 +94,7 @@ export {
     initializeRNNModel,
     generateMusicRNNSequence,
     setSeedSequence,
-    readMidi,
+    readSeedMidi,
     exportMusicRNNSequence,
     replayMusicRNNSequence
 };

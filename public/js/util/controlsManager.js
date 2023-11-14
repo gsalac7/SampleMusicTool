@@ -1,13 +1,13 @@
 import * as Nexus from 'nexusui';
 import { toggleRecording, exportMIDI } from './recordingManager';
 import { toggleLoop, updateSequencer } from './drumManager';
-import { replayMusicRNNSequence, exportMusicRNNSequence, initializeRNNModel, generateMusicRNNSequence, setSeedSequence, readMidi, disposeRNNModel } from '../models/music_rnn';
+import { replayMusicRNNSequence, exportMusicRNNSequence, initializeRNNModel, generateMusicRNNSequence, setSeedSequence, readSeedMidi, disposeRNNModel } from '../models/music_rnn';
 import { initializeMusicVaeModel, generateMusicVAESequence, replayMusicVAESequence, exportMusicVAESequence, disposeVAEModel } from '../models/music_vae';
 import { initializeChordModel, generateChordSequence, replayChordSequence, exportChordSequence, disposeChordModel } from '../models/chord_improv';
 import { initializeMultiTrackModel, generateMultiTrackSequence, replayMultiTrackSequence, exportMultiTrackSequence, disposeMultiTrackModel } from '../models/multitrack';
 import { initializeArpModel, generateArpSequence, disposeArpModel, replayArpSequence, exportArpSequence } from '../models/arp_rnn';
 import { initializeMarkovModel, playGenerativeSequence, replayGenerativeSequence, exportGenerativeSequence } from '../models/generative';
-import { initializeGroovaeModel, generateGroovaeSequence, replayGroovaeSequence, exportGroovaeSequence, disposeGroovaeModel, } from '../models/groovae';
+import { initializeGroovaeModel, generateGroovaeSequence, replayGroovaeSequence, exportGroovaeSequence, disposeGroovaeModel, readSampleMidi} from '../models/groovae';
 import checkpoints from './configs/checkpoints.json';
 import { instrumentConfig } from './configs/instrumentConfig';
 
@@ -32,6 +32,7 @@ export function initializeControls() {
     initLengthField();
     initCheckpointSelector();
     initSeedSequencer();
+    initSampleSequencer();
     initModelControl();
     initializationButtonListener();
 }
@@ -188,13 +189,19 @@ function initializationButtonListener() {
         // Unhide the proper controls for the specific model
         if (newModel == "MusicRNN") {
             // display Seed Selector choices and hide other options
-            document.getElementById('seed-selector').style.display = 'none';
-            document.getElementById('sample-selector').style.display = 'block';
+            document.getElementById('seed-selector').style.display = 'block';
+            document.getElementById('sample-selector').style.display = 'none';
             document.getElementById('Arp-Chord-Selector').style.display = 'none';
             document.getElementById('Chord-Melody-Selector').style.display = 'none';
         } else if (newModel == "Groovae") {
-            document.getElementById('seed-selector').style.display = 'none';
+            document.getElementById('sample-selector').style.display = 'none';
             document.getElementById('sample-selector').style.display = 'block';
+            document.getElementById('Arp-Chord-Selector').style.display = 'none';
+            document.getElementById('Chord-Melody-Selector').style.display = 'none';
+        }
+        else if (newModel == "MusicVae") {
+            document.getElementById('seed-selector').style.display = 'none';
+            document.getElementById('sample-selector').style.display = 'none';
             document.getElementById('Arp-Chord-Selector').style.display = 'none';
             document.getElementById('Chord-Melody-Selector').style.display = 'none';
         }
@@ -272,6 +279,7 @@ function initStepsSelector() {
     }
 }
 
+
 function initSeedSequencer() {
     const dropdown = document.getElementById('seed-select');
     if (dropdown) {
@@ -282,21 +290,31 @@ function initSeedSequencer() {
     } else {
         console.error('Dropdown not found');
     }
-    document.getElementById('midiFile').addEventListener('change', (event) => {
+    document.getElementById('midiSeedFile').addEventListener('change', (event) => {
         const file = event.target.files[0];
         if (file) {
-            document.getElementById('clear-midi').style.display = 'inline';
-            document.getElementById('midi-filename').innerText = file.name;
-            readMidi(file);
+            document.getElementById('midiSeed-filename').innerText = file.name;
+            readSeedMidi(file);
         }
     });
-    document.getElementById('clear-midi').addEventListener('click', function () {
-        // Clear the file input
-        document.getElementById('midiFile').value = '';
-        document.getElementById('midi-filename').textContent = '';
+}
 
-        // Hide the "X" button
-        this.style.display = 'none';
+function initSampleSequencer() {
+    const dropdown = document.getElementById('sample-select');
+    if (dropdown) {
+        dropdown.addEventListener('change', function () {
+            const selectedValue = this.value;
+            setSeedSequence(selectedValue);
+        });
+    } else {
+        console.error('Dropdown not found');
+    }
+    document.getElementById('midiSampleFile').addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            document.getElementById('midiSample-filename').innerText = file.name;
+            readSampleMidi(file);
+        }
     });
 }
 
