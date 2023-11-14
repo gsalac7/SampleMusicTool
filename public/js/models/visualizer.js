@@ -77,7 +77,12 @@ function playGeneratedSequenceSoundFont(generatedSequence, shouldNormalize = tru
     if (shouldNormalize) {
         normalizeSequence(generatedSequence);
     } else {
-        setActiveInstrumentNumber();
+        let num = setActiveInstrumentNumber();
+
+        generatedSequence.notes.forEach(note => {
+            note.program = num;  // Set to the desired instrument index
+            note.velocity = 127; // set the velocity for everything to 127; max volume
+        });
     }
     // Start the player
     player.start(generatedSequence);

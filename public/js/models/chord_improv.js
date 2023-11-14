@@ -73,7 +73,7 @@ async function generateChordSequence() {
       // Add the bass note for the current chord
       initialSeq.notes.push({
         instrument: 1,
-        program: 32,
+        //program: 32,
         pitch: 36 + roots[j], // Add the correct bass note for the chord
         quantizedStartStep: startStep,
         quantizedEndStep: endStep
@@ -134,7 +134,8 @@ async function exportChordSequence() {
 }
 
 function replayChordSequence() {
-  playGeneratedSequenceDefault(generatedSequence);
+  //playGeneratedSequenceDefault(generatedSequence);
+  playGeneratedSequenceSoundFont(generatedSequence, false);
 }
 
 function disposeChordModel() {
