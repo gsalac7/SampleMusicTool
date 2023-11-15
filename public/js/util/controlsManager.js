@@ -193,11 +193,14 @@ function initializationButtonListener() {
             document.getElementById('sample-selector').style.display = 'none';
             document.getElementById('Arp-Chord-Selector').style.display = 'none';
             document.getElementById('Chord-Melody-Selector').style.display = 'none';
+            document.getElementById('Arp-Controls').style.display = 'none';
+            document.getElementById('Extender-Controls').style.display = 'block';
         } else if (newModel == "Groovae") {
             document.getElementById('sample-selector').style.display = 'none';
             document.getElementById('sample-selector').style.display = 'block';
             document.getElementById('Arp-Chord-Selector').style.display = 'none';
             document.getElementById('Chord-Melody-Selector').style.display = 'none';
+            document.getElementById('Arp-Controls').style.display = 'none';
         }
         else if (newModel == "MusicVae") {
             document.getElementById('seed-selector').style.display = 'none';
@@ -210,6 +213,7 @@ function initializationButtonListener() {
             document.getElementById('sample-selector').style.display = 'none';
             document.getElementById('Arp-Chord-Selector').style.display = 'block';
             document.getElementById('Chord-Melody-Selector').style.display = 'none';
+            document.getElementById('Arp-Controls').style.display = 'block';
             // set Event listener for arp-chord-selector
             const arpField = document.getElementById('chordInput');
             if (arpField) {
@@ -220,11 +224,30 @@ function initializationButtonListener() {
             } else {
                 console.error('Arp Chord select field not found');
             }
+            const numBars = document.getElementById('bar-select');
+            if (numBars) {
+                numBars.addEventListener('change', function () {
+                    const selectedValue = this.value;
+                    instrumentConfig['numBars'] = selectedValue;
+                });
+            } else {
+                console.error('NumBars select field not found');
+            }
+            const stepsPerQuarter= document.getElementById('steps-select');
+            if (stepsPerQuarter) {
+                arpField.addEventListener('change', function () {
+                    const selectedValue = this.value;
+                    instrumentConfig['stepsPerQuarter'] = selectedValue;
+                });
+            } else {
+                console.error('Steps Per Quarter select field not found');
+            }
         } else if (newModel == "ChordImprov" || newModel == "MultiTrack") {
             document.getElementById('seed-selector').style.display = 'none';
             document.getElementById('sample-selector').style.display = 'none';
             document.getElementById('Arp-Chord-Selector').style.display = 'none';
             document.getElementById('Chord-Melody-Selector').style.display = 'block';
+            document.getElementById('Arp-Controls').style.display = 'none';
             // set Event listener for arp-chord-selector
             const chordField = document.getElementById('chordInput');
             if (chordField) {

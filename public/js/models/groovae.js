@@ -76,15 +76,13 @@ function readSampleMidi(file) {
 async function exportGroovaeSequence() {
     console.log("Exporting Groovae Sequence0");
     const sequence = mm.NoteSequence.create(generatedSequence);
+
     // Specify the number of steps per quarter note for quantization
     const STEPS_PER_QUARTER = 16;
     const quantizedSequence = mm.sequences.quantizeNoteSequence(generatedSequence[0], STEPS_PER_QUARTER);
     console.log(quantizedSequence);
-
     const midiBytes = mm.sequenceProtoToMidi(quantizedSequence);
-    console.log("Exporting Groovae Sequence0");
     const midiBlob = new Blob([new Uint8Array(midiBytes)], { type: 'audio/midi' });
-    console.log("Exporting Groovae Sequence1");
 
     // Create a download link and append it to the document
     const downloadLink = document.createElement('a');

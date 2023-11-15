@@ -9,6 +9,7 @@ export const instrumentConfig = {
     arpChord: "",
     chordMelodySeq: "",
     seedSequence: "",
+    numBars: "",
     soundFontUrl: "../SampleMusicTool/public/sounds/soundfont",
     soundFontData: {
         "name": "sgm_plus",

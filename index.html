@@ -45,7 +45,7 @@
 
       <div id="checkpoint-group">
         <div id="checkpoint-selector">
-          <label for="checkpoint-select">Checkpoints:</label>
+          <label for="checkpoint-select">Models:</label>
           <select id="checkpoint-select">
             <option value="checkpoint1" data-description="Description for checkpoint 1"></option>
             <!-- Add more options as necessary -->
@@ -109,6 +109,47 @@
         <input type="text" id="chordInput3" placeholder="e.g., C">
         <input type="text" id="chordInput4" placeholder="e.g., C">
       </div>
+ <!-- Specific Controls for the Melody Extender-->
+      <div id="Extender-Controls" style="display:none">
+        <!-- Length Input -->
+        <div id="length-selector">
+        </div>
+        <!-- Steps per Quarter Dropdown -->
+        <div id="steps-melody-selector">
+          <label for="steps-melody-select">Steps per Quarter:</label>
+          <select id="steps-melody-select">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="4">4</option>
+            <option value="8">8</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Specific Controls for the Arpeggiator-->
+      <div id="Arp-Controls" style="display:none">
+        <!-- Length Input -->
+        <div id="bar-selector">
+          <label for="bar-select">Num of Bars:</label>
+          <select id="bar-select">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="4">3</option>
+            <option value="8">4</option>
+          </select>
+        </div>
+        <!-- Steps per Quarter Dropdown -->
+        <div id="steps-selector">
+          <label for="steps-select">Steps per Quarter:</label>
+          <select id="steps-select">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="4">4</option>
+            <option value="8">8</option>
+          </select>
+        </div>
+      </div>
+
 
       <div id="Model-Controls">
         <!-- Temperature Slider -->
@@ -122,24 +163,6 @@
           <label>BPM: </label>
           <span id="bpm-value">120</span>
           <div id="bpm-slider"></div>
-        </div>
-      </div>
-
-      <div id="Extender-Controls" style="display:none">
-        <!-- Length Input -->
-        <div id="length-input-container">
-          <label for="length-input">Length:</label>
-          <input type="number" id="length-input" min="1" placeholder="Enter length" value="50">
-        </div>
-        <!-- Steps per Quarter Dropdown -->
-        <div id="steps-selector">
-          <label for="steps-select">Steps per Quarter:</label>
-          <select id="steps-select">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="4">4</option>
-            <option value="8">8</option>
-          </select>
         </div>
       </div>
 

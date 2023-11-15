@@ -20,29 +20,35 @@ function initializeArpModel(checkpoint) {
   });
 }
 
+
 async function generateArpSequence() {
   let temperature = instrumentConfig['temperature'];
   let chord = instrumentConfig['arpChord'];
-  let note = noteToPitch(chord);
+  let barLength = instrumentConfig['numBars'] 
+  let stepsPerQuarter = instrumentConfig['stepsPerQuarter']; // 1 step per quarter note
 
-  const quantizedSeq= {
-    quantizationInfo: { stepsPerQuarter: 4 },
-    notes: [{pitch: note, quantizedStartStep: 0, quantizedEndStep: 1}],
-    totalQuantizedSteps: 1
+  const stepsPerBar = 16; // 4 beats per bar, 4 steps per beat
+  const totalSteps = stepsPerBar * barLength; // Total steps based on the number of bars
+
+  const quantizedSeq = {
+    quantizationInfo: { stepsPerQuarter: stepsPerQuarter },
+    notes: [],
+    totalQuantizedSteps: totalSteps
   };
 
-  generatedSequence = await rnnModel.continueSequence(quantizedSeq, 20, temperature, [chord]);
-  let normalizedSequence= extendSequence(generatedSequence, chord);
+  // Generate sequence for the specified number of bars
+  // The length parameter in continueSequence should be set to the total steps needed
+  generatedSequence = await rnnModel.continueSequence(quantizedSeq, totalSteps, temperature, [chord]);
+  //let normalizedSequence = extendSequence(generatedSequence, chord);
+
 
   if (generatedSequence) {
-    // Normalize to an arpeggiated sequence
-    console.log(normalizedSequence)
-    playGeneratedSequenceSoundFont(normalizedSequence, false);
-    // display replay-button and download link
+    playGeneratedSequenceSoundFont(generatedSequence, false);
     document.getElementById('replay-button').style.display = 'inline-block';
     document.getElementById('download-link').style.display = 'inline-block';
   }
 }
+
 
 function noteToPitch(note, octave = 4) {
   const noteMap = {

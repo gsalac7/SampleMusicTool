@@ -50,19 +50,19 @@
     "Groove Enhancer (1-Bar)": {
         "model": "MusicVAE",
         "description": "Add groove to your 1-bar melodic patterns. Infuse your music with a special groove.",
-        "url": "https://storage.googleapis.com/magentadata/js/checkpoints/groovae/tap2drum_4bar",
+        "url": "https://storage.googleapis.com/magentadata/js/checkpoints/groovae/tap2drum_1bar",
         "size_mb": 15.8
     },
     "Groove Enhancer (2-Bar)": {
         "model": "MusicVAE",
         "description": "Add groove to your 4-bar melodic patterns. Infuse your music with a special groove.",
-        "url": "https://storage.googleapis.com/magentadata/js/checkpoints/groovae/tap2drum_4bar",
+        "url": "https://storage.googleapis.com/magentadata/js/checkpoints/groovae/tap2drum_2bar",
         "size_mb": 15.8
     },
     "Groove Enhancer (3-Bar)": {
         "model": "MusicVAE",
         "description": "Add groove to your 4-bar melodic patterns. Infuse your music with a special groove.",
-        "url": "https://storage.googleapis.com/magentadata/js/checkpoints/groovae/tap2drum_4bar",
+        "url": "https://storage.googleapis.com/magentadata/js/checkpoints/groovae/tap2drum_3bar",
         "size_mb": 15.8
     },
     "Groove Enhancer (4-Bar)": {
