@@ -26,16 +26,17 @@ async function generateArpSequence() {
   let chord = instrumentConfig['arpChord'];
   let barLength = instrumentConfig['numBars'] 
   let stepsPerQuarter = instrumentConfig['stepsPerQuarter']; // 1 step per quarter note
-
-  const stepsPerBar = 16; // 4 beats per bar, 4 steps per beat
+  console.log(instrumentConfig)
+  const stepsPerBar = 4 * stepsPerQuarter; 
   const totalSteps = stepsPerBar * barLength; // Total steps based on the number of bars
 
   const quantizedSeq = {
     quantizationInfo: { stepsPerQuarter: stepsPerQuarter },
     notes: [],
-    totalQuantizedSteps: totalSteps
+    totalQuantizedSteps: 1
   };
 
+  console.log("quantizedSeq: " + JSON.stringify(quantizedSeq, null, 2));
   // Generate sequence for the specified number of bars
   // The length parameter in continueSequence should be set to the total steps needed
   generatedSequence = await rnnModel.continueSequence(quantizedSeq, totalSteps, temperature, [chord]);
@@ -89,7 +90,7 @@ function extendSequence(generatedSequence) {
   let totalSteps = Number(generatedSequence.totalQuantizedSteps);
 
   // Loop to repeat the notes 4 times
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < 2; i++) {
     // Adjust each note's start and end steps and add to extendedNotes
     generatedSequence.notes.forEach(originalNote => {
       let note = {...originalNote};

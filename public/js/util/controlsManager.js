@@ -10,6 +10,7 @@ import { initializeMarkovModel, playGenerativeSequence, replayGenerativeSequence
 import { initializeGroovaeModel, generateGroovaeSequence, replayGroovaeSequence, exportGroovaeSequence, disposeGroovaeModel, readSampleMidi} from '../models/groovae';
 import checkpoints from './configs/checkpoints.json';
 import { instrumentConfig } from './configs/instrumentConfig';
+import {stopPlayer} from '../models/visualizer';
 
 let currentModel = instrumentConfig['currentModel'];
 let checkpoint = instrumentConfig['checkpoint'];
@@ -20,6 +21,7 @@ export function initializeControls() {
         'exportMidi': [exportMIDI, 'Export MIDI button not found'],
         'play-button': [() => toggleLoop(document.getElementById('play-button')), 'Play button not found'],
         'updateSequencer': [updateSequencer, 'Update sequencer button not found'],
+        'stop-button': [stopPlayer, 'Stop button not found'],
     };
 
     for (const [btnId, config] of Object.entries(buttonConfig)) {
@@ -133,6 +135,22 @@ export function showNotification(message) {
     }, 3000);
 }
 
+export function showError(message) {
+    const errorBanner = document.getElementById('errorBanner');
+    const errorMessage = document.getElementById('errorMessage');
+
+    errorMessage.textContent = message; // Set the text content of errorMessage, not errorBanner
+    errorBanner.style.display = 'block'; // Show the error banner
+    errorBanner.classList.add('show');
+
+    // Automatically hide the error notification after 3 seconds
+    setTimeout(() => {
+        errorBanner.classList.remove('show');
+        errorBanner.style.display = 'none'; // Hide the error banner after the timeout
+    }, 3000);
+}
+
+
 function initializationButtonListener() {
     const initModelButton = document.getElementById('init-button');
 
@@ -143,11 +161,11 @@ function initializationButtonListener() {
 
     // Attach click listener to the initialization button
     initModelButton.addEventListener('click', () => {
-        showLoader();
         if (!checkpoint) {
-            alert('Please select a checkpoint');
+            showError('Please select a checkpoint');
             return;
         }
+        showLoader();
 
         // Determine the new model based on the checkpoint
         let newModel;
@@ -228,7 +246,7 @@ function initializationButtonListener() {
             if (numBars) {
                 numBars.addEventListener('change', function () {
                     const selectedValue = this.value;
-                    instrumentConfig['numBars'] = selectedValue;
+                    instrumentConfig['numBars'] = parseInt(selectedValue, 10);
                 });
             } else {
                 console.error('NumBars select field not found');

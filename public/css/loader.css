@@ -43,3 +43,22 @@
   top: 0; /* Slide down to show */
   visibility: visible; /* Make visible */
 }
+
+.error-banner {
+  position: fixed;
+  top: -50px; /* Start off-screen */
+  left: 0;
+  width: 100%;
+  background-color: #b73e2e; /* Green background */
+  color: white;
+  text-align: center;
+  padding: 10px 0;
+  z-index: 1001; /* Above other elements */
+  transition: top 0.5s, visibility 0.5s; /* Smooth slide-down and visibility transition */
+  visibility: hidden; /* Start as hidden */
+}
+
+.error-banner.show {
+  top: 0; /* Slide down to show */
+  visibility: visible; /* Make visible */
+}

@@ -2,27 +2,43 @@ import * as mm from '@magenta/music';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
 
 let visualizer;
-let BPM = instrumentConfig['bpm'];
 const soundFontUrl = instrumentConfig['soundFontUrl'];
 const soundFontData = instrumentConfig['soundFontData'];
-let player;
+let player = null;
 let activeInstrument;
 
 // Use the custom soundfont
 function initializeVisualizerSoundFont() {
-    player = new mm.SoundFontPlayer(soundFontUrl, undefined, undefined, undefined, {
-        run: note => visualizer.redraw(note),
-        stop: () => { }
-    });
+    if (!player) {
+        player = new mm.SoundFontPlayer(soundFontUrl, undefined, undefined, undefined, {
+            run: note => visualizer.redraw(note),
+            stop: () => { }
+        });
+    } else {
+        if (player.isPlaying()) {
+            player.stop();
+        }
+    }
 }
 
 // USe the default instruments 
 function initializeVisualizerDefault() {
-    player = new mm.Player(false, {
-        run: note => visualizer.redraw(note),
-        stop: () => { }
+    if (!player) {
+        player = new mm.Player(false, {
+            run: note => visualizer.redraw(note),
+            stop: () => { }
+        });
+    } else {
+        if (player.isPlaying()) {
+            player.stop();
+        }
+    }
+}
 
-});
+function stopPlayer() {
+    if (player) {
+        player.stop();
+    }
 }
 
 function setInstrument(instrument) {
@@ -53,7 +69,7 @@ function normalizeSequence(sequence, shouldNormalize = true) {
 }
 
 function playGeneratedSequenceSoundFont(generatedSequence, shouldNormalize = true) {
-    console.log("PLaying using soundfont");
+    let BPM = instrumentConfig['bpm'];
     initializeVisualizerSoundFont();
     player.setTempo(BPM);
     generatedSequence.notes.forEach(note => {
@@ -68,11 +84,6 @@ function playGeneratedSequenceSoundFont(generatedSequence, shouldNormalize = tru
     };
 
     visualizer = new mm.PianoRollSVGVisualizer(generatedSequence, document.getElementById('svg-container'), config);
-
-    // Stop player if it's currently playing
-    if (player.isPlaying()) {
-        player.stop();
-    }
 
     if (shouldNormalize) {
         normalizeSequence(generatedSequence);
@@ -92,6 +103,7 @@ function playGeneratedSequenceSoundFont(generatedSequence, shouldNormalize = tru
 function playGeneratedSequenceDefault(generatedSequence) {
     initializeVisualizerDefault();
     console.log(generatedSequence);
+    let BPM = instrumentConfig['bpm'];
     player.setTempo(BPM);
     const config = {
         noteHeight: 10,
@@ -102,9 +114,6 @@ function playGeneratedSequenceDefault(generatedSequence) {
 
     visualizer = new mm.PianoRollSVGVisualizer(generatedSequence, document.getElementById('svg-container'), config);
 
-    if (player.isPlaying()) {
-        player.stop();
-    }
     // Play the sequence and use the callbacks to highlight the notes.
     player.start(generatedSequence);
 }
@@ -127,4 +136,4 @@ function setActiveInstrumentNumber() {
     return null;
 }
 
-export { setInstrument, playGeneratedSequenceSoundFont, playGeneratedSequenceDefault }
+export { setInstrument, playGeneratedSequenceSoundFont, playGeneratedSequenceDefault, stopPlayer}

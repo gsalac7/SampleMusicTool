@@ -30,12 +30,17 @@
       <p id="notificationMessage">Model initialized successfully!</p>
     </div>
 
+    <div id="errorBanner" class="error-banner" style="display: none;">
+      <p id="errorMessage">Model Failed Initialization</p>
+    </div>
+
     <div id="svg-wrapper">
       <svg id="svg-container">
         <!-- Your SVG content here -->
       </svg>
     </div>
 
+    <button id="stop-button">Stop Sequence</button>
     <button id="generateMusic">Generate Music</button>
     <button id="replay-button" style="display: none;">Replay Generated Sequence</button>
     <button id="download-link" style="display: none;">Download Generated Sequence</button>
@@ -47,7 +52,7 @@
         <div id="checkpoint-selector">
           <label for="checkpoint-select">Models:</label>
           <select id="checkpoint-select">
-            <option value="checkpoint1" data-description="Description for checkpoint 1"></option>
+            <option value="" disabled selected>Select a Model to initialize</option>
             <!-- Add more options as necessary -->
           </select>
         </div>
@@ -132,7 +137,7 @@
         <div id="bar-selector">
           <label for="bar-select">Num of Bars:</label>
           <select id="bar-select">
-            <option value="1">1</option>
+            <option value="" disabled selected>Select Number of Bars</option>
             <option value="2">2</option>
             <option value="4">3</option>
             <option value="8">4</option>
@@ -142,10 +147,11 @@
         <div id="steps-selector">
           <label for="steps-select">Steps per Quarter:</label>
           <select id="steps-select">
-            <option value="1">1</option>
+            <option value="" disabled selected>Select Steps per Quarter</option>
             <option value="2">2</option>
             <option value="4">4</option>
             <option value="8">8</option>
+            <option value="16">16</option>
           </select>
         </div>
       </div>
