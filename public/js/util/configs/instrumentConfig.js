@@ -24,7 +24,9 @@ export const instrumentConfig = {
             "7": "acoustic_grand_piano",
             "8": "synth_drum",
             "9": "percussion",
-            "10": "pad_3_polysynth"
+            "10": "pad_3_polysynth",
+            "11": "synthstrings_1",
+            "12": "electric_piano_1"
         }
     }
 }

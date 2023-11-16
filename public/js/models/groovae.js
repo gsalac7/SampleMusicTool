@@ -1,5 +1,5 @@
 import * as mm from '@magenta/music';
-import { playGeneratedSequenceSoundFont, playGeneratedSequenceDefault } from './visualizer';
+import { playGeneratedSequenceSoundFont, clearVisualizer} from './visualizer';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
 import { hideLoader, showNotification } from '../util/controlsManager';
 import { sampleSequences } from './configs/sample_sequences';
@@ -9,6 +9,7 @@ let generatedSequence;
 let seedSequence;
 
 function initializeGroovaeModel(checkpoint) {
+  clearVisualizer();
     instrumentConfig['currentModel'] = "MusicVAE";
     console.log("Checkpooint: " + checkpoint);
     music_vae = new mm.MusicVAE(checkpoint);
@@ -25,6 +26,9 @@ function disposeGroovaeModel() {
     if (music_vae) {
         music_vae.dispose();
         instrumentConfig['currentModel'] = '';
+        generatedSequence = null;
+        document.getElementById('replay-button').style.display = 'none';
+        document.getElementById('download-link').style.display = 'none';
     }
 }
 

@@ -13,7 +13,7 @@
     },
     "Quick Melody Maker (4-Bar)": {
         "model": "MusicVAE",
-        "description": "A medium-sized 4-bar, 90-class onehot melody model.  Trained with a strong prior (low KL divergence), which is better for sampling. Quantized to 2-byte weights.",
+        "description": "Create a 4-bar melody. Ideal for sampling and getting started with making music.",
         "url": "https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_lokl_q2",
         "size_mb": 65.4
     },

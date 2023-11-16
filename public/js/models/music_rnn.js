@@ -1,6 +1,6 @@
 import * as mm from '@magenta/music';
 import { seedSequences } from './configs/seed_sequences';
-import { playGeneratedSequenceSoundFont } from './visualizer';
+import { playGeneratedSequenceSoundFont, clearVisualizer } from './visualizer';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
 import { hideLoader, showNotification } from '../util/controlsManager';
 
@@ -10,6 +10,7 @@ let seedSequence;
 
 // initialize the AI Model
 function initializeRNNModel(checkpoint) {
+  clearVisualizer();
     instrumentConfig['currentModel'] = "MusicRNN";
     rnnModel = new mm.MusicRNN(checkpoint);
     rnnModel.initialize().then(function () {
@@ -67,6 +68,9 @@ function disposeRNNModel() {
     if (rnnModel) {
         rnnModel.dispose();
         instrumentConfig['currentModel'] = '';
+        generatedSequence = null;
+        document.getElementById('replay-button').style.display = 'none';
+        document.getElementById('download-link').style.display = 'none';
     }
 }
 

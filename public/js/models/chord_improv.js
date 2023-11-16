@@ -1,6 +1,6 @@
 import * as mm from '@magenta/music';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
-import { playGeneratedSequenceDefault, playGeneratedSequenceSoundFont } from './visualizer';
+import { clearVisualizer, playGeneratedSequenceSoundFont } from './visualizer';
 import { hideLoader, showNotification } from '../util/controlsManager';
 
 let rnnModel;
@@ -14,6 +14,7 @@ let NUM_REPS = 4;
 
 // initialize the AI Model with chord improv
 function initializeChordModel(checkpoint) {
+  clearVisualizer();
   instrumentConfig['currentModel'] = "chordImprov";
   rnnModel = new mm.MusicRNN(checkpoint);
   rnnModel.initialize().then(function () {
@@ -47,7 +48,7 @@ async function generateChordSequence() {
   };
 
   console.log("Generated sequence with Temperature: " + temperature + " and Length: " + length + " and Steps: " + steps);
-  const genSequence= await rnnModel.continueSequence(initialSeq, length, temperature, chords);
+  const genSequence = await rnnModel.continueSequence(initialSeq, length, temperature, chords);
 
   // Add the continuation to the original sequence
   genSequence.notes.forEach((note) => {
@@ -143,6 +144,9 @@ function disposeChordModel() {
     console.log("Disposing Chord RNN Model");
     rnnModel.dispose();
     instrumentConfig['currentModel'] = ''
+    generatedSequence = null;
+    document.getElementById('replay-button').style.display = 'none';
+    document.getElementById('download-link').style.display = 'none';
   }
 }
 

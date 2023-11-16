@@ -32,6 +32,10 @@ function disposeVAEModel() {
     console.log("Disposing MusicVAE Model");
     music_vae.dispose();
     instrumentConfig['currentModel'] = '';
+    generatedSequence = null;
+    // rehide the replay and download buttons
+    document.getElementById('replay-button').style.display = 'none';
+    document.getElementById('download-link').style.display = 'none';
   }
 }
 

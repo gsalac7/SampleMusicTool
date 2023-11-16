@@ -1,4 +1,4 @@
-import { playGeneratedSequenceSoundFont, playGeneratedSequenceDefault } from './visualizer';
+import { playGeneratedSequenceSoundFont, clearVisualizer} from './visualizer';
 import { hideLoader, showNotification } from '../util/controlsManager';
 import * as mm from '@magenta/music';
 

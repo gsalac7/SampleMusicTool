@@ -23,6 +23,8 @@ const instruments = {
     marimba: new Tone.Sampler(getSample('marimba')).toDestination(),
     acoustic_bass: new Tone.Sampler(getSample('acoustic_bass')).toDestination(),
     distortion_guitar: new Tone.Sampler(getSample('distortion_guitar')).toDestination(),
+    electric_piano_1: new Tone.Sampler(getSample('electric_piano_1')).toDestination(),
+    synthstrings_1: new Tone.Sampler(getSample('synthstrings_1')).toDestination(),
 }
 const maxVolume = 0; // 0 dB is full volume in Tone.js
 let activeInstrument = instruments['acoustic_grand_piano'];

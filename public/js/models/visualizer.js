@@ -41,10 +41,10 @@ function stopPlayer() {
     }
 }
 
-
 function clearVisualizer() {
     if (visualizer) {
         visualizer.clear();
+        visualizer.clearActiveNotes();
     }
 }
 function setInstrument(instrument) {
@@ -135,6 +135,7 @@ function setInstrumentNumber(instrumentName) {
 function setActiveInstrumentNumber() {
     for (const [key, value] of Object.entries(soundFontData.instruments)) {
         if (value === activeInstrument) {
+            console.log("Active Instrument: " + activeInstrument);
             return parseInt(key, 10);  // Also fixed a typo here: parseint -> parseInt
         }
     }

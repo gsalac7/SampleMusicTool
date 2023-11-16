@@ -1,4 +1,5 @@
 import Nexus from 'nexusui';
+import { Midi } from '@tonejs/midi';
 
 const sounds = {
     0: new Audio('./public/sounds/drum-kits/electronic/kick.mp3'),
@@ -107,5 +108,44 @@ function setBPMSequencer(bpm) {
     currentBpm = bpm;
 }
 
+function exportDrumMIDI() {
+    // Create a new MIDI file
+    const midi = new Midi();
+    const track = midi.addTrack();
+    const ticksPerBeat = midi.header.ticksPerBeat;
+    const noteDuration = 60000 / currentBpm / 4;  // Duration of a 16th note at current BPM
 
-export { initializeSequencer, toggleLoop, updateSequencer, setBPMSequencer};
+    // Assuming each row corresponds to a different MIDI note number
+    const rowToMIDINoteMap = [36, 38, 42, 46, 49, 51]; // Adjust based on your setup
+
+    for (let row = 0; row < sequencer.matrix.pattern.length; row++) {
+        for (let column = 0; column < sequencer.matrix.pattern[row].length; column++) {
+            if (sequencer.matrix.pattern[row][column]) {
+                const midiNote = rowToMIDINoteMap[row];
+                const startTime = (column * noteDuration) / 1000; // Start time in seconds
+                const duration = noteDuration / 1000; // Duration in seconds
+
+                track.addNote({
+                    midi: midiNote,
+                    time: startTime,
+                    duration: duration
+                });
+            }
+        }
+    }
+
+    // Convert MIDI to binary and create a Blob
+    const midiBinary = midi.toArray();
+    const blob = new Blob([midiBinary], { type: 'audio/midi' });
+
+    // Create and click a download link
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'sequencer-output.midi';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+
+export { initializeSequencer, toggleLoop, updateSequencer, setBPMSequencer, exportDrumMIDI};

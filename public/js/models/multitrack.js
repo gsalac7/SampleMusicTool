@@ -1,5 +1,5 @@
 import * as mm from '@magenta/music';
-import { playGeneratedSequenceSoundFont, playGeneratedSequenceDefault } from './visualizer';
+import { playGeneratedSequenceSoundFont, clearVisualizer } from './visualizer';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
 import { hideLoader, showNotification } from '../util/controlsManager';
 
@@ -8,7 +8,7 @@ let generatedSequence;
 let player = "soundfont";
 
 function initializeMultiTrackModel(checkpoint) {
-  clearVisualizer();
+    clearVisualizer();
     instrumentConfig['currentModel'] = "MultiTrack";
     music_vae = new mm.MusicVAE(checkpoint);
     music_vae.initialize().then(function () {
@@ -24,6 +24,8 @@ function disposeMultiTrackModel() {
     if (music_vae) {
         music_vae.dispose();
         instrumentConfig['currentModel'] = '';
+        document.getElementById('replay-button').style.display = 'none';
+        document.getElementById('download-link').style.display = 'none';
     }
 }
 
@@ -88,7 +90,7 @@ async function generateMultiTrackSequence() {
     ].filter(chord => chord !== ""); // Filter out empty chords
 
     // Generate the initial sequence based on the first chord
-    let generatedSeq= await music_vae.sample(1, temperature, { chordProgression: [chords[0]] }, 24);
+    let generatedSeq = await music_vae.sample(1, temperature, { chordProgression: [chords[0]] }, 24);
     generatedSequence = generatedSeq[0];
 
     // Ensure fullSequence is initialized with the correct properties for a quantized sequence
@@ -119,7 +121,7 @@ async function generateMultiTrackSequence() {
 
             // Make sure the transposed pitch is within the MIDI range (for non-drum notes)
             if (note.isDrum || (transposedNote.pitch >= 0 && transposedNote.pitch <= 127)) {
-            fullSequence.notes.push(transposedNote);
+                fullSequence.notes.push(transposedNote);
             }
         });
 
@@ -129,11 +131,7 @@ async function generateMultiTrackSequence() {
 
     // Use the full, concatenated sequence for playback
     generatedSequence = fullSequence;
-    if (player === "soundfont") {
-        playGeneratedSequenceSoundFont(generatedSequence)
-    } else {
-        playGeneratedSequenceDefault(generatedSequence);
-    }
+    playGeneratedSequenceSoundFont(generatedSequence)
     // Display replay-button and download link
     document.getElementById('replay-button').style.display = 'inline-block';
     document.getElementById('download-link').style.display = 'inline-block';
@@ -141,11 +139,7 @@ async function generateMultiTrackSequence() {
 
 
 function replayMultiTrackSequence() {
-    if (player == "default") {
-        playGeneratedSequenceDefault(generatedSequence)
-    } else {
-        playGeneratedSequenceSoundFont(generatedSequence, false) // should no longer be normalized
-    }
+    playGeneratedSequenceSoundFont(generatedSequence, false) // should no longer be normalized
 }
 
 async function exportMultiTrackSequence() {

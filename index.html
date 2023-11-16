@@ -176,6 +176,8 @@
           <option value="synth_bass_1">Synth Bass</option>
           <option value="acoustic_guitar_steel">Steel Guitar</option>
           <option value="distortion_guitar">DistortionGuitar</option>
+          <option value="synthstrings_1">Synth Strings</option>
+          <option value="electric_piano_1">Electric Piano</option>
           <option value="marimba">Marimba</option>
           <!-- Add other synth options here -->
         </select>
@@ -185,10 +187,12 @@
       <!-- Generate keys for the piano here -->
     </div>
     <button id="toggleRecording" class="recording-button">Record</button>
+    <button id="exportMidi" class="export-button">Export Recorded Sequence</button>
     <div id="sequencer-container">
       <div id="sequencer"></div>
     </div>
     <button id="play-button">Play</button>
+    <button id="exportDrumMidi" class="export-drum-button">Export Drum Sequence</button>
     <div id="bpmDial"></div>
   </div>
   <script src="./dist/renderer.bundle.js"></script>

@@ -1,6 +1,6 @@
 import * as Nexus from 'nexusui';
 import { toggleRecording, exportMIDI } from './recordingManager';
-import { toggleLoop, updateSequencer } from './drumManager';
+import { toggleLoop, exportDrumMIDI} from './drumManager';
 import { replayMusicRNNSequence, exportMusicRNNSequence, initializeRNNModel, generateMusicRNNSequence, setSeedSequence, readSeedMidi, disposeRNNModel } from '../models/music_rnn';
 import { initializeMusicVaeModel, generateMusicVAESequence, replayMusicVAESequence, exportMusicVAESequence, disposeVAEModel } from '../models/music_vae';
 import { initializeChordModel, generateChordSequence, replayChordSequence, exportChordSequence, disposeChordModel } from '../models/chord_improv';
@@ -19,6 +19,7 @@ export function initializeControls() {
     const buttonConfig = {
         'toggleRecording': [toggleRecording, 'Toggle recording button not found'],
         'exportMidi': [exportMIDI, 'Export MIDI button not found'],
+        'exportDrumMidi': [exportDrumMIDI, 'Export Drum MIDI button not found'],
         'play-button': [() => toggleLoop(document.getElementById('play-button')), 'Play button not found'],
         'stop-button': [stopPlayer, 'Stop button not found'],
     };
@@ -152,7 +153,7 @@ function initializationButtonListener() {
 
         // Determine the new model based on the checkpoint
         let newModel;
-        if (checkpoint.includes("Drum Pattern Expander") || checkpoint.includes("Melody Extender")) {
+        if (checkpoint.includes("Melody Extender")) {
             newModel = "MusicRNN";
         } else if (checkpoint.includes("Arpeggio Assistant")) {
             newModel = "ArpRNN";
@@ -215,18 +216,29 @@ function initializationButtonListener() {
                 console.error('Steps Per Quarter select field not found');
             }
             
-        } else if (newModel == "Groovae") {
-            document.getElementById('sample-selector').style.display = 'none';
-            document.getElementById('sample-selector').style.display = 'block';
-            document.getElementById('Arp-Chord-Selector').style.display = 'none';
-            document.getElementById('Chord-Melody-Selector').style.display = 'none';
-            document.getElementById('Arp-Controls').style.display = 'none';
-        }
-        else if (newModel == "MusicVae") {
+        } else if (newModel == "MarkovChain") {
             document.getElementById('seed-selector').style.display = 'none';
             document.getElementById('sample-selector').style.display = 'none';
             document.getElementById('Arp-Chord-Selector').style.display = 'none';
             document.getElementById('Chord-Melody-Selector').style.display = 'none';
+            document.getElementById('Arp-Controls').style.display = 'none';
+            document.getElementById('Extender-Controls').style.display = 'none';
+            
+        }else if (newModel == "Groovae") {
+            document.getElementById('seed-selector').style.display = 'none';
+            document.getElementById('sample-selector').style.display = 'block';
+            document.getElementById('Arp-Chord-Selector').style.display = 'none';
+            document.getElementById('Chord-Melody-Selector').style.display = 'none';
+            document.getElementById('Arp-Controls').style.display = 'none';
+            document.getElementById('Extender-Controls').style.display = 'none';
+        }
+        else if (newModel == "MusicVae") {
+            document.getElementById('seed-selector').style.display = 'none';
+            document.getElementById('sample-selector').style.display = 'none';
+            document.getElementById('Chord-Melody-Selector').style.display = 'none';
+            document.getElementById('Arp-Chord-Selector').style.display = 'none';
+            document.getElementById('Extender-Controls').style.display = 'none';
+            document.getElementById('Arp-Controls').style.display = 'none';
         }
         else if (newModel == "ArpRNN") {
             document.getElementById('seed-selector').style.display = 'none';
@@ -268,7 +280,7 @@ function initializationButtonListener() {
                 });
                 // probably create a list of the chords set here
             } else {
-                console.error('Arp Chord select field not found');
+                console.error('Chord select field not found');
             }
         }
     });

@@ -1,6 +1,6 @@
 import * as mm from '@magenta/music';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
-import { playGeneratedSequenceSoundFont } from './visualizer';
+import { playGeneratedSequenceSoundFont, clearVisualizer } from './visualizer';
 import { hideLoader, showNotification } from '../util/controlsManager';
 import { quantizeNoteSequence } from '@magenta/music/esm/core/sequences';
 
@@ -10,6 +10,7 @@ let generatedSequence;
 
 // initialize the AI Model with chord improv
 function initializeArpModel(checkpoint) {
+  clearVisualizer();
   instrumentConfig['currentModel'] = "ArpRNN";
   rnnModel = new mm.MusicRNN(checkpoint);
   rnnModel.initialize().then(function () {
@@ -37,17 +38,15 @@ async function generateArpSequence() {
     totalQuantizedSteps: totalSteps
   };
 
-  console.log(quantizedSeq);
-
   // Generate a one-bar sequence
-  let generatedSeq= await rnnModel.continueSequence(quantizedSeq, totalSteps, temperature, [chord]);
+  let generatedSeq = await rnnModel.continueSequence(quantizedSeq, totalSteps, temperature, [chord]);
 
   // Loop the generated sequence 4 times
   let loopedSequence = loopSequence(generatedSeq, 4);
 
   if (loopedSequence) {
     playGeneratedSequenceSoundFont(loopedSequence, false);
-    generatedSequence = loopedSequence; 
+    generatedSequence = JSON.parse(JSON.stringify(loopedSequence));
     document.getElementById('replay-button').style.display = 'inline-block';
     document.getElementById('download-link').style.display = 'inline-block';
   }
@@ -96,6 +95,9 @@ function disposeArpModel() {
     console.log("Disposing arp RNN Model");
     rnnModel.dispose();
     instrumentConfig['currentModel'] = ''
+    generatedSequence = null;
+    document.getElementById('replay-button').style.display = 'none';
+    document.getElementById('download-link').style.display = 'none';
   }
 }
 
