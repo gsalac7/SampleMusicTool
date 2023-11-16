@@ -41,22 +41,28 @@ function stopPlayer() {
     }
 }
 
+
+function clearVisualizer() {
+    if (visualizer) {
+        visualizer.clear();
+    }
+}
 function setInstrument(instrument) {
     activeInstrument = instrument
 }
 
-// Assign instruments to each trio
+// Assign instruments to each trio, multi, drum, and groove
 function normalizeSequence(sequence, shouldNormalize = true) {
     if (!shouldNormalize) return;
+    console.log("Normalizing Sequence: "  + JSON.stringify(sequence, null, 2));
     sequence.notes.forEach(note => {
         if (note.isDrum) {
             note.program = setInstrumentNumber('percussion');  // Instrument #9 for drums
             delete note.isDrum;  // Remove the isDrum attribute
         } else {
-            // You can use a switch or if-else blocks to assign instruments
             switch (note.instrument) {
                 case 0:  // melody
-                    note.program = setInstrumentNumber('pad_3_polysynth');
+                    note.program = setInstrumentNumber('acoustic_grand_piano');
                     break;
                 case 1:  // bassline
                     note.program = setInstrumentNumber('synth_bass_1');
@@ -68,11 +74,11 @@ function normalizeSequence(sequence, shouldNormalize = true) {
     });
 }
 
-function playGeneratedSequenceSoundFont(generatedSequence, shouldNormalize = true) {
+function playGeneratedSequenceSoundFont(generatedSeq, shouldNormalize = true) {
     let BPM = instrumentConfig['bpm'];
     initializeVisualizerSoundFont();
     player.setTempo(BPM);
-    generatedSequence.notes.forEach(note => {
+    generatedSeq.notes.forEach(note => {
         note.velocity = 127;  // Max velocity
     });
 
@@ -83,22 +89,21 @@ function playGeneratedSequenceSoundFont(generatedSequence, shouldNormalize = tru
         activeNoteRGB: '240, 84, 119',
     };
 
-    visualizer = new mm.PianoRollSVGVisualizer(generatedSequence, document.getElementById('svg-container'), config);
+    visualizer = new mm.PianoRollSVGVisualizer(generatedSeq, document.getElementById('svg-container'), config);
 
     if (shouldNormalize) {
-        normalizeSequence(generatedSequence);
+        normalizeSequence(generatedSeq);
     } else {
         let num = setActiveInstrumentNumber();
-
-        generatedSequence.notes.forEach(note => {
+        generatedSeq.notes.forEach(note => {
             note.program = num;  // Set to the desired instrument index
             note.velocity = 127; // set the velocity for everything to 127; max volume
         });
     }
     // Start the player
-    player.start(generatedSequence);
+    player.start(generatedSeq);
+    console.log(generatedSeq);
 }
-
 
 function playGeneratedSequenceDefault(generatedSequence) {
     initializeVisualizerDefault();
@@ -136,4 +141,4 @@ function setActiveInstrumentNumber() {
     return null;
 }
 
-export { setInstrument, playGeneratedSequenceSoundFont, playGeneratedSequenceDefault, stopPlayer}
+export { setInstrument, playGeneratedSequenceSoundFont, playGeneratedSequenceDefault, stopPlayer, clearVisualizer}

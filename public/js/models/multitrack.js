@@ -5,10 +5,10 @@ import { hideLoader, showNotification } from '../util/controlsManager';
 
 let music_vae;
 let generatedSequence;
-let numSequences = 1;
-let player = "default";
+let player = "soundfont";
 
 function initializeMultiTrackModel(checkpoint) {
+  clearVisualizer();
     instrumentConfig['currentModel'] = "MultiTrack";
     music_vae = new mm.MusicVAE(checkpoint);
     music_vae.initialize().then(function () {
@@ -18,10 +18,6 @@ function initializeMultiTrackModel(checkpoint) {
     }).catch(function (error) {
         console.error('Failed to initialize model:', error);
     });
-
-    if (checkpoint.includes('multi')) {
-        player = "default"
-    }
 }
 
 function disposeMultiTrackModel() {
@@ -30,57 +26,6 @@ function disposeMultiTrackModel() {
         instrumentConfig['currentModel'] = '';
     }
 }
-/*
-async function generateMultiTrackSequence() {
-    let temperature = instrumentConfig['temperature'];
-    const chords = [
-        document.getElementById('chordInput1').value,
-        document.getElementById('chordInput2').value,
-        document.getElementById('chordInput3').value,
-        document.getElementById('chordInput4').value,
-    ].filter(chord => chord !== ""); // Filter out empty chords
-    console.log("Generating with chords: " + chords + " and temperature: " + temperature);
-
-    // Ensure fullSequence is initialized with the correct properties for a quantized sequence
-    let fullSequence = {
-        notes: [],
-        totalQuantizedSteps: 0 // This should be set to the length of the sequence in quantized steps
-    };
-
-    for (let chord of chords) {
-        let sequences = await music_vae.sample(1, null, { chordProgression: [chord] }, 24);
-        // Assuming sample() returns an array of sequences
-        let sequence = sequences[0];
-        console.log(sequence)
-
-        sequence.notes.forEach(note => {
-            note.quantizedStartStep += fullSequence.totalQuantizedSteps;
-            note.quantizedEndStep += fullSequence.totalQuantizedSteps;
-            fullSequence.notes.push(note);
-        });
-
-        // Increment the totalQuantizedSteps by the amount in the current sequence
-        // Assuming that the length of each bar (sequence) is the same in terms of quantized steps
-        fullSequence.totalQuantizedSteps += sequence.totalQuantizedSteps;
-    }
-
-    // Set the remaining parts of the Sequence object
-    fullSequence.quantizationInfo = { stepsPerQuarter: 24 };
-    fullSequence.tempos = [{ "qpm": 120 }];
-
-    if (fullSequence) {
-        generatedSequence = fullSequence; // Use the full, concatenated sequence
-        if (player === "soundfont") {
-            playGeneratedSequenceSoundFont(generatedSequence)
-        } else {
-            playGeneratedSequenceDefault(generatedSequence);
-        }
-        // Display replay-button and download link
-        document.getElementById('replay-button').style.display = 'inline-block';
-        document.getElementById('download-link').style.display = 'inline-block';
-    }
-}
-*/
 
 function getRootNoteForChord(chord) {
     // This maps chord names to MIDI root notes
@@ -143,10 +88,8 @@ async function generateMultiTrackSequence() {
     ].filter(chord => chord !== ""); // Filter out empty chords
 
     // Generate the initial sequence based on the first chord
-    let generatedSequences = await music_vae.sample(1, temperature, { chordProgression: [chords[0]] }, 24);
-    let generatedSequence = generatedSequences[0];
-    console.log("Current generatedSequence")
-    console.log(generatedSequence)
+    let generatedSeq= await music_vae.sample(1, temperature, { chordProgression: [chords[0]] }, 24);
+    generatedSequence = generatedSeq[0];
 
     // Ensure fullSequence is initialized with the correct properties for a quantized sequence
     let fullSequence = {
@@ -199,14 +142,15 @@ async function generateMultiTrackSequence() {
 
 function replayMultiTrackSequence() {
     if (player == "default") {
-        playGeneratedSequenceDefault(generatedSequence[0])
+        playGeneratedSequenceDefault(generatedSequence)
     } else {
-        playGeneratedSequenceSoundFont(generatedSequence[0], false) // should no longer be normalized
+        playGeneratedSequenceSoundFont(generatedSequence, false) // should no longer be normalized
     }
 }
 
 async function exportMultiTrackSequence() {
-    const midiBytes = mm.sequenceProtoToMidi(generatedSequence[0]);
+    console.log(generatedSequence);
+    const midiBytes = mm.sequenceProtoToMidi(generatedSequence);
     const midiBlob = new Blob([new Uint8Array(midiBytes)], { type: 'audio/midi' });
 
     // Create a download link and append it to the document

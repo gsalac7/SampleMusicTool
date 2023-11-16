@@ -137,7 +137,7 @@ select {
 }
 
 
-#Arp-Controls > div {
+#Arp-Controls > div, #Extender-Controls > div {
     width: 100%; /* Full width of the parent */
     display: flex;
     flex-direction: column;
@@ -145,11 +145,11 @@ select {
     margin: 5px;
 }
 
-#Arp-Controls label {
+#Arp-Controls label, #Extender-Controls label {
     margin-bottom: 3px;
 }
 
-#Arp-Controls select {
+#Arp-Controls select, #Extender-Controls select {
     padding: 6px;
     border: none;
     border-radius: 5px;
@@ -159,7 +159,9 @@ select {
 }
 
 #Arp-Controls > div > label,
-#Arp-Controls > div > select {
+#Arp-Controls > div > select,
+#Extender-Controls > div > label,
+#Extender-Controls > div > select {
   display: inline-block;
   margin: 5px;
 }

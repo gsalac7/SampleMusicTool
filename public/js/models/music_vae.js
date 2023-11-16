@@ -1,15 +1,15 @@
 import * as mm from '@magenta/music';
-import { playGeneratedSequenceSoundFont, playGeneratedSequenceDefault } from './visualizer';
+import { playGeneratedSequenceSoundFont, clearVisualizer } from './visualizer';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
 import { hideLoader, showNotification } from '../util/controlsManager';
-import seedSequences from './configs/seed_sequences';
 
 let music_vae;
 let generatedSequence;
-let numSequences = 1;
-let player = "soundfont";
+let copyGeneratedSequence;
+let shouldNormalize;
 
 function initializeMusicVaeModel(checkpoint) {
+  clearVisualizer();
   instrumentConfig['currentModel'] = "MusicVAE";
   music_vae = new mm.MusicVAE(checkpoint);
   music_vae.initialize().then(function () {
@@ -19,9 +19,11 @@ function initializeMusicVaeModel(checkpoint) {
   }).catch(function (error) {
     console.error('Failed to initialize model:', error);
   });
-
-  if (checkpoint.includes('multi')) {
-    player = "default"
+  // Trio, Multi, Drum, Groove require specific instruments to be played with
+  if (checkpoint.includes("trio") || checkpoint.includes('multi') || checkpoint.includes('drum') || checkpoint.includes("groove")) {
+    shouldNormalize = true;
+  } else {
+    shouldNormalize = false;
   }
 }
 
@@ -36,14 +38,10 @@ function disposeVAEModel() {
 async function generateMusicVAESequence() {
   let temperature = instrumentConfig['temperature'];
   generatedSequence = await music_vae.sample(1, temperature);
-  console.log("Generated Sequence: " + JSON.stringify(generatedSequence, null, 2));
+  let sequence = JSON.parse(JSON.stringify(generatedSequence[0]));
 
-  if (generatedSequence) {
-    if (player == "soundfont") {
-      playGeneratedSequenceSoundFont(generatedSequence[0])
-    } else {
-      playGeneratedSequenceDefault(generatedSequence[0]);
-    }
+  if (sequence) {
+    playGeneratedSequenceSoundFont(sequence);
     // display replay-button and download link
     document.getElementById('replay-button').style.display = 'inline-block';
     document.getElementById('download-link').style.display = 'inline-block';
@@ -51,16 +49,18 @@ async function generateMusicVAESequence() {
 }
 
 function replayMusicVAESequence() {
-  if (player == "default") {
-    playGeneratedSequenceDefault(generatedSequence[0])
-  } else {
-    playGeneratedSequenceSoundFont(generatedSequence[0], false) // should no longer be normalized
-  }
+  let sequence = JSON.parse(JSON.stringify(generatedSequence[0]));
+  playGeneratedSequenceSoundFont(sequence, shouldNormalize);
 }
 
 async function exportMusicVAESequence() {
-  const midiBytes = mm.sequenceProtoToMidi(generatedSequence[0]);
-  const midiBlob = new Blob([new Uint8Array(midiBytes)], { type: 'audio/midi' });
+  // Assign program 9 to all notes
+  let sequence = JSON.parse(JSON.stringify(generatedSequence[0]));
+  sequence.notes.forEach(note => {
+      note.velocity=127;
+  });
+  const midiBytes = mm.sequenceProtoToMidi(sequence);
+  const midiBlob = new Blob([new Uint8Array(midiBytes)], { type: 'audio/midi-file' });
 
   // Create a download link and append it to the document
   const downloadLink = document.createElement('a');

@@ -47,10 +47,10 @@ async function generateChordSequence() {
   };
 
   console.log("Generated sequence with Temperature: " + temperature + " and Length: " + length + " and Steps: " + steps);
-  generatedSequence = await rnnModel.continueSequence(initialSeq, length, temperature, chords);
+  const genSequence= await rnnModel.continueSequence(initialSeq, length, temperature, chords);
 
   // Add the continuation to the original sequence
-  generatedSequence.notes.forEach((note) => {
+  genSequence.notes.forEach((note) => {
     note.quantizedStartStep += 1;
     note.quantizedEndStep += 1;
     initialSeq.notes.push(note);
@@ -72,7 +72,7 @@ async function generateChordSequence() {
 
       // Add the bass note for the current chord
       initialSeq.notes.push({
-        instrument: 1,
+        //instrument: 1,
         //program: 32,
         pitch: 36 + roots[j], // Add the correct bass note for the chord
         quantizedStartStep: startStep,
@@ -83,12 +83,12 @@ async function generateChordSequence() {
 
   // Set total sequence length
   initialSeq.totalQuantizedSteps = STEPS_PER_PROG * NUM_REPS;
+  generatedSequence = initialSeq;
 
-  if (initialSeq) {
+  if (generatedSequence) {
     //playGeneratedSequenceDefault(initialSeq);
-    playGeneratedSequenceSoundFont(initialSeq, false);
-    generatedSequence = initialSeq;
-    //playGeneratedSequenceSoundFont(initialSeq, false);
+    playGeneratedSequenceSoundFont(generatedSequence, true);
+
     // Display replay-button and download link
     document.getElementById('replay-button').style.display = 'inline-block';
     document.getElementById('download-link').style.display = 'inline-block';

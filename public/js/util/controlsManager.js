@@ -10,7 +10,7 @@ import { initializeMarkovModel, playGenerativeSequence, replayGenerativeSequence
 import { initializeGroovaeModel, generateGroovaeSequence, replayGroovaeSequence, exportGroovaeSequence, disposeGroovaeModel, readSampleMidi} from '../models/groovae';
 import checkpoints from './configs/checkpoints.json';
 import { instrumentConfig } from './configs/instrumentConfig';
-import {stopPlayer} from '../models/visualizer';
+import { stopPlayer, clearVisualizer } from '../models/visualizer';
 
 let currentModel = instrumentConfig['currentModel'];
 let checkpoint = instrumentConfig['checkpoint'];
@@ -20,7 +20,6 @@ export function initializeControls() {
         'toggleRecording': [toggleRecording, 'Toggle recording button not found'],
         'exportMidi': [exportMIDI, 'Export MIDI button not found'],
         'play-button': [() => toggleLoop(document.getElementById('play-button')), 'Play button not found'],
-        'updateSequencer': [updateSequencer, 'Update sequencer button not found'],
         'stop-button': [stopPlayer, 'Stop button not found'],
     };
 
@@ -135,22 +134,6 @@ export function showNotification(message) {
     }, 3000);
 }
 
-export function showError(message) {
-    const errorBanner = document.getElementById('errorBanner');
-    const errorMessage = document.getElementById('errorMessage');
-
-    errorMessage.textContent = message; // Set the text content of errorMessage, not errorBanner
-    errorBanner.style.display = 'block'; // Show the error banner
-    errorBanner.classList.add('show');
-
-    // Automatically hide the error notification after 3 seconds
-    setTimeout(() => {
-        errorBanner.classList.remove('show');
-        errorBanner.style.display = 'none'; // Hide the error banner after the timeout
-    }, 3000);
-}
-
-
 function initializationButtonListener() {
     const initModelButton = document.getElementById('init-button');
 
@@ -161,11 +144,11 @@ function initializationButtonListener() {
 
     // Attach click listener to the initialization button
     initModelButton.addEventListener('click', () => {
+        showLoader();
         if (!checkpoint) {
-            showError('Please select a checkpoint');
+            alert('Please select a checkpoint');
             return;
         }
-        showLoader();
 
         // Determine the new model based on the checkpoint
         let newModel;
@@ -213,6 +196,25 @@ function initializationButtonListener() {
             document.getElementById('Chord-Melody-Selector').style.display = 'none';
             document.getElementById('Arp-Controls').style.display = 'none';
             document.getElementById('Extender-Controls').style.display = 'block';
+            const lengthSelect= document.getElementById('length-select');
+            if (lengthSelect) {
+                lengthSelect.addEventListener('change', function () {
+                    const selectedValue = this.value;
+                    instrumentConfig['length'] = parseInt(selectedValue, 10);
+                });
+            } else {
+                console.error('Steps Per Quarter select field not found');
+            }
+            const stepsPerQuarter= document.getElementById('steps-melody-select');
+            if (stepsPerQuarter) {
+                stepsPerQuarter.addEventListener('change', function () {
+                    const selectedValue = this.value;
+                    instrumentConfig['stepsPerQuarter'] = parseInt(selectedValue, 10);
+                });
+            } else {
+                console.error('Steps Per Quarter select field not found');
+            }
+            
         } else if (newModel == "Groovae") {
             document.getElementById('sample-selector').style.display = 'none';
             document.getElementById('sample-selector').style.display = 'block';
@@ -242,20 +244,11 @@ function initializationButtonListener() {
             } else {
                 console.error('Arp Chord select field not found');
             }
-            const numBars = document.getElementById('bar-select');
-            if (numBars) {
-                numBars.addEventListener('change', function () {
-                    const selectedValue = this.value;
-                    instrumentConfig['numBars'] = parseInt(selectedValue, 10);
-                });
-            } else {
-                console.error('NumBars select field not found');
-            }
             const stepsPerQuarter= document.getElementById('steps-select');
             if (stepsPerQuarter) {
-                arpField.addEventListener('change', function () {
+                stepsPerQuarter.addEventListener('change', function () {
                     const selectedValue = this.value;
-                    instrumentConfig['stepsPerQuarter'] = selectedValue;
+                    instrumentConfig['stepsPerQuarter'] = parseInt(selectedValue, 10);
                 });
             } else {
                 console.error('Steps Per Quarter select field not found');

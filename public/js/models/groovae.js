@@ -29,12 +29,10 @@ function disposeGroovaeModel() {
 }
 
 async function generateGroovaeSequence() {
-    console.log("Executing GroovoaeSquence");
     let temperature = instrumentConfig['temperature'];
     if (seedSequence == undefined) {
         seedSequence = sampleSequences['majorScaleUp'];
     }
-    //const melodicSequence = sampleSequences['majorScaleUp'];
 
     console.log(seedSequence);
     seedSequence.tempos.forEach((tempo) => {
@@ -74,13 +72,14 @@ function readSampleMidi(file) {
     }
 }
 async function exportGroovaeSequence() {
-    console.log("Exporting Groovae Sequence0");
-    const sequence = mm.NoteSequence.create(generatedSequence);
-
     // Specify the number of steps per quarter note for quantization
     const STEPS_PER_QUARTER = 16;
     const quantizedSequence = mm.sequences.quantizeNoteSequence(generatedSequence[0], STEPS_PER_QUARTER);
-    console.log(quantizedSequence);
+    quantizedSequence.notes = quantizedSequence.notes.map(note => {
+        const { startTime, endTime, ...restOfNote } = note;
+        return restOfNote;
+    });
+    console.log("quantizedSequence: " + JSON.stringify(quantizedSequence, null, 2));
     const midiBytes = mm.sequenceProtoToMidi(quantizedSequence);
     const midiBlob = new Blob([new Uint8Array(midiBytes)], { type: 'audio/midi' });
 

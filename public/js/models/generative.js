@@ -18,6 +18,7 @@ const melodyChain = {
 let generatedSequence;
 
 function initializeMarkovModel() {
+  clearVisualizer();
     hideLoader();
     showNotification("Markov Chain initialized Successfully!");
 }

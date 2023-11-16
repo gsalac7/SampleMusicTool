@@ -114,10 +114,17 @@
         <input type="text" id="chordInput3" placeholder="e.g., C">
         <input type="text" id="chordInput4" placeholder="e.g., C">
       </div>
- <!-- Specific Controls for the Melody Extender-->
+      <!-- Specific Controls for the Melody Extender-->
       <div id="Extender-Controls" style="display:none">
         <!-- Length Input -->
         <div id="length-selector">
+          <label for="length-select">Length:</label>
+          <select id="length-select">
+            <option value="" disabled selected>Select Length</option>
+            <option value="16">16</option>
+            <option value="32">32</option>
+            <option value="64">64</option>
+          </select>
         </div>
         <!-- Steps per Quarter Dropdown -->
         <div id="steps-melody-selector">
@@ -133,16 +140,6 @@
 
       <!-- Specific Controls for the Arpeggiator-->
       <div id="Arp-Controls" style="display:none">
-        <!-- Length Input -->
-        <div id="bar-selector">
-          <label for="bar-select">Num of Bars:</label>
-          <select id="bar-select">
-            <option value="" disabled selected>Select Number of Bars</option>
-            <option value="2">2</option>
-            <option value="4">3</option>
-            <option value="8">4</option>
-          </select>
-        </div>
         <!-- Steps per Quarter Dropdown -->
         <div id="steps-selector">
           <label for="steps-select">Steps per Quarter:</label>
