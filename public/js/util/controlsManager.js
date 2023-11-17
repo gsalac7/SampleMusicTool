@@ -252,6 +252,7 @@ function initializationButtonListener() {
             document.getElementById('sample-selector').style.display = 'none';
             document.getElementById('Arp-Chord-Selector').style.display = 'block';
             document.getElementById('Chord-Melody-Selector').style.display = 'none';
+            document.getElementById('Extender-Controls').style.display = 'none';
             document.getElementById('Arp-Controls').style.display = 'block';
             // set Event listener for arp-chord-selector
             const arpField = document.getElementById('chordInput');
