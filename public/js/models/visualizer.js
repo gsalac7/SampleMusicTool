@@ -7,18 +7,22 @@ const soundFontData = instrumentConfig['soundFontData'];
 let player = null;
 let activeInstrument;
 
-// Use the custom soundfont
-function initializeVisualizerSoundFont() {
-    if (!player) {
-        player = new mm.SoundFontPlayer(soundFontUrl, undefined, undefined, undefined, {
-            run: note => visualizer.redraw(note),
-            stop: () => { }
-        });
-    } else {
-        if (player.isPlaying()) {
-            player.stop();
-        }
-    }
+function initializeVisualizerAndPlayer(sequence) {
+    // Initialize the visualizer with the sequence
+    const visualizerConfig = {
+        noteHeight: 10,
+        pixelsPerTimeStep: 150,
+        noteRGB: '211, 211, 211',
+        activeNoteRGB: '240, 84, 119',
+    };
+
+    visualizer = new mm.PianoRollSVGVisualizer(sequence, document.getElementById('svg-container'), visualizerConfig);
+
+    // Initialize the SoundFontPlayer
+    player = new mm.SoundFontPlayer(soundFontUrl, undefined, undefined, undefined, {
+        run: note => visualizer.redraw(note),
+        stop: () => {}
+    });
 }
 
 function stopPlayer() {
@@ -42,7 +46,6 @@ function setInstrument(instrument) {
 // Assign instruments to each trio, multi, drum, and groove
 function normalizeSequence(sequence, shouldNormalize = true) {
     if (!shouldNormalize) return;
-    console.log("Normalizing Sequence: "  + JSON.stringify(sequence, null, 2));
     sequence.notes.forEach(note => {
         if (note.isDrum) {
             note.program = setInstrumentNumber('percussion');  // Instrument #9 for drums
@@ -64,20 +67,9 @@ function normalizeSequence(sequence, shouldNormalize = true) {
 
 function playGeneratedSequenceSoundFont(generatedSeq, shouldNormalize = true) {
     let BPM = instrumentConfig['bpm'];
-    initializeVisualizerSoundFont();
-    player.setTempo(BPM);
     generatedSeq.notes.forEach(note => {
         note.velocity = 127;  // Max velocity
     });
-
-    const config = {
-        noteHeight: 10,
-        pixelsPerTimeStep: 150,
-        noteRGB: '211, 211, 211',
-        activeNoteRGB: '240, 84, 119',
-    };
-
-    visualizer = new mm.PianoRollSVGVisualizer(generatedSeq, document.getElementById('svg-container'), config);
 
     if (shouldNormalize) {
         normalizeSequence(generatedSeq);
@@ -88,7 +80,10 @@ function playGeneratedSequenceSoundFont(generatedSeq, shouldNormalize = true) {
             note.velocity = 127; // set the velocity for everything to 127; max volume
         });
     }
+    initializeVisualizerAndPlayer(generatedSeq);
+    player.setTempo(BPM);
     // Start the player
+    console.log(generatedSeq);
     player.start(generatedSeq);
 }
 

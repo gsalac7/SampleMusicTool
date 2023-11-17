@@ -43,8 +43,9 @@ async function generateMusicVAESequence() {
   let temperature = instrumentConfig['temperature'];
   generatedSequence = await music_vae.sample(1, temperature);
   let sequence = JSON.parse(JSON.stringify(generatedSequence[0]));
-
+  sequence['model'] = 'MusicVAE';
   if (sequence) {
+    console.log("MusicVAE is executing this");
     playGeneratedSequenceSoundFont(sequence);
     // display replay-button and download link
     document.getElementById('replay-button').style.display = 'inline-block';

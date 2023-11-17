@@ -1,4 +1,4 @@
-import { playGeneratedSequenceSoundFont, clearVisualizer} from './visualizer';
+import { playGeneratedSequenceSoundFont, clearVisualizer } from './visualizer';
 import { hideLoader, showNotification } from '../util/controlsManager';
 import * as mm from '@magenta/music';
 
@@ -18,9 +18,11 @@ const melodyChain = {
 let generatedSequence;
 
 function initializeMarkovModel() {
-  clearVisualizer();
+    clearVisualizer();
     hideLoader();
     showNotification("Markov Chain initialized Successfully!");
+    document.getElementById('replay-button').style.display = 'none';
+    document.getElementById('download-link').style.display = 'none';
 }
 
 function generateMusicSequence(startPitch, totalSteps, stepsPerQuarter, chain) {
@@ -71,13 +73,13 @@ function playGenerativeSequence() {
     generatedSequence = {
         quantizationInfo: { stepsPerQuarter: 4 },
         notes: melodySequence,
-        totalQuantizedSteps:64 
+        totalQuantizedSteps: 64
     };
 
     // Assuming playGeneratedSequenceDefault and playGeneratedSequenceSoundFont are defined elsewhere
     // playGeneratedSequenceDefault(generatedSequence);
     playGeneratedSequenceSoundFont(generatedSequence, false); // should no longer be normalized
-       // display replay-button and download link
+    // display replay-button and download link
     document.getElementById('replay-button').style.display = 'inline-block';
     document.getElementById('download-link').style.display = 'inline-block';
 }
@@ -117,4 +119,4 @@ async function exportGenerativeSequence() {
     document.body.removeChild(downloadLink);
 }
 
-export { initializeMarkovModel, generateMusicSequence, playGenerativeSequence, replayGenerativeSequence, exportGenerativeSequence}
+export { initializeMarkovModel, generateMusicSequence, playGenerativeSequence, replayGenerativeSequence, exportGenerativeSequence }

@@ -5,7 +5,6 @@ import { hideLoader, showNotification } from '../util/controlsManager';
 
 let music_vae;
 let generatedSequence;
-let player = "soundfont";
 
 async function initializeMultiTrackModel(checkpoint) {
     clearVisualizer();
@@ -138,13 +137,11 @@ async function generateMultiTrackSequence() {
     document.getElementById('download-link').style.display = 'inline-block';
 }
 
-
 function replayMultiTrackSequence() {
     playGeneratedSequenceSoundFont(generatedSequence, false) // should no longer be normalized
 }
 
 async function exportMultiTrackSequence() {
-    console.log(generatedSequence);
     const midiBytes = mm.sequenceProtoToMidi(generatedSequence);
     const midiBlob = new Blob([new Uint8Array(midiBytes)], { type: 'audio/midi' });
 

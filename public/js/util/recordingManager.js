@@ -59,7 +59,6 @@ function recordNote(noteName) {
     });
 
     sequence.totalQuantizedSteps = Math.max(sequence.totalQuantizedSteps, quantizedEndStep);
-    console.log("Note Sequence:", JSON.stringify(sequence));
 }
 // This function might be called wherever a note is played
 function handleNotePlayed(note) {

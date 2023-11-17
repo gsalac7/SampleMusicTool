@@ -9,14 +9,11 @@ let generatedSequence;
 let seedSequence;
 
 async function initializeGroovaeModel(checkpoint) {
-    clearVisualizer();
     instrumentConfig['currentModel'] = "MusicVAE";
-    console.log("Checkpoint: " + checkpoint);
     music_vae = new mm.MusicVAE(checkpoint);
 
     try {
         await music_vae.initialize();
-        console.log('Model initialized');
         hideLoader();
         showNotification("MusicVAE Model initialized Successfully!");
     } catch (error) {
@@ -25,9 +22,9 @@ async function initializeGroovaeModel(checkpoint) {
     }
 }
 
-
 function disposeGroovaeModel() {
     if (music_vae) {
+        clearVisualizer();
         music_vae.dispose();
         instrumentConfig['currentModel'] = '';
         generatedSequence = null;
@@ -42,7 +39,6 @@ async function generateGroovaeSequence() {
         seedSequence = sampleSequences['majorScaleUp'];
     }
 
-    console.log(seedSequence);
     seedSequence.tempos.forEach((tempo) => {
         tempo.qpm = 120; // Set to your desired tempo
     });
@@ -51,10 +47,7 @@ async function generateGroovaeSequence() {
     // Decode the latent representation to generate a drum sequence
     generatedSequence = await music_vae.decode(z, temperature, undefined, 4);
     if (generatedSequence) {
-        console.log("Generated Sequence: " + JSON.stringify(generatedSequence, null, 2));
-
         playGeneratedSequenceSoundFont(generatedSequence[0])
-
         // display replay-button and download link
         document.getElementById('replay-button').style.display = 'inline-block';
         document.getElementById('download-link').style.display = 'inline-block';
@@ -87,7 +80,6 @@ async function exportGroovaeSequence() {
         const { startTime, endTime, ...restOfNote } = note;
         return restOfNote;
     });
-    console.log("quantizedSequence: " + JSON.stringify(quantizedSequence, null, 2));
     const midiBytes = mm.sequenceProtoToMidi(quantizedSequence);
     const midiBlob = new Blob([new Uint8Array(midiBytes)], { type: 'audio/midi' });
 

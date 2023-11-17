@@ -13,7 +13,6 @@ let STEPS_PER_PROG = 4 * STEPS_PER_CHORD;
 let NUM_REPS = 4;
 
 async function initializeChordModel(checkpoint) {
-    clearVisualizer();
     instrumentConfig['currentModel'] = "chordImprov";
     rnnModel = new mm.MusicRNN(checkpoint);
 
@@ -50,7 +49,6 @@ async function generateChordSequence() {
     totalQuantizedSteps: 1
   };
 
-  console.log("Generated sequence with Temperature: " + temperature + " and Length: " + length + " and Steps: " + steps);
   const genSequence = await rnnModel.continueSequence(initialSeq, length, temperature, chords);
 
   // Add the continuation to the original sequence
@@ -64,8 +62,6 @@ async function generateChordSequence() {
 
   // Determine the steps for each chord based on how many chords there are
   const stepsPerChord = STEPS_PER_PROG / roots.length;
-
-  console.log("Steps Per Chord: " + stepsPerChord);
 
   // Add the bass progression
   for (let i = 0; i < NUM_REPS; i++) {
@@ -98,29 +94,6 @@ async function generateChordSequence() {
     document.getElementById('download-link').style.display = 'inline-block';
   }
 }
-// Check chords for validity and highlight invalid chords.
-const checkChords = () => {
-  const chords = [
-    document.getElementById('chordInput1').value,
-    document.getElementById('chordInput2').value,
-    document.getElementById('chordInput3').value,
-    document.getElementById('chordInput4').value
-  ];
-
-  const isGood = (chord) => {
-    if (!chord) {
-      return false;
-    }
-    try {
-      mm.chords.ChordSymbols.pitches(chord);
-      return true;
-    }
-    catch (e) {
-      return false;
-    }
-  }
-}
-
 
 async function exportChordSequence() {
   const midiBytes = mm.sequenceProtoToMidi(generatedSequence);
@@ -138,12 +111,12 @@ async function exportChordSequence() {
 }
 
 function replayChordSequence() {
-  //playGeneratedSequenceDefault(generatedSequence);
   playGeneratedSequenceSoundFont(generatedSequence, false);
 }
 
 function disposeChordModel() {
   if (rnnModel) {
+    clearVisualizer();
     console.log("Disposing Chord RNN Model");
     rnnModel.dispose();
     instrumentConfig['currentModel'] = ''
@@ -152,6 +125,5 @@ function disposeChordModel() {
     document.getElementById('download-link').style.display = 'none';
   }
 }
-
 
 export { generateChordSequence, initializeChordModel, disposeChordModel, exportChordSequence, replayChordSequence };

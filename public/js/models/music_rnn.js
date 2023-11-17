@@ -26,23 +26,23 @@ async function initializeRNNModel(checkpoint) {
     }
 }
 
-
 // Generate sequence specific for RNN model
 async function generateMusicRNNSequence() {
     let length = instrumentConfig['length']; 
     let steps = instrumentConfig['stepsPerQuarter']; 
     let temperature = instrumentConfig['temperature'];
+    if (seedSequence == undefined) {
+        console.log(seedSequences)
+        seedSequence = seedSequences['majorScaleUp'];
+    }
     // Normalize the Tempo
     seedSequence.tempos.forEach((tempo) => {
         tempo.qpm = 120; // Set to your desired tempo
     });
 
-
-    console.log("Seed Sequence; " + JSON.stringify(seedSequence, null, 2));
-
     const quantizedSeq = mm.sequences.quantizeNoteSequence(seedSequence, steps);
     generatedSequence = await rnnModel.continueSequence(quantizedSeq, length, temperature);
-    console.log("Model musicRNN Sequence: " + JSON.stringify(generatedSequence));
+    generatedSequence['model'] = 'MusicRNN';
     if (generatedSequence) {
         playGeneratedSequenceSoundFont(generatedSequence, false);
         // display replay-button and download link
@@ -71,6 +71,7 @@ function readSeedMidi(file) {
 }
 function disposeRNNModel() {
     if (rnnModel) {
+        clearVisualizer();
         rnnModel.dispose();
         instrumentConfig['currentModel'] = '';
         generatedSequence = null;

@@ -9,7 +9,6 @@ let rnnModel;
 let generatedSequence;
 
 async function initializeArpModel(checkpoint) {
-    clearVisualizer();
     instrumentConfig['currentModel'] = "ArpRNN";
     rnnModel = new mm.MusicRNN(checkpoint);
 
@@ -23,8 +22,6 @@ async function initializeArpModel(checkpoint) {
         // Handle the error appropriately, for instance, show an error message to the user
     }
 }
-
-
 
 async function generateArpSequence() {
   let temperature = instrumentConfig['temperature'];
@@ -46,8 +43,10 @@ async function generateArpSequence() {
 
   // Loop the generated sequence 4 times
   let loopedSequence = loopSequence(generatedSeq, 4);
+  loopedSequence['model'] = 'ArpRNN';
 
   if (loopedSequence) {
+    console.log("ArpRNN is executing this");
     playGeneratedSequenceSoundFont(loopedSequence, false);
     generatedSequence = JSON.parse(JSON.stringify(loopedSequence));
     document.getElementById('replay-button').style.display = 'inline-block';
@@ -72,7 +71,6 @@ function loopSequence(sequence, times) {
   return loopedSequence;
 }
 
-
 async function exportArpSequence() {
   console.log(generatedSequence);
   const midiBytes = mm.sequenceProtoToMidi(generatedSequence);
@@ -95,6 +93,7 @@ function replayArpSequence() {
 
 function disposeArpModel() {
   if (rnnModel) {
+    clearVisualizer();
     console.log("Disposing arp RNN Model");
     rnnModel.dispose();
     instrumentConfig['currentModel'] = ''

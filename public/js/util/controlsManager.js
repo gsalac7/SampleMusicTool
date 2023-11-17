@@ -145,6 +145,9 @@ function initializationButtonListener() {
 
     // Attach click listener to the initialization button
     initModelButton.addEventListener('click', () => {
+        // Remove old eventListeners
+        removeEventListenersFromButtons();
+
         showLoader();
         if (!checkpoint) {
             alert('Please select a checkpoint');
@@ -417,5 +420,28 @@ function initBPMSlider() {
         document.getElementById('bpm-value').textContent = value.toFixed(1);
         // Set the instrument Config BPM
         instrumentConfig['bpm'] = value;
+    });
+}
+
+function removeEventListenersFromButtons() {
+    Object.values(modelConfig).forEach(model => {
+        if (model.generateCallback) {
+            const generateMusicButton = document.getElementById('generateMusic');
+            if (generateMusicButton) {
+                generateMusicButton.removeEventListener('click', model.generateCallback);
+            }
+        }
+        if (model.replayCallback) {
+            const replayButton = document.getElementById('replay-button');
+            if (replayButton) {
+                replayButton.removeEventListener('click', model.replayCallback);
+            }
+        }
+        if (model.exportCallback) {
+            const exportButton = document.getElementById('download-link');
+            if (exportButton) {
+                exportButton.removeEventListener('click', model.exportCallback);
+            }
+        }
     });
 }
