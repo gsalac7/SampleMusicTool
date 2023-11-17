@@ -147,6 +147,7 @@ function initializationButtonListener() {
     initModelButton.addEventListener('click', () => {
         // Remove old eventListeners
         removeEventListenersFromButtons();
+        console.log("instrumentConfig", instrumentConfig);
 
         showLoader();
         if (!checkpoint) {
@@ -191,6 +192,7 @@ function initializationButtonListener() {
         } else {
             console.error(`Initialization callback not found for model: ${newModel}`);
         }
+        console.log("NewModel: " + newModel);
         // Unhide the proper controls for the specific model
         if (newModel == "MusicRNN") {
             // display Seed Selector choices and hide other options
@@ -220,6 +222,7 @@ function initializationButtonListener() {
             }
             
         } else if (newModel == "MarkovChain") {
+            console.log("Model is MarkovChain removing all controls");
             document.getElementById('seed-selector').style.display = 'none';
             document.getElementById('sample-selector').style.display = 'none';
             document.getElementById('Arp-Chord-Selector').style.display = 'none';
@@ -235,7 +238,8 @@ function initializationButtonListener() {
             document.getElementById('Arp-Controls').style.display = 'none';
             document.getElementById('Extender-Controls').style.display = 'none';
         }
-        else if (newModel == "MusicVae") {
+        else if (newModel == "MusicVAE") {
+            console.log("Model is musicVAE removing all controls");
             document.getElementById('seed-selector').style.display = 'none';
             document.getElementById('sample-selector').style.display = 'none';
             document.getElementById('Chord-Melody-Selector').style.display = 'none';
