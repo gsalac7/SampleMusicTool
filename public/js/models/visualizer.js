@@ -53,13 +53,13 @@ function normalizeSequence(sequence, shouldNormalize = true) {
         } else {
             switch (note.instrument) {
                 case 0:  // melody
-                    note.program = setInstrumentNumber('acoustic_grand_piano');
+                    note.program = setInstrumentNumber(activeInstrument);
                     break;
                 case 1:  // bassline
                     note.program = setInstrumentNumber('synth_bass_1');
                     break;
                 default:
-                    note.program = 0;  // fallback to piano
+                    note.program = setInstrument(activeInstrument);  // fallback to piano
             }
         }
     });
