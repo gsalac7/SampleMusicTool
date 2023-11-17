@@ -7,17 +7,20 @@ let music_vae;
 let generatedSequence;
 let player = "soundfont";
 
-function initializeMultiTrackModel(checkpoint) {
+async function initializeMultiTrackModel(checkpoint) {
     clearVisualizer();
     instrumentConfig['currentModel'] = "MultiTrack";
     music_vae = new mm.MusicVAE(checkpoint);
-    music_vae.initialize().then(function () {
+
+    try {
+        await music_vae.initialize();
         console.log('MultiTrack Model initialized');
         hideLoader();
-        showNotification("MultiTrack MOdel initialized Successfully!");
-    }).catch(function (error) {
+        showNotification("MultiTrack Model initialized Successfully!");
+    } catch (error) {
         console.error('Failed to initialize model:', error);
-    });
+        // Handle the error appropriately, such as showing an error message to the user
+    }
 }
 
 function disposeMultiTrackModel() {
@@ -107,8 +110,6 @@ async function generateMultiTrackSequence() {
     for (let i = 0; i < chords.length; i++) {
         // Transpose the sequence if necessary
         let transpositionInterval = getRootNoteForChord(chords[i]) - rootNote;
-        console.log(chords[i])
-        console.log("Transposition Interval for chord: " + transpositionInterval);
 
         generatedSequence.notes.forEach(note => {
             // Copy and transpose the note

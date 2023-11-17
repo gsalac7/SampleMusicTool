@@ -9,18 +9,23 @@ let generatedSequence;
 let seedSequence;
 
 // initialize the AI Model
-function initializeRNNModel(checkpoint) {
-  clearVisualizer();
+async function initializeRNNModel(checkpoint) {
+    clearVisualizer();
     instrumentConfig['currentModel'] = "MusicRNN";
     rnnModel = new mm.MusicRNN(checkpoint);
-    rnnModel.initialize().then(function () {
+
+    try {
+        await rnnModel.initialize();
         console.log('Model initialized');
         hideLoader();
         showNotification("MusicRNN Model Initialized");
-    }).catch(function (error) {
+    } catch (error) {
         console.error('Failed to initialize model:', error);
-    });
+        // Handle the error appropriately
+        // For example, show an error notification to the user
+    }
 }
+
 
 // Generate sequence specific for RNN model
 async function generateMusicRNNSequence() {

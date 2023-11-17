@@ -12,18 +12,21 @@ let STEPS_PER_PROG = 4 * STEPS_PER_CHORD;
 // Number of times to repeat chord progression.
 let NUM_REPS = 4;
 
-// initialize the AI Model with chord improv
-function initializeChordModel(checkpoint) {
-  clearVisualizer();
-  instrumentConfig['currentModel'] = "chordImprov";
-  rnnModel = new mm.MusicRNN(checkpoint);
-  rnnModel.initialize().then(function () {
-    console.log('Model initialized');
-    hideLoader();
-    showNotification("Chord Model Initialized");
-  }).catch(function (error) {
-    console.error('Failed to initialize model:', error);
-  });
+async function initializeChordModel(checkpoint) {
+    clearVisualizer();
+    instrumentConfig['currentModel'] = "chordImprov";
+    rnnModel = new mm.MusicRNN(checkpoint);
+
+    try {
+        await rnnModel.initialize();
+        console.log('Model initialized');
+        hideLoader();
+        showNotification("Chord Model Initialized");
+    } catch (error) {
+        console.error('Failed to initialize model:', error);
+        // Handle the error appropriately
+        // For example, show an error notification to the user
+    }
 }
 
 async function generateChordSequence() {

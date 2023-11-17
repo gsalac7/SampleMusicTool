@@ -8,19 +8,23 @@ let music_vae;
 let generatedSequence;
 let seedSequence;
 
-function initializeGroovaeModel(checkpoint) {
-  clearVisualizer();
+async function initializeGroovaeModel(checkpoint) {
+    clearVisualizer();
     instrumentConfig['currentModel'] = "MusicVAE";
-    console.log("Checkpooint: " + checkpoint);
+    console.log("Checkpoint: " + checkpoint);
     music_vae = new mm.MusicVAE(checkpoint);
-    music_vae.initialize().then(function () {
+
+    try {
+        await music_vae.initialize();
         console.log('Model initialized');
         hideLoader();
         showNotification("MusicVAE Model initialized Successfully!");
-    }).catch(function (error) {
+    } catch (error) {
         console.error('Failed to initialize model:', error);
-    });
+        // Handle the error appropriately, for example, show an error message to the user
+    }
 }
+
 
 function disposeGroovaeModel() {
     if (music_vae) {

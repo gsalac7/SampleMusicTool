@@ -1,7 +1,7 @@
 import * as mm from '@magenta/music';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
 
-let visualizer;
+let visualizer = null;
 const soundFontUrl = instrumentConfig['soundFontUrl'];
 const soundFontData = instrumentConfig['soundFontData'];
 let player = null;
@@ -11,20 +11,6 @@ let activeInstrument;
 function initializeVisualizerSoundFont() {
     if (!player) {
         player = new mm.SoundFontPlayer(soundFontUrl, undefined, undefined, undefined, {
-            run: note => visualizer.redraw(note),
-            stop: () => { }
-        });
-    } else {
-        if (player.isPlaying()) {
-            player.stop();
-        }
-    }
-}
-
-// USe the default instruments 
-function initializeVisualizerDefault() {
-    if (!player) {
-        player = new mm.Player(false, {
             run: note => visualizer.redraw(note),
             stop: () => { }
         });
@@ -45,6 +31,8 @@ function clearVisualizer() {
     if (visualizer) {
         visualizer.clear();
         visualizer.clearActiveNotes();
+        player = null;
+        visualizer = null;
     }
 }
 function setInstrument(instrument) {
@@ -102,25 +90,6 @@ function playGeneratedSequenceSoundFont(generatedSeq, shouldNormalize = true) {
     }
     // Start the player
     player.start(generatedSeq);
-    console.log(generatedSeq);
-}
-
-function playGeneratedSequenceDefault(generatedSequence) {
-    initializeVisualizerDefault();
-    console.log(generatedSequence);
-    let BPM = instrumentConfig['bpm'];
-    player.setTempo(BPM);
-    const config = {
-        noteHeight: 10,
-        pixelsPerTimeStep: 150,
-        noteRGB: '211, 211, 211',
-        activeNoteRGB: '240, 84, 119',
-    };
-
-    visualizer = new mm.PianoRollSVGVisualizer(generatedSequence, document.getElementById('svg-container'), config);
-
-    // Play the sequence and use the callbacks to highlight the notes.
-    player.start(generatedSequence);
 }
 
 function setInstrumentNumber(instrumentName) {
@@ -142,4 +111,4 @@ function setActiveInstrumentNumber() {
     return null;
 }
 
-export { setInstrument, playGeneratedSequenceSoundFont, playGeneratedSequenceDefault, stopPlayer, clearVisualizer}
+export { setInstrument, playGeneratedSequenceSoundFont, stopPlayer, clearVisualizer}

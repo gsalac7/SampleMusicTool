@@ -5,27 +5,26 @@ import { hideLoader, showNotification } from '../util/controlsManager';
 
 let music_vae;
 let generatedSequence;
-let copyGeneratedSequence;
 let shouldNormalize;
 
-function initializeMusicVaeModel(checkpoint) {
-  clearVisualizer();
-  instrumentConfig['currentModel'] = "MusicVAE";
-  music_vae = new mm.MusicVAE(checkpoint);
-  music_vae.initialize().then(function () {
-    console.log('Model initialized');
-    hideLoader();
-    showNotification("MusicVAE Model initialized Successfully!");
-  }).catch(function (error) {
-    console.error('Failed to initialize model:', error);
-  });
-  // Trio, Multi, Drum, Groove require specific instruments to be played with
-  if (checkpoint.includes("trio") || checkpoint.includes('multi') || checkpoint.includes('drum') || checkpoint.includes("groove")) {
-    shouldNormalize = true;
-  } else {
-    shouldNormalize = false;
-  }
+async function initializeMusicVaeModel(checkpoint) {
+    clearVisualizer();
+    instrumentConfig['currentModel'] = "MusicVAE";
+    music_vae = new mm.MusicVAE(checkpoint);
+
+    try {
+        await music_vae.initialize();
+        console.log('Model initialized');
+        hideLoader();
+        showNotification("MusicVAE Model initialized Successfully!");
+    } catch (error) {
+        console.error('Failed to initialize model:', error);
+    }
+
+    shouldNormalize = checkpoint.includes("trio") || checkpoint.includes('multi') || 
+                      checkpoint.includes('drum') || checkpoint.includes("groove");
 }
+
 
 function disposeVAEModel() {
   if (music_vae) {
@@ -33,6 +32,7 @@ function disposeVAEModel() {
     music_vae.dispose();
     instrumentConfig['currentModel'] = '';
     generatedSequence = null;
+    clearVisualizer();
     // rehide the replay and download buttons
     document.getElementById('replay-button').style.display = 'none';
     document.getElementById('download-link').style.display = 'none';

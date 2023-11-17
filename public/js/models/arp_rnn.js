@@ -8,19 +8,22 @@ import { quantizeNoteSequence } from '@magenta/music/esm/core/sequences';
 let rnnModel;
 let generatedSequence;
 
-// initialize the AI Model with chord improv
-function initializeArpModel(checkpoint) {
-  clearVisualizer();
-  instrumentConfig['currentModel'] = "ArpRNN";
-  rnnModel = new mm.MusicRNN(checkpoint);
-  rnnModel.initialize().then(function () {
-    console.log('Arp Model initialized');
-    hideLoader();
-    showNotification("Arp Model Initialized");
-  }).catch(function (error) {
-    console.error('Failed to initialize model:', error);
-  });
+async function initializeArpModel(checkpoint) {
+    clearVisualizer();
+    instrumentConfig['currentModel'] = "ArpRNN";
+    rnnModel = new mm.MusicRNN(checkpoint);
+
+    try {
+        await rnnModel.initialize();
+        console.log('Arp Model initialized');
+        hideLoader();
+        showNotification("Arp Model Initialized");
+    } catch (error) {
+        console.error('Failed to initialize model:', error);
+        // Handle the error appropriately, for instance, show an error message to the user
+    }
 }
+
 
 
 async function generateArpSequence() {
