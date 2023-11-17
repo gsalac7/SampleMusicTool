@@ -1,5 +1,5 @@
 import * as mm from '@magenta/music';
-import { playGeneratedSequenceSoundFont, clearVisualizer} from './visualizer';
+import { playGeneratedSequenceSoundFont, clearVisualizer } from './visualizer';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
 import { hideLoader, showNotification } from '../util/controlsManager';
 import { sampleSequences } from './configs/sample_sequences';
@@ -16,9 +16,9 @@ async function initializeGroovaeModel(checkpoint) {
         await music_vae.initialize();
         hideLoader();
         showNotification("MusicVAE Model initialized Successfully!");
+        document.getElementById('generateMusic').style.display = 'inline-block';
     } catch (error) {
         console.error('Failed to initialize model:', error);
-        // Handle the error appropriately, for example, show an error message to the user
     }
 }
 
@@ -30,6 +30,7 @@ function disposeGroovaeModel() {
         generatedSequence = null;
         document.getElementById('replay-button').style.display = 'none';
         document.getElementById('download-link').style.display = 'none';
+        document.getElementById('stop-button').style.display = 'none';
     }
 }
 
@@ -51,6 +52,7 @@ async function generateGroovaeSequence() {
         // display replay-button and download link
         document.getElementById('replay-button').style.display = 'inline-block';
         document.getElementById('download-link').style.display = 'inline-block';
+        document.getElementById('stop-button').style.display = 'inline-block';
     }
 }
 
@@ -67,7 +69,7 @@ function readSampleMidi(file) {
             const noteSequence = await mm.midiToSequenceProto(midi);
             // Use noteSequence as your seed
             seedSequence = noteSequence;
-            
+
         };
         reader.readAsArrayBuffer(file);
     }

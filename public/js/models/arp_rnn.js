@@ -2,8 +2,6 @@ import * as mm from '@magenta/music';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
 import { playGeneratedSequenceSoundFont, clearVisualizer } from './visualizer';
 import { hideLoader, showNotification } from '../util/controlsManager';
-import { quantizeNoteSequence } from '@magenta/music/esm/core/sequences';
-
 
 let rnnModel;
 let generatedSequence;
@@ -17,9 +15,9 @@ async function initializeArpModel(checkpoint) {
         console.log('Arp Model initialized');
         hideLoader();
         showNotification("Arp Model Initialized");
+        document.getElementById('generateMusic').style.display = 'inline-block';
     } catch (error) {
         console.error('Failed to initialize model:', error);
-        // Handle the error appropriately, for instance, show an error message to the user
     }
 }
 
@@ -29,7 +27,7 @@ async function generateArpSequence() {
   let stepsPerQuarter = instrumentConfig['stepsPerQuarter']; // Assuming this is set correctly in your config
 
   const stepsPerBar = 4 * stepsPerQuarter; // 4 beats in a bar for 4/4 time signature
-  const barLength = 1; // Generate only one bar
+  const barLength = instrumentConfig['numBars']; 
   const totalSteps = stepsPerBar * barLength; // Total steps for one bar
 
   const quantizedSeq = {
@@ -46,11 +44,11 @@ async function generateArpSequence() {
   loopedSequence['model'] = 'ArpRNN';
 
   if (loopedSequence) {
-    console.log("ArpRNN is executing this");
     playGeneratedSequenceSoundFont(loopedSequence, false);
     generatedSequence = JSON.parse(JSON.stringify(loopedSequence));
     document.getElementById('replay-button').style.display = 'inline-block';
     document.getElementById('download-link').style.display = 'inline-block';
+    document.getElementById('stop-button').style.display = 'inline-block';
   }
 }
 
@@ -100,6 +98,7 @@ function disposeArpModel() {
     generatedSequence = null;
     document.getElementById('replay-button').style.display = 'none';
     document.getElementById('download-link').style.display = 'none';
+    document.getElementById('stop-button').style.display = 'none';
   }
 }
 

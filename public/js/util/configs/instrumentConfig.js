@@ -1,8 +1,7 @@
 export const instrumentConfig = {
-    keyPressed: false,
     temperature: 1.0,
-    stepsPerQuarter: 4,
-    length: 50,
+    stepsPerQuarter: "",
+    length: "",
     bpm: 120,
     currentModel: "",
     checkpoint: "",

@@ -148,6 +148,7 @@ function initializationButtonListener() {
         // Remove old eventListeners
         removeEventListenersFromButtons();
         console.log("instrumentConfig", instrumentConfig);
+        document.getElementById('generateMusic').style.display = 'inline:block';
 
         showLoader();
         if (!checkpoint) {
@@ -192,13 +193,11 @@ function initializationButtonListener() {
         } else {
             console.error(`Initialization callback not found for model: ${newModel}`);
         }
-        console.log("NewModel: " + newModel);
         // Unhide the proper controls for the specific model
         if (newModel == "MusicRNN") {
             // display Seed Selector choices and hide other options
             document.getElementById('seed-selector').style.display = 'block';
             document.getElementById('sample-selector').style.display = 'none';
-            document.getElementById('Arp-Chord-Selector').style.display = 'none';
             document.getElementById('Chord-Melody-Selector').style.display = 'none';
             document.getElementById('Arp-Controls').style.display = 'none';
             document.getElementById('Extender-Controls').style.display = 'block';
@@ -225,7 +224,6 @@ function initializationButtonListener() {
             console.log("Model is MarkovChain removing all controls");
             document.getElementById('seed-selector').style.display = 'none';
             document.getElementById('sample-selector').style.display = 'none';
-            document.getElementById('Arp-Chord-Selector').style.display = 'none';
             document.getElementById('Chord-Melody-Selector').style.display = 'none';
             document.getElementById('Arp-Controls').style.display = 'none';
             document.getElementById('Extender-Controls').style.display = 'none';
@@ -233,7 +231,6 @@ function initializationButtonListener() {
         }else if (newModel == "Groovae") {
             document.getElementById('seed-selector').style.display = 'none';
             document.getElementById('sample-selector').style.display = 'block';
-            document.getElementById('Arp-Chord-Selector').style.display = 'none';
             document.getElementById('Chord-Melody-Selector').style.display = 'none';
             document.getElementById('Arp-Controls').style.display = 'none';
             document.getElementById('Extender-Controls').style.display = 'none';
@@ -243,14 +240,12 @@ function initializationButtonListener() {
             document.getElementById('seed-selector').style.display = 'none';
             document.getElementById('sample-selector').style.display = 'none';
             document.getElementById('Chord-Melody-Selector').style.display = 'none';
-            document.getElementById('Arp-Chord-Selector').style.display = 'none';
             document.getElementById('Extender-Controls').style.display = 'none';
             document.getElementById('Arp-Controls').style.display = 'none';
         }
         else if (newModel == "ArpRNN") {
             document.getElementById('seed-selector').style.display = 'none';
             document.getElementById('sample-selector').style.display = 'none';
-            document.getElementById('Arp-Chord-Selector').style.display = 'block';
             document.getElementById('Chord-Melody-Selector').style.display = 'none';
             document.getElementById('Extender-Controls').style.display = 'none';
             document.getElementById('Arp-Controls').style.display = 'block';
@@ -263,6 +258,15 @@ function initializationButtonListener() {
                 });
             } else {
                 console.error('Arp Chord select field not found');
+            }
+            const numBars = document.getElementById('bar-select');
+            if (numBars) {
+                numBars.addEventListener('change', function () {
+                    const selectedValue = this.value;
+                    instrumentConfig['numBars'] = parseInt(selectedValue, 10);
+                });
+            } else {
+                console.error('Steps Per Quarter select field not found');
             }
             const stepsPerQuarter= document.getElementById('steps-select');
             if (stepsPerQuarter) {

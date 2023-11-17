@@ -17,6 +17,7 @@ async function initializeMusicVaeModel(checkpoint) {
         console.log('Model initialized');
         hideLoader();
         showNotification("MusicVAE Model initialized Successfully!");
+        document.getElementById('generateMusic').style.display = 'inline-block';
     } catch (error) {
         console.error('Failed to initialize model:', error);
     }
@@ -36,6 +37,7 @@ function disposeVAEModel() {
     // rehide the replay and download buttons
     document.getElementById('replay-button').style.display = 'none';
     document.getElementById('download-link').style.display = 'none';
+    document.getElementById('stop-button').style.display = 'none';
   }
 }
 
@@ -50,6 +52,7 @@ async function generateMusicVAESequence() {
     // display replay-button and download link
     document.getElementById('replay-button').style.display = 'inline-block';
     document.getElementById('download-link').style.display = 'inline-block';
+    document.getElementById('stop-button').style.display = 'inline-block';
   }
 }
 

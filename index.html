@@ -40,8 +40,8 @@
       </svg>
     </div>
 
-    <button id="stop-button">Stop Sequence</button>
-    <button id="generateMusic">Generate Music</button>
+    <button id="stop-button" style="display:none;">Stop Sequence</button>
+    <button id="generateMusic" style="display:none;">Generate Music</button>
     <button id="replay-button" style="display: none;">Replay Generated Sequence</button>
     <button id="download-link" style="display: none;">Download Generated Sequence</button>
 
@@ -100,12 +100,6 @@
         </div>
       </div>
 
-      <!-- ARP Chord Selector -->
-      <div id="Arp-Chord-Selector" style="display:none">
-        <label for="chordInput">Enter a chord to create an arpeggiated sequence: </label>
-        <input type="text" id="chordInput" placeholder="e.g., C">
-      </div>
-
       <!-- Chord Selector Improv Melody-->
       <div id="Chord-Melody-Selector" style="display:none">
         <label for="chordInput">Enter a Chord Progression to improvise over: </label>
@@ -140,6 +134,20 @@
 
       <!-- Specific Controls for the Arpeggiator-->
       <div id="Arp-Controls" style="display:none">
+        <!-- ARP Chord Selector -->
+        <div id="Arp-Chord-Selector">
+          <label for="chordInput">Enter a chord to create an arpeggiated sequence: </label>
+          <input type="text" id="chordInput" placeholder="e.g., C">
+        </div>
+        <!-- Bar Length-->
+        <div id="bar-selector">
+          <label for="bar-select">Number of Bars:</label>
+          <select id="bar-select">
+            <option value="" disabled selected>Select Bar Length:</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+          </select>
+        </div>
         <!-- Steps per Quarter Dropdown -->
         <div id="steps-selector">
           <label for="steps-select">Steps per Quarter:</label>

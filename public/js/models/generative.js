@@ -23,6 +23,8 @@ function initializeMarkovModel() {
     showNotification("Markov Chain initialized Successfully!");
     document.getElementById('replay-button').style.display = 'none';
     document.getElementById('download-link').style.display = 'none';
+    document.getElementById('generateMusic').style.display = 'inline-block';
+    document.getElementById('stop-button').style.display = 'inline-block';
 }
 
 function generateMusicSequence(startPitch, totalSteps, stepsPerQuarter, chain) {

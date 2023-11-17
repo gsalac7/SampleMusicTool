@@ -16,6 +16,7 @@ async function initializeMultiTrackModel(checkpoint) {
         console.log('MultiTrack Model initialized');
         hideLoader();
         showNotification("MultiTrack Model initialized Successfully!");
+        document.getElementById('generateMusic').style.display = 'inline-block';
     } catch (error) {
         console.error('Failed to initialize model:', error);
         // Handle the error appropriately, such as showing an error message to the user
@@ -28,6 +29,7 @@ function disposeMultiTrackModel() {
         instrumentConfig['currentModel'] = '';
         document.getElementById('replay-button').style.display = 'none';
         document.getElementById('download-link').style.display = 'none';
+        document.getElementById('stop-button').style.display = 'none';
     }
 }
 
@@ -135,6 +137,7 @@ async function generateMultiTrackSequence() {
     // Display replay-button and download link
     document.getElementById('replay-button').style.display = 'inline-block';
     document.getElementById('download-link').style.display = 'inline-block';
+    document.getElementById('stop-button').style.display = 'inline-block';
 }
 
 function replayMultiTrackSequence() {

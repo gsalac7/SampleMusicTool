@@ -21,6 +21,7 @@ async function initializeChordModel(checkpoint) {
         console.log('Model initialized');
         hideLoader();
         showNotification("Chord Model Initialized");
+        document.getElementById('generateMusic').style.display = 'inline-block';
     } catch (error) {
         console.error('Failed to initialize model:', error);
         // Handle the error appropriately
@@ -92,6 +93,7 @@ async function generateChordSequence() {
     // Display replay-button and download link
     document.getElementById('replay-button').style.display = 'inline-block';
     document.getElementById('download-link').style.display = 'inline-block';
+    document.getElementById('stop-button').style.display = 'inline-block';
   }
 }
 
@@ -123,6 +125,7 @@ function disposeChordModel() {
     generatedSequence = null;
     document.getElementById('replay-button').style.display = 'none';
     document.getElementById('download-link').style.display = 'none';
+    document.getElementById('stop-button').style.display = 'none';
   }
 }
 
