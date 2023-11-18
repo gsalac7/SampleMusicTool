@@ -95,7 +95,7 @@ async function generateMultiTrackSequence() {
 
     // Generate the initial sequence based on the first chord
     let generatedSeq = await music_vae.sample(1, temperature, { chordProgression: [chords[0]] }, 24);
-    generatedSequence = generatedSeq[0];
+    //generatedSequence = generatedSeq[0];
 
     // Ensure fullSequence is initialized with the correct properties for a quantized sequence
     let fullSequence = {
@@ -112,13 +112,13 @@ async function generateMultiTrackSequence() {
         // Transpose the sequence if necessary
         let transpositionInterval = getRootNoteForChord(chords[i]) - rootNote;
 
-        generatedSequence.notes.forEach(note => {
+        generatedSeq[0].notes.forEach(note => {
             // Copy and transpose the note
             let transposedNote = {
                 ...note,
                 pitch: note.isDrum ? note.pitch : note.pitch + transpositionInterval,
-                quantizedStartStep: note.quantizedStartStep + i * generatedSequence.totalQuantizedSteps,
-                quantizedEndStep: note.quantizedEndStep + i * generatedSequence.totalQuantizedSteps
+                quantizedStartStep: note.quantizedStartStep + i * generatedSeq[0].totalQuantizedSteps,
+                quantizedEndStep: note.quantizedEndStep + i * generatedSeq[0].totalQuantizedSteps
             };
 
             // Make sure the transposed pitch is within the MIDI range (for non-drum notes)
@@ -128,12 +128,12 @@ async function generateMultiTrackSequence() {
         });
 
         // Assuming each sequence/bar has the same number of quantized steps
-        fullSequence.totalQuantizedSteps += generatedSequence.totalQuantizedSteps;
+        fullSequence.totalQuantizedSteps += generatedSeq[0].totalQuantizedSteps;
     }
 
     // Use the full, concatenated sequence for playback
-    generatedSequence = fullSequence;
-    playGeneratedSequenceSoundFont(generatedSequence)
+    generatedSequence = JSON.parse(JSON.stringify(fullSequence));
+    playGeneratedSequenceSoundFont(fullSequence)
     // Display replay-button and download link
     document.getElementById('replay-button').style.display = 'inline-block';
     document.getElementById('download-link').style.display = 'inline-block';
@@ -141,7 +141,10 @@ async function generateMultiTrackSequence() {
 }
 
 function replayMultiTrackSequence() {
-    playGeneratedSequenceSoundFont(generatedSequence, false) // should no longer be normalized
+    let sequence= JSON.parse(JSON.stringify(generatedSequence));
+    console.log("Replay")
+    console.log(sequence)
+    playGeneratedSequenceSoundFont(sequence, true) // should no longer be normalized
 }
 
 async function exportMultiTrackSequence() {
