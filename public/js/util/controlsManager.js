@@ -10,7 +10,7 @@ import { initializeMarkovModel, playGenerativeSequence, replayGenerativeSequence
 import { initializeGroovaeModel, generateGroovaeSequence, replayGroovaeSequence, exportGroovaeSequence, disposeGroovaeModel, readSampleMidi} from '../models/groovae';
 import checkpoints from './configs/checkpoints.json';
 import { instrumentConfig } from './configs/instrumentConfig';
-import { stopPlayer, clearVisualizer } from '../models/visualizer';
+import { stopPlayer } from '../models/visualizer';
 
 let currentModel = instrumentConfig['currentModel'];
 let checkpoint = instrumentConfig['checkpoint'];
@@ -280,10 +280,8 @@ function initializationButtonListener() {
         } else if (newModel == "ChordImprov" || newModel == "MultiTrack") {
             document.getElementById('seed-selector').style.display = 'none';
             document.getElementById('sample-selector').style.display = 'none';
-            document.getElementById('Arp-Chord-Selector').style.display = 'none';
             document.getElementById('Chord-Melody-Selector').style.display = 'block';
             document.getElementById('Arp-Controls').style.display = 'none';
-            // set Event listener for arp-chord-selector
             const chordField = document.getElementById('chordInput');
             if (chordField) {
                 chordField.addEventListener('change', function () {

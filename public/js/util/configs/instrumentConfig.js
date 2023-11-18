@@ -1,3 +1,4 @@
+const path = require('path');
 export const instrumentConfig = {
     temperature: 1.0,
     stepsPerQuarter: "",
@@ -9,7 +10,7 @@ export const instrumentConfig = {
     chordMelodySeq: "",
     seedSequence: "",
     numBars: "",
-    soundFontUrl: "../SampleMusicTool/public/sounds/soundfont",
+    soundFontUrl: path.join(__dirname, '/public/sounds/soundfont'), 
     soundFontData: {
         "name": "sgm_plus",
         "instruments": {

@@ -66,6 +66,7 @@ function normalizeSequence(sequence, shouldNormalize = true) {
 }
 
 function playGeneratedSequenceSoundFont(generatedSeq, shouldNormalize = true) {
+    stopPlayer();
     let BPM = instrumentConfig['bpm'];
     generatedSeq.notes.forEach(note => {
         note.velocity = 127;  // Max velocity
