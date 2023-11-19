@@ -1,5 +1,5 @@
 import * as mm from '@magenta/music';
-import { playGeneratedSequenceSoundFont, clearVisualizer} from './visualizer';
+import { playGeneratedSequenceSoundFont, clearVisualizer, displayControls} from './visualizer';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
 import { hideLoader, showNotification } from '../util/controlsManager';
 
@@ -29,15 +29,10 @@ async function initializeMusicVaeModel(checkpoint) {
 
 function disposeVAEModel() {
   if (music_vae) {
-    console.log("Disposing MusicVAE Model");
+    clearVisualizer();
     music_vae.dispose();
     instrumentConfig['currentModel'] = '';
     generatedSequence = null;
-    clearVisualizer();
-    // rehide the replay and download buttons
-    document.getElementById('replay-button').style.display = 'none';
-    document.getElementById('download-link').style.display = 'none';
-    document.getElementById('stop-button').style.display = 'none';
   }
 }
 
@@ -47,11 +42,7 @@ async function generateMusicVAESequence() {
   let sequence = JSON.parse(JSON.stringify(generatedSequence[0]));
   if (sequence) {
     playGeneratedSequenceSoundFont(sequence);
-    // display replay-button and download link
-    document.getElementById('replay-button').style.display = 'inline-block';
-    document.getElementById('download-link').style.display = 'inline-block';
-    document.getElementById('stop-button').style.display = 'inline-block';
-    document.getElementById('loop-button').style.display = 'inline-block';
+    displayControls();
   }
 }
 

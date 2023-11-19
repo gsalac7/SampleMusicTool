@@ -1,5 +1,5 @@
 import * as mm from '@magenta/music';
-import { playGeneratedSequenceSoundFont, clearVisualizer} from './visualizer';
+import { playGeneratedSequenceSoundFont, clearVisualizer, displayControls} from './visualizer';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
 import { hideLoader, showNotification } from '../util/controlsManager';
 import { sampleSequences } from './configs/sample_sequences';
@@ -28,15 +28,12 @@ function disposeGroovaeModel() {
         music_vae.dispose();
         instrumentConfig['currentModel'] = '';
         generatedSequence = null;
-        document.getElementById('replay-button').style.display = 'none';
-        document.getElementById('download-link').style.display = 'none';
-        document.getElementById('stop-button').style.display = 'none';
     }
 }
 
 async function generateGroovaeSequence() {
     let temperature = instrumentConfig['temperature'];
-    if (seedSequence == undefined) {
+    if (!seedSequence) {
         seedSequence = sampleSequences['majorScaleUp'];
     }
 
@@ -50,10 +47,7 @@ async function generateGroovaeSequence() {
     if (generatedSequence) {
         playGeneratedSequenceSoundFont(generatedSequence[0])
         // display replay-button and download link
-        document.getElementById('replay-button').style.display = 'inline-block';
-        document.getElementById('download-link').style.display = 'inline-block';
-        document.getElementById('stop-button').style.display = 'inline-block';
-        document.getElementById('loop-button').style.display = 'inline-block';
+        displayControls();
     }
 }
 
@@ -70,7 +64,6 @@ function readSampleMidi(file) {
             const noteSequence = await mm.midiToSequenceProto(midi);
             // Use noteSequence as your seed
             seedSequence = noteSequence;
-
         };
         reader.readAsArrayBuffer(file);
     }

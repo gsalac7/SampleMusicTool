@@ -46,7 +46,7 @@
         <button id="replay-button" style="display: none;">Replay</button>
         <button id="loop-button" style="display:none;">
           <img src="public/assets/loop.png" alt="Loop" style="width: 24px; height: 24px;">
-      </button>
+        </button>
 
 
       </div>
@@ -56,7 +56,7 @@
       </div>
     </div>
 
-    
+
 
     <div id="AI-Control-Panel">
       <!-- Checkpoint and Initialize Model Group -->
@@ -102,8 +102,7 @@
         <label for="seed-select">Sample Sequence:</label>
         <select id="seed-select">
           <option value="majorScaleUp">Major Scale</option>
-          <option value="maryHadALittleLamb">Mary Had a Little Lamb</option>
-          <option value="twinkleTwinkls">Twinkle Twinkle Little Star</option>
+          <option value="complexMelody">Complex Melody</option>
         </select>
         <!-- Upload MIDI as Sample Sequence -->
         <div id="midi-upload">
@@ -114,12 +113,22 @@
       </div>
 
       <!-- Chord Selector Improv Melody-->
-      <div id="Chord-Melody-Selector" style="display:none">
-        <label for="chordInput">Enter a Chord Progression to improvise over: </label>
-        <input type="text" id="chordInput1" placeholder="e.g., C">
-        <input type="text" id="chordInput2" placeholder="e.g., C">
-        <input type="text" id="chordInput3" placeholder="e.g., C">
-        <input type="text" id="chordInput4" placeholder="e.g., C">
+      <div id="Chord-Melody-Controls" style="display:none">
+          <label for="chordInput">Enter a Chord Progression to improvise over: </label>
+          <input type="text" id="chordInput1" placeholder="e.g., C">
+          <input type="text" id="chordInput2" placeholder="e.g., C">
+          <input type="text" id="chordInput3" placeholder="e.g., C">
+          <input type="text" id="chordInput4" placeholder="e.g., C">
+        <!-- Steps per Quarter Dropdown -->
+        <div id="steps-chord-selector">
+          <label for="steps-chord-select">Steps per Quarter:</label>
+          <select id="steps-chord-select">
+            <option value="" disabled selected>Select Steps per Quarter</option>
+            <option value="16">16</option>
+            <option value="32">32</option>
+            <option value="48">48</option>
+          </select>
+        </div>
       </div>
       <!-- Specific Controls for the Melody Extender-->
       <div id="Extender-Controls" style="display:none">
@@ -137,6 +146,7 @@
         <div id="steps-melody-selector">
           <label for="steps-melody-select">Steps per Quarter:</label>
           <select id="steps-melody-select">
+            <option value="" disabled selected>Select Steps per Quarter</option>
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="4">4</option>

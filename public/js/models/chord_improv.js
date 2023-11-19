@@ -1,7 +1,7 @@
 import * as mm from '@magenta/music';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
 import { clearVisualizer, playGeneratedSequenceSoundFont } from './visualizer';
-import { hideLoader, showNotification } from '../util/controlsManager';
+import { hideLoader, showError, showNotification } from '../util/controlsManager';
 
 let rnnModel;
 let generatedSequence;
@@ -36,7 +36,16 @@ async function generateChordSequence() {
     document.getElementById('chordInput4').value
   ].filter(Boolean);;
 
-  const steps = 4; // Replace with your specific steps per quarter
+  if (chords.length === 0) {
+    showError("Please enter at least one chord to generate a Melodic progression");
+  }
+
+  const steps = instrumentConfig['stepsPerQuarter']; 
+
+  if (!steps) {
+    showError("Please select the number of steps per quarter note in the dropdown");
+  }
+
   const temperature = instrumentConfig['temperature']; // Replace with your specific temperature
   const length = STEPS_PER_PROG + (NUM_REPS - 1) * STEPS_PER_PROG - 1;
 
@@ -72,8 +81,6 @@ async function generateChordSequence() {
 
       // Add the bass note for the current chord
       initialSeq.notes.push({
-        //instrument: 1,
-        //program: 32,
         pitch: 36 + roots[j], // Add the correct bass note for the chord
         quantizedStartStep: startStep,
         quantizedEndStep: endStep

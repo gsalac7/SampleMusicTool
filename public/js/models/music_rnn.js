@@ -1,8 +1,8 @@
 import * as mm from '@magenta/music';
 import { seedSequences } from './configs/seed_sequences';
-import { playGeneratedSequenceSoundFont, clearVisualizer } from './visualizer';
+import { playGeneratedSequenceSoundFont, clearVisualizer, displayControls } from './visualizer';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
-import { hideLoader, showNotification } from '../util/controlsManager';
+import { hideLoader, showError, showNotification } from '../util/controlsManager';
 
 let rnnModel;
 let generatedSequence;
@@ -22,18 +22,23 @@ async function initializeRNNModel(checkpoint) {
         document.getElementById('generateMusic').style.display = 'inline-block';
     } catch (error) {
         console.error('Failed to initialize model:', error);
-        // Handle the error appropriately
-        // For example, show an error notification to the user
+        showError("Failed to initialize model");
     }
 }
 
 // Generate sequence specific for RNN model
 async function generateMusicRNNSequence() {
     let length = instrumentConfig['length']; 
+    if (!length) {
+        showError("Please select the length of the sequence in the dropdown");
+    }
     let steps = instrumentConfig['stepsPerQuarter']; 
+    if (!steps) {
+        showError("Please select the number of steps per quarter note in the dropdown");
+    }
     let temperature = instrumentConfig['temperature'];
-    if (seedSequence == undefined) {
-        console.log(seedSequences)
+    // If no seed Sequence is present default to what is in the dropdown
+    if (!seedSequence) {
         seedSequence = seedSequences['majorScaleUp'];
     }
     // Normalize the Tempo
@@ -43,14 +48,10 @@ async function generateMusicRNNSequence() {
 
     const quantizedSeq = mm.sequences.quantizeNoteSequence(seedSequence, steps);
     generatedSequence = await rnnModel.continueSequence(quantizedSeq, length, temperature);
-    generatedSequence['model'] = 'MusicRNN';
     if (generatedSequence) {
         playGeneratedSequenceSoundFont(generatedSequence, false);
         // display replay-button and download link
-        document.getElementById('replay-button').style.display = 'inline-block';
-        document.getElementById('download-link').style.display = 'inline-block';
-        document.getElementById('stop-button').style.display = 'inline-block';
-        document.getElementById('loop-button').style.display = 'inline-block';
+        displayControls();
     }
 }
 
@@ -78,9 +79,6 @@ function disposeRNNModel() {
         rnnModel.dispose();
         instrumentConfig['currentModel'] = '';
         generatedSequence = null;
-        document.getElementById('replay-button').style.display = 'none';
-        document.getElementById('download-link').style.display = 'none';
-        document.getElementById('stop-button').style.display = 'none';
     }
 }
 

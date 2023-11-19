@@ -37,7 +37,4 @@ export const sampleSequences = {
         ],
         quantizationInfo: { stepsPerQuarter: 4 }
     }
-
-
-
 };

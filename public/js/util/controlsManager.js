@@ -6,7 +6,7 @@ import { initializeMusicVaeModel, generateMusicVAESequence, replayMusicVAESequen
 import { initializeChordModel, generateChordSequence, replayChordSequence, exportChordSequence, disposeChordModel } from '../models/chord_improv';
 import { initializeMultiTrackModel, generateMultiTrackSequence, replayMultiTrackSequence, exportMultiTrackSequence, disposeMultiTrackModel } from '../models/multitrack';
 import { initializeArpModel, generateArpSequence, disposeArpModel, replayArpSequence, exportArpSequence } from '../models/arp_rnn';
-import { initializeMarkovModel, playGenerativeSequence, replayGenerativeSequence, exportGenerativeSequence } from '../models/generative';
+import { initializeMarkovModel, playGenerativeSequence, replayGenerativeSequence, exportGenerativeSequence, disposeMarkovModel } from '../models/generative';
 import { initializeGroovaeModel, generateGroovaeSequence, replayGroovaeSequence, exportGroovaeSequence, disposeGroovaeModel, readSampleMidi} from '../models/groovae';
 import checkpoints from './configs/checkpoints.json';
 import { instrumentConfig } from './configs/instrumentConfig';
@@ -95,7 +95,7 @@ const modelConfig = {
         generateCallback: playGenerativeSequence,
         replayCallback: replayGenerativeSequence,
         exportCallback: exportGenerativeSequence,
-        disposeCallback: () => { },
+        disposeCallback: disposeMarkovModel,
         logMessage: "Initializing Markov Chain",
     }
 }
@@ -121,6 +121,19 @@ export function hideLoader() {
     document.getElementById('loader').style.display = 'none';
 }
 
+export function showError(message) {
+    const errorBanner = document.getElementById('errorBanner');
+    const errorMessage = document.getElementById('errorMessage');
+
+    errorMessage.textContent = message;
+    errorBanner.style.display = 'block'; // Make sure this is 'block' or 'flex' as per your CSS
+    errorBanner.classList.add('show');
+
+    // Automatically hide the notification after 3 seconds
+    setTimeout(() => {
+        errorBanner.classList.remove('show');
+    }, 3000);
+}
 
 export function showNotification(message) {
     const notificationBanner = document.getElementById('notificationBanner');
@@ -199,7 +212,7 @@ function initializationButtonListener() {
             // display Seed Selector choices and hide other options
             document.getElementById('seed-selector').style.display = 'block';
             document.getElementById('sample-selector').style.display = 'none';
-            document.getElementById('Chord-Melody-Selector').style.display = 'none';
+            document.getElementById('Chord-Melody-Controls').style.display = 'none';
             document.getElementById('Arp-Controls').style.display = 'none';
             document.getElementById('Extender-Controls').style.display = 'block';
             const lengthSelect= document.getElementById('length-select');
@@ -225,14 +238,14 @@ function initializationButtonListener() {
             console.log("Model is MarkovChain removing all controls");
             document.getElementById('seed-selector').style.display = 'none';
             document.getElementById('sample-selector').style.display = 'none';
-            document.getElementById('Chord-Melody-Selector').style.display = 'none';
+            document.getElementById('Chord-Melody-Controls').style.display = 'none';
             document.getElementById('Arp-Controls').style.display = 'none';
             document.getElementById('Extender-Controls').style.display = 'none';
             
         }else if (newModel == "Groovae") {
             document.getElementById('seed-selector').style.display = 'none';
             document.getElementById('sample-selector').style.display = 'block';
-            document.getElementById('Chord-Melody-Selector').style.display = 'none';
+            document.getElementById('Chord-Melody-Controls').style.display = 'none';
             document.getElementById('Arp-Controls').style.display = 'none';
             document.getElementById('Extender-Controls').style.display = 'none';
         }
@@ -240,14 +253,14 @@ function initializationButtonListener() {
             console.log("Model is musicVAE removing all controls");
             document.getElementById('seed-selector').style.display = 'none';
             document.getElementById('sample-selector').style.display = 'none';
-            document.getElementById('Chord-Melody-Selector').style.display = 'none';
+            document.getElementById('Chord-Melody-Controls').style.display = 'none';
             document.getElementById('Extender-Controls').style.display = 'none';
             document.getElementById('Arp-Controls').style.display = 'none';
         }
         else if (newModel == "ArpRNN") {
             document.getElementById('seed-selector').style.display = 'none';
             document.getElementById('sample-selector').style.display = 'none';
-            document.getElementById('Chord-Melody-Selector').style.display = 'none';
+            document.getElementById('Chord-Melody-Controls').style.display = 'none';
             document.getElementById('Extender-Controls').style.display = 'none';
             document.getElementById('Arp-Controls').style.display = 'block';
             // set Event listener for arp-chord-selector
@@ -281,7 +294,7 @@ function initializationButtonListener() {
         } else if (newModel == "ChordImprov" || newModel == "MultiTrack") {
             document.getElementById('seed-selector').style.display = 'none';
             document.getElementById('sample-selector').style.display = 'none';
-            document.getElementById('Chord-Melody-Selector').style.display = 'block';
+            document.getElementById('Chord-Melody-Controls').style.display = 'block';
             document.getElementById('Arp-Controls').style.display = 'none';
             const chordField = document.getElementById('chordInput');
             if (chordField) {
@@ -292,6 +305,15 @@ function initializationButtonListener() {
                 // probably create a list of the chords set here
             } else {
                 console.error('Chord select field not found');
+            }
+            const stepsPerQuarter= document.getElementById('steps-chord-select');
+            if (stepsPerQuarter) {
+                stepsPerQuarter.addEventListener('change', function () {
+                    const selectedValue = this.value;
+                    instrumentConfig['stepsPerQuarter'] = parseInt(selectedValue, 10);
+                });
+            } else {
+                console.error('Steps Per Quarter select field not found');
             }
         }
     });

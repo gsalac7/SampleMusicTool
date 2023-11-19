@@ -1,6 +1,7 @@
 import { playGeneratedSequenceSoundFont, clearVisualizer } from './visualizer';
 import { hideLoader, showNotification } from '../util/controlsManager';
 import * as mm from '@magenta/music';
+import { instrumentConfig } from '../util/configs/instrumentConfig';
 
 const melodyChain = {
     69: { 69: 0.3, 71: 0.25, 72: 0.25, 74: 0.15, 76: 0.05 }, // A
@@ -24,7 +25,16 @@ function initializeMarkovModel() {
     document.getElementById('replay-button').style.display = 'none';
     document.getElementById('download-link').style.display = 'none';
     document.getElementById('generateMusic').style.display = 'inline-block';
-    document.getElementById('stop-button').style.display = 'inline-block';
+    document.getElementById('stop-button').style.display = 'none';
+}
+
+function disposeMarkovModel() {
+    clearVisualizer();
+    instrumentConfig['currentModel'] = '';
+    document.getElementById('replay-button').style.display = 'none';
+    document.getElementById('download-link').style.display = 'none';
+    document.getElementById('stop-button').style.display = 'none';
+    document.getElementById('loop-button').style.display = 'none';
 }
 
 function generateMusicSequence(startPitch, totalSteps, stepsPerQuarter, chain) {
@@ -123,4 +133,4 @@ async function exportGenerativeSequence() {
     document.body.removeChild(downloadLink);
 }
 
-export { initializeMarkovModel, generateMusicSequence, playGenerativeSequence, replayGenerativeSequence, exportGenerativeSequence }
+export { initializeMarkovModel, disposeMarkovModel, generateMusicSequence, playGenerativeSequence, replayGenerativeSequence, exportGenerativeSequence }

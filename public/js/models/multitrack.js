@@ -1,7 +1,7 @@
 import * as mm from '@magenta/music';
-import { playGeneratedSequenceSoundFont, clearVisualizer } from './visualizer';
+import { playGeneratedSequenceSoundFont, clearVisualizer, displayControls } from './visualizer';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
-import { hideLoader, showNotification } from '../util/controlsManager';
+import { hideLoader, showError, showNotification } from '../util/controlsManager';
 
 let music_vae;
 let generatedSequence;
@@ -19,18 +19,15 @@ async function initializeMultiTrackModel(checkpoint) {
         document.getElementById('generateMusic').style.display = 'inline-block';
     } catch (error) {
         console.error('Failed to initialize model:', error);
-        // Handle the error appropriately, such as showing an error message to the user
+        showError("Failed to initialize model");
     }
 }
 
 function disposeMultiTrackModel() {
     if (music_vae) {
+        clearVisualizer();
         music_vae.dispose();
         instrumentConfig['currentModel'] = '';
-        document.getElementById('replay-button').style.display = 'none';
-        document.getElementById('download-link').style.display = 'none';
-        document.getElementById('stop-button').style.display = 'none';
-        document.getElementById('loop-button').style.display = 'none';
     }
 }
 
@@ -94,15 +91,23 @@ async function generateMultiTrackSequence() {
         document.getElementById('chordInput4').value,
     ].filter(chord => chord !== ""); // Filter out empty chords
 
+    if (chords.length === 0) {
+        showError("Please enter at least one chord to generate a Multitrack Sequence");
+    }
+
+    let stepsPerQuarter = instrumentConfig['stepsPerQuarter']; 
+    if (!stepsPerQuarter) {
+        showError("Please select the number of steps per quarter note in the dropdown");
+    }
+
     // Generate the initial sequence based on the first chord
-    let generatedSeq = await music_vae.sample(1, temperature, { chordProgression: [chords[0]] }, 24);
-    //generatedSequence = generatedSeq[0];
+    let generatedSeq = await music_vae.sample(1, temperature, { chordProgression: [chords[0]] }, stepsPerQuarter);
 
     // Ensure fullSequence is initialized with the correct properties for a quantized sequence
     let fullSequence = {
         notes: [],
         totalQuantizedSteps: 0,
-        quantizationInfo: { stepsPerQuarter: 24 },
+        quantizationInfo: { stepsPerQuarter: stepsPerQuarter },
         tempos: [{ qpm: 120 }]
     };
 
@@ -136,16 +141,11 @@ async function generateMultiTrackSequence() {
     generatedSequence = JSON.parse(JSON.stringify(fullSequence));
     playGeneratedSequenceSoundFont(fullSequence)
     // Display replay-button and download link
-    document.getElementById('replay-button').style.display = 'inline-block';
-    document.getElementById('download-link').style.display = 'inline-block';
-    document.getElementById('stop-button').style.display = 'inline-block';
-    document.getElementById('loop-button').style.display = 'inline-block';
+    displayControls();
 }
 
 function replayMultiTrackSequence() {
     let sequence= JSON.parse(JSON.stringify(generatedSequence));
-    console.log("Replay")
-    console.log(sequence)
     playGeneratedSequenceSoundFont(sequence, true) // should no longer be normalized
 }
 

@@ -1,7 +1,7 @@
 import * as mm from '@magenta/music';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
-import { playGeneratedSequenceSoundFont, clearVisualizer } from './visualizer';
-import { hideLoader, showNotification } from '../util/controlsManager';
+import { playGeneratedSequenceSoundFont, clearVisualizer, displayControls } from './visualizer';
+import { hideLoader, showNotification, showError } from '../util/controlsManager';
 
 let rnnModel;
 let generatedSequence;
@@ -18,16 +18,32 @@ async function initializeArpModel(checkpoint) {
         document.getElementById('generateMusic').style.display = 'inline-block';
     } catch (error) {
         console.error('Failed to initialize model:', error);
+        showError("Failed to initialize model");
     }
 }
 
 async function generateArpSequence() {
   let temperature = instrumentConfig['temperature'];
   let chord = instrumentConfig['arpChord'];
+
+  if (!chord) {
+    showError("Please select a chord to generate an arpeggio");
+    return;
+  }
+
   let stepsPerQuarter = instrumentConfig['stepsPerQuarter']; // Assuming this is set correctly in your config
+  if (!stepsPerQuarter) {
+    showError("Please select the number of steps per quarter note in the dropdown");
+    return;
+  }
 
   const stepsPerBar = 4 * stepsPerQuarter; // 4 beats in a bar for 4/4 time signature
   const barLength = instrumentConfig['numBars']; 
+
+  if (!barLength) {
+    showError("Please select the number of bars in the dropdown");
+    return;
+  }
   const totalSteps = stepsPerBar * barLength; // Total steps for one bar
 
   const quantizedSeq = {
@@ -46,10 +62,7 @@ async function generateArpSequence() {
   if (loopedSequence) {
     playGeneratedSequenceSoundFont(loopedSequence, false);
     generatedSequence = JSON.parse(JSON.stringify(loopedSequence));
-    document.getElementById('replay-button').style.display = 'inline-block';
-    document.getElementById('download-link').style.display = 'inline-block';
-    document.getElementById('stop-button').style.display = 'inline-block';
-    document.getElementById('loop-button').style.display = 'inline-block';
+    displayControls();
   }
 }
 
@@ -97,10 +110,6 @@ function disposeArpModel() {
     rnnModel.dispose();
     instrumentConfig['currentModel'] = ''
     generatedSequence = null;
-    document.getElementById('replay-button').style.display = 'none';
-    document.getElementById('download-link').style.display = 'none';
-    document.getElementById('stop-button').style.display = 'none';
-    document.getElementById('loop-button').style.display = 'none';
   }
 }
 

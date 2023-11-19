@@ -34,15 +34,27 @@ function stopPlayer() {
 }
 
 function clearVisualizer() {
+    stopPlayer();
     if (visualizer) {
         visualizer.clear();
         visualizer.clearActiveNotes();
+        document.getElementById('replay-button').style.display = 'none';
+        document.getElementById('download-link').style.display = 'none';
+        document.getElementById('stop-button').style.display = 'none';
+        document.getElementById('loop-button').style.display = 'none';
         player = null;
         visualizer = null;
     }
 }
 function setInstrument(instrument) {
     activeInstrument = instrument
+}
+
+function displayControls() {
+    document.getElementById('replay-button').style.display = 'inline-block';
+    document.getElementById('download-link').style.display = 'inline-block';
+    document.getElementById('stop-button').style.display = 'inline-block';
+    document.getElementById('loop-button').style.display = 'inline-block';
 }
 
 // Assign instruments to each trio, multi, drum, and groove
@@ -124,4 +136,4 @@ function setActiveInstrumentNumber() {
     return null;
 }
 
-export { setInstrument, playGeneratedSequenceSoundFont, stopPlayer, clearVisualizer}
+export { setInstrument, playGeneratedSequenceSoundFont, stopPlayer, clearVisualizer, displayControls}
