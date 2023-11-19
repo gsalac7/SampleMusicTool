@@ -1,7 +1,7 @@
 import * as mm from '@magenta/music';
 import { playGeneratedSequenceSoundFont, clearVisualizer, displayControls} from './visualizer';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
-import { hideLoader, showNotification } from '../util/controlsManager';
+import { hideLoader, hideSvgLoader, showNotification, showSvgLoader } from '../util/controlsManager';
 
 let music_vae;
 let generatedSequence;
@@ -26,7 +26,6 @@ async function initializeMusicVaeModel(checkpoint) {
                       checkpoint.includes('drum') || checkpoint.includes("groove");
 }
 
-
 function disposeVAEModel() {
   if (music_vae) {
     clearVisualizer();
@@ -37,10 +36,12 @@ function disposeVAEModel() {
 }
 
 async function generateMusicVAESequence() {
+  showSvgLoader();
   let temperature = instrumentConfig['temperature'];
   generatedSequence = await music_vae.sample(1, temperature);
   let sequence = JSON.parse(JSON.stringify(generatedSequence[0]));
   if (sequence) {
+    hideSvgLoader();
     playGeneratedSequenceSoundFont(sequence);
     displayControls();
   }

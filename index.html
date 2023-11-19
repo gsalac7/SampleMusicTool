@@ -34,11 +34,17 @@
       <p id="errorMessage">Model Failed Initialization</p>
     </div>
 
-    <div id="svg-wrapper">
-      <svg id="svg-container">
-        <!-- Your SVG content here -->
-      </svg>
+<div id="svg-wrapper">
+    <div class="loader-container" id="svg-loader" style="display:none">
+        <div class="loader"></div>
+        <div class="loader-text">Music Generating...</div>
+        <!-- Additional content for loader if needed -->
     </div>
+    <svg id="svg-container">
+        <!-- Your SVG content here -->
+    </svg>
+</div>
+
 
     <div id="player-btn-container">
       <div class="button-row">
@@ -124,9 +130,10 @@
           <label for="steps-chord-select">Steps per Quarter:</label>
           <select id="steps-chord-select">
             <option value="" disabled selected>Select Steps per Quarter</option>
+            <option value="2">2</option>
+            <option value="4">4</option>
+            <option value="8">8</option>
             <option value="16">16</option>
-            <option value="32">32</option>
-            <option value="48">48</option>
           </select>
         </div>
       </div>

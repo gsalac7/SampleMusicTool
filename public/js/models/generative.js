@@ -1,5 +1,5 @@
-import { playGeneratedSequenceSoundFont, clearVisualizer } from './visualizer';
-import { hideLoader, showNotification } from '../util/controlsManager';
+import { playGeneratedSequenceSoundFont, clearVisualizer, displayControls } from './visualizer';
+import { hideLoader, hideSvgLoader, showNotification, showSvgLoader } from '../util/controlsManager';
 import * as mm from '@magenta/music';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
 
@@ -19,25 +19,18 @@ const melodyChain = {
 let generatedSequence;
 
 function initializeMarkovModel() {
-    clearVisualizer();
     hideLoader();
     showNotification("Markov Chain initialized Successfully!");
-    document.getElementById('replay-button').style.display = 'none';
-    document.getElementById('download-link').style.display = 'none';
     document.getElementById('generateMusic').style.display = 'inline-block';
-    document.getElementById('stop-button').style.display = 'none';
 }
 
 function disposeMarkovModel() {
     clearVisualizer();
     instrumentConfig['currentModel'] = '';
-    document.getElementById('replay-button').style.display = 'none';
-    document.getElementById('download-link').style.display = 'none';
-    document.getElementById('stop-button').style.display = 'none';
-    document.getElementById('loop-button').style.display = 'none';
 }
 
 function generateMusicSequence(startPitch, totalSteps, stepsPerQuarter, chain) {
+    showSvgLoader();
     let currentStep = 0;
     let currentPitch = startPitch;
     const sequence = [];
@@ -88,14 +81,9 @@ function playGenerativeSequence() {
         totalQuantizedSteps: 64
     };
 
-    // Assuming playGeneratedSequenceDefault and playGeneratedSequenceSoundFont are defined elsewhere
-    // playGeneratedSequenceDefault(generatedSequence);
+    hideSvgLoader();
     playGeneratedSequenceSoundFont(generatedSequence, false); // should no longer be normalized
-    // display replay-button and download link
-    document.getElementById('replay-button').style.display = 'inline-block';
-    document.getElementById('download-link').style.display = 'inline-block';
-    document.getElementById('loop-button').style.display = 'inline-block';
-    document.getElementById('stop-button').style.display = 'inline-block';
+    displayControls();
 }
 
 // Function to choose the next pitch based on the current pitch and a Markov chain

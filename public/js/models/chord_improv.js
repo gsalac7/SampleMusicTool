@@ -1,7 +1,7 @@
 import * as mm from '@magenta/music';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
-import { clearVisualizer, playGeneratedSequenceSoundFont } from './visualizer';
-import { hideLoader, showError, showNotification } from '../util/controlsManager';
+import { clearVisualizer, playGeneratedSequenceSoundFont, displayControls } from './visualizer';
+import { hideLoader, showError, showNotification, hideSvgLoader, showSvgLoader } from '../util/controlsManager';
 
 let rnnModel;
 let generatedSequence;
@@ -23,12 +23,13 @@ async function initializeChordModel(checkpoint) {
         document.getElementById('generateMusic').style.display = 'inline-block';
     } catch (error) {
         console.error('Failed to initialize model:', error);
-        // Handle the error appropriately
-        // For example, show an error notification to the user
+        showError("Failed to initialize model");
+
     }
 }
 
 async function generateChordSequence() {
+  showSvgLoader();
   const chords = [
     document.getElementById('chordInput1').value,
     document.getElementById('chordInput2').value,
@@ -38,12 +39,16 @@ async function generateChordSequence() {
 
   if (chords.length === 0) {
     showError("Please enter at least one chord to generate a Melodic progression");
+    hideSvgLoader();
+    return;
   }
 
   const steps = instrumentConfig['stepsPerQuarter']; 
 
   if (!steps) {
     showError("Please select the number of steps per quarter note in the dropdown");
+    hideSvgLoader();
+    return;
   }
 
   const temperature = instrumentConfig['temperature']; // Replace with your specific temperature
@@ -94,13 +99,11 @@ async function generateChordSequence() {
 
   if (generatedSequence) {
     //playGeneratedSequenceDefault(initialSeq);
+    hideSvgLoader();
     playGeneratedSequenceSoundFont(generatedSequence, true);
 
     // Display replay-button and download link
-    document.getElementById('replay-button').style.display = 'inline-block';
-    document.getElementById('download-link').style.display = 'inline-block';
-    document.getElementById('stop-button').style.display = 'inline-block';
-    document.getElementById('loop-button').style.display = 'inline-block';
+    displayControls();
   }
 }
 
@@ -130,10 +133,6 @@ function disposeChordModel() {
     rnnModel.dispose();
     instrumentConfig['currentModel'] = ''
     generatedSequence = null;
-    document.getElementById('replay-button').style.display = 'none';
-    document.getElementById('download-link').style.display = 'none';
-    document.getElementById('stop-button').style.display = 'none';
-    document.getElementById('loop-button').style.display = 'none';
   }
 }
 

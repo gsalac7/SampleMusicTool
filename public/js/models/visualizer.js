@@ -8,7 +8,6 @@ let player = null;
 let activeInstrument;
 let isLooping = false;
 
-
 function initializeVisualizerAndPlayer(sequence) {
     // Initialize the visualizer with the sequence
     const visualizerConfig = {
@@ -73,7 +72,7 @@ function normalizeSequence(sequence, shouldNormalize = true) {
                     note.program = setInstrumentNumber('synth_bass_1');
                     break;
                 default:
-                    note.program = setInstrument(activeInstrument);  // fallback to piano
+                    note.program = setInstrumentNumber(activeInstrument);  // fallback to piano
             }
         }
     });
@@ -108,13 +107,14 @@ function playGeneratedSequenceSoundFont(generatedSeq, shouldNormalize = true) {
 function playSequence(generatedSeq) {
     let BPM = instrumentConfig['bpm'];
     player.setTempo(BPM);
-    
+    if (!player.isPlaying()) {
         player.start(generatedSeq).then(() => {
             // After the sequence has finished playing, check if we should loop
             if (instrumentConfig.loopSequence) {
                 playSequence(generatedSeq);
             }
         });
+    }
 }
 
 function setInstrumentNumber(instrumentName) {

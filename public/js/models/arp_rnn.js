@@ -1,7 +1,7 @@
 import * as mm from '@magenta/music';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
 import { playGeneratedSequenceSoundFont, clearVisualizer, displayControls } from './visualizer';
-import { hideLoader, showNotification, showError } from '../util/controlsManager';
+import { hideLoader, showNotification, showError, hideSvgLoader, showSvgLoader } from '../util/controlsManager';
 
 let rnnModel;
 let generatedSequence;
@@ -23,17 +23,20 @@ async function initializeArpModel(checkpoint) {
 }
 
 async function generateArpSequence() {
+  showSvgLoader();
   let temperature = instrumentConfig['temperature'];
   let chord = instrumentConfig['arpChord'];
 
   if (!chord) {
     showError("Please select a chord to generate an arpeggio");
+    hideSvgLoader();
     return;
   }
 
   let stepsPerQuarter = instrumentConfig['stepsPerQuarter']; // Assuming this is set correctly in your config
   if (!stepsPerQuarter) {
     showError("Please select the number of steps per quarter note in the dropdown");
+    hideSvgLoader();
     return;
   }
 
@@ -42,6 +45,7 @@ async function generateArpSequence() {
 
   if (!barLength) {
     showError("Please select the number of bars in the dropdown");
+    hideSvgLoader();
     return;
   }
   const totalSteps = stepsPerBar * barLength; // Total steps for one bar
@@ -60,6 +64,7 @@ async function generateArpSequence() {
   loopedSequence['model'] = 'ArpRNN';
 
   if (loopedSequence) {
+    hideSvgLoader();
     playGeneratedSequenceSoundFont(loopedSequence, false);
     generatedSequence = JSON.parse(JSON.stringify(loopedSequence));
     displayControls();

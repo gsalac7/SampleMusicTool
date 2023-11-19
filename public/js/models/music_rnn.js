@@ -2,7 +2,7 @@ import * as mm from '@magenta/music';
 import { seedSequences } from './configs/seed_sequences';
 import { playGeneratedSequenceSoundFont, clearVisualizer, displayControls } from './visualizer';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
-import { hideLoader, showError, showNotification } from '../util/controlsManager';
+import { hideLoader, hideSvgLoader, showError, showNotification, showSvgLoader } from '../util/controlsManager';
 
 let rnnModel;
 let generatedSequence;
@@ -10,7 +10,6 @@ let seedSequence;
 
 // initialize the AI Model
 async function initializeRNNModel(checkpoint) {
-    clearVisualizer();
     instrumentConfig['currentModel'] = "MusicRNN";
     rnnModel = new mm.MusicRNN(checkpoint);
 
@@ -28,13 +27,18 @@ async function initializeRNNModel(checkpoint) {
 
 // Generate sequence specific for RNN model
 async function generateMusicRNNSequence() {
+    showSvgLoader();
     let length = instrumentConfig['length']; 
     if (!length) {
         showError("Please select the length of the sequence in the dropdown");
+        hideSvgLoader();
+        return;
     }
     let steps = instrumentConfig['stepsPerQuarter']; 
     if (!steps) {
         showError("Please select the number of steps per quarter note in the dropdown");
+        hideSvgLoader();
+        return;
     }
     let temperature = instrumentConfig['temperature'];
     // If no seed Sequence is present default to what is in the dropdown
@@ -49,6 +53,7 @@ async function generateMusicRNNSequence() {
     const quantizedSeq = mm.sequences.quantizeNoteSequence(seedSequence, steps);
     generatedSequence = await rnnModel.continueSequence(quantizedSeq, length, temperature);
     if (generatedSequence) {
+        hideSvgLoader();
         playGeneratedSequenceSoundFont(generatedSequence, false);
         // display replay-button and download link
         displayControls();

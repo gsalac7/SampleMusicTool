@@ -112,8 +112,15 @@ function initModelControl() {
     });
 }
 
+export function showSvgLoader() {
+    document.getElementById('svg-loader').style.display = 'flex'; // Use 'flex' to activate the flexbox styling
+}
 
-function showLoader() {
+export function hideSvgLoader() {
+    document.getElementById('svg-loader').style.display = 'none';
+}
+
+export function showLoader() {
     document.getElementById('loader').style.display = 'flex';
 }
 
@@ -306,14 +313,19 @@ function initializationButtonListener() {
             } else {
                 console.error('Chord select field not found');
             }
-            const stepsPerQuarter= document.getElementById('steps-chord-select');
-            if (stepsPerQuarter) {
-                stepsPerQuarter.addEventListener('change', function () {
-                    const selectedValue = this.value;
-                    instrumentConfig['stepsPerQuarter'] = parseInt(selectedValue, 10);
-                });
+            if (newModel == "MultiTrack") {
+                document.getElementById('steps-chord-selector').style.display = 'none';
             } else {
-                console.error('Steps Per Quarter select field not found');
+                document.getElementById('steps-chord-selector').style.display = 'block';
+                const stepsPerQuarter= document.getElementById('steps-chord-select');
+                if (stepsPerQuarter) {
+                    stepsPerQuarter.addEventListener('change', function () {
+                        const selectedValue = this.value;
+                        instrumentConfig['stepsPerQuarter'] = parseInt(selectedValue, 10);
+                    });
+                } else {
+                    console.error('Steps Per Quarter select field not found');
+                }
             }
         }
     });
@@ -322,8 +334,8 @@ function initializationButtonListener() {
 function initializeButton(buttonId, callback, errorMessage) {
     const button = document.getElementById(buttonId);
     if (button) {
-        // Consider removing old event listeners to avoid duplicates
-        button.removeEventListener('click', callback);
+        button.removeEventListener('click', callback); // Remove existing event listener
+        // For other buttons, just bind the callback directly
         button.addEventListener('click', callback);
     } else {
         console.error(errorMessage);

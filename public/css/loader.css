@@ -62,3 +62,28 @@
   top: 0; /* Slide down to show */
   visibility: visible; /* Make visible */
 }
+
+
+#svg-wrapper {
+    position: relative; /* Ensures that the loader is positioned relative to the svg-wrapper */
+}
+
+.loader-container {
+    position: absolute; /* Changed from fixed to absolute */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.75); /* Dark background for contrast */
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* High z-index to be on top */
+}
+.loader-text {
+    margin-top: 20px; /* Space between loader and text */
+    color: #ffffff; /* White color for readability */
+    font-size: 20px; /* Adjust size as needed */
+    font-weight: bold;
+}

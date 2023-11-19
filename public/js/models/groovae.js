@@ -1,7 +1,7 @@
 import * as mm from '@magenta/music';
 import { playGeneratedSequenceSoundFont, clearVisualizer, displayControls} from './visualizer';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
-import { hideLoader, showNotification } from '../util/controlsManager';
+import { hideLoader, showNotification, hideSvgLoader, showSvgLoader } from '../util/controlsManager';
 import { sampleSequences } from './configs/sample_sequences';
 
 let music_vae;
@@ -32,6 +32,7 @@ function disposeGroovaeModel() {
 }
 
 async function generateGroovaeSequence() {
+    showSvgLoader();
     let temperature = instrumentConfig['temperature'];
     if (!seedSequence) {
         seedSequence = sampleSequences['majorScaleUp'];
@@ -45,6 +46,7 @@ async function generateGroovaeSequence() {
     // Decode the latent representation to generate a drum sequence
     generatedSequence = await music_vae.decode(z, temperature, undefined, 4);
     if (generatedSequence) {
+        hideSvgLoader();
         playGeneratedSequenceSoundFont(generatedSequence[0])
         // display replay-button and download link
         displayControls();

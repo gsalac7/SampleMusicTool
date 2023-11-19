@@ -1,7 +1,7 @@
 import { initializeMidi } from './util/midiHandler';
-import { initializePianoUI, initializeSynth} from './util/synthManager';
-import { initializeSequencer} from './util/drumManager';
-import { initializeControls} from './util/controlsManager';
+import { initializePianoUI, initializeSynth } from './util/synthManager';
+import { initializeSequencer } from './util/drumManager';
+import { initializeControls } from './util/controlsManager';
 
 window.onload = () => {
   initializeSynth();

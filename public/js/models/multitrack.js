@@ -1,13 +1,13 @@
 import * as mm from '@magenta/music';
 import { playGeneratedSequenceSoundFont, clearVisualizer, displayControls } from './visualizer';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
-import { hideLoader, showError, showNotification } from '../util/controlsManager';
+import { hideLoader, showError, showNotification, showSvgLoader, hideSvgLoader } from '../util/controlsManager';
 
 let music_vae;
 let generatedSequence;
+const tf = mm.tf;
 
 async function initializeMultiTrackModel(checkpoint) {
-    clearVisualizer();
     instrumentConfig['currentModel'] = "MultiTrack";
     music_vae = new mm.MusicVAE(checkpoint);
 
@@ -31,121 +31,85 @@ function disposeMultiTrackModel() {
     }
 }
 
-function getRootNoteForChord(chord) {
-    // This maps chord names to MIDI root notes
-    const chordToNoteMap = {
-        'C': 60,  // Middle C
-        'C#': 61, // C# Major
-        'D': 62,  // D Major
-        'D#': 63, // D# Major
-        'E': 64,  // E Major
-        'F': 65,  // F Major
-        'F#': 66, // F# Major
-        'G': 67,  // G Major
-        'G#': 68, // G# Major
-        'A': 69,  // A Major
-        'A#': 70, // A# Major
-        'B': 71,  // B Major
-        'Cm': 60, // C Minor
-        'C#m': 61, // C# Minor
-        'Dm': 62,  // D Minor
-        'D#m': 63, // D# Minor
-        'Em': 64,  // E Minor
-        'Fm': 65,  // F Minor
-        'F#m': 66, // F# Minor
-        'Gm': 67,  // G Minor
-        'G#m': 68, // G# Minor
-        'Am': 69,  // A Minor
-        'A#m': 70, // A# Minor
-        'Bm': 71   // B Minor
-        // You can continue adding other chords and their variations, including 7ths, diminished, augmented, etc.
-    };
-
-    // Extract the root note and the quality of the chord (major, minor, etc.)
-    // If the chord contains more than one character (e.g., "C#m"),
-    // we separate the root note (e.g., "C#") and the chord quality (e.g., "m").
-    let root = chord;
-    let quality = '';
-
-    if (chord.length > 1 && (chord[1] === '#' || chord[1] === 'b')) {
-        root = chord.substring(0, 2);
-        quality = chord.substring(2);
-    } else if (chord.length > 1) {
-        root = chord.substring(0, 1);
-        quality = chord.substring(1);
-    }
-
-    // Combine root and quality to form the chord key for the map
-    let chordKey = `${root}${quality}`;
-
-    // Return the MIDI note number, or a default value (Middle C) if the chord is not found
-    return chordToNoteMap[chordKey] || 60;
-}
-
 async function generateMultiTrackSequence() {
-    let temperature = instrumentConfig['temperature'];
-    const chords = [
-        document.getElementById('chordInput1').value,
-        document.getElementById('chordInput2').value,
-        document.getElementById('chordInput3').value,
-        document.getElementById('chordInput4').value,
-    ].filter(chord => chord !== ""); // Filter out empty chords
+    showSvgLoader();
+    const temperature = instrumentConfig['temperature'];
+    const numInterpolationSteps = 4;
+    const Z_DIM = 256; // Adjust based on your model's requirements
 
-    if (chords.length === 0) {
-        showError("Please enter at least one chord to generate a Multitrack Sequence");
-    }
-
-    let stepsPerQuarter = instrumentConfig['stepsPerQuarter']; 
-    if (!stepsPerQuarter) {
-        showError("Please select the number of steps per quarter note in the dropdown");
-    }
-
-    // Generate the initial sequence based on the first chord
-    let generatedSeq = await music_vae.sample(1, temperature, { chordProgression: [chords[0]] }, stepsPerQuarter);
-
-    // Ensure fullSequence is initialized with the correct properties for a quantized sequence
     let fullSequence = {
         notes: [],
         totalQuantizedSteps: 0,
-        quantizationInfo: { stepsPerQuarter: stepsPerQuarter },
+        quantizationInfo: { stepsPerQuarter: 24 },
         tempos: [{ qpm: 120 }]
     };
 
-    // Get the MIDI note number for the first chord
-    let rootNote = getRootNoteForChord(chords[0]);
+    // Sample two random latent vectors
+    let z1 = tf.randomNormal([1, Z_DIM]);
+    let z2 = tf.randomNormal([1, Z_DIM]);
 
-    for (let i = 0; i < chords.length; i++) {
-        // Transpose the sequence if necessary
-        let transpositionInterval = getRootNoteForChord(chords[i]) - rootNote;
+    // Define a chord progression
+    const chordProgression = [
+        document.getElementById('chordInput1').value,
+        document.getElementById('chordInput2').value,
+        document.getElementById('chordInput3').value,
+        document.getElementById('chordInput4').value
+    ].filter(Boolean);;
 
-        generatedSeq[0].notes.forEach(note => {
-            // Copy and transpose the note
-            let transposedNote = {
-                ...note,
-                pitch: note.isDrum ? note.pitch : note.pitch + transpositionInterval,
-                quantizedStartStep: note.quantizedStartStep + i * generatedSeq[0].totalQuantizedSteps,
-                quantizedEndStep: note.quantizedEndStep + i * generatedSeq[0].totalQuantizedSteps
-            };
-
-            // Make sure the transposed pitch is within the MIDI range (for non-drum notes)
-            if (note.isDrum || (transposedNote.pitch >= 0 && transposedNote.pitch <= 127)) {
-                fullSequence.notes.push(transposedNote);
-            }
-        });
-
-        // Assuming each sequence/bar has the same number of quantized steps
-        fullSequence.totalQuantizedSteps += generatedSeq[0].totalQuantizedSteps;
+    if (chordProgression.length === 0) {
+        showError("Please enter at least one chord to generate a Melodic progression");
+        hideSvgLoader();
+        return 
     }
 
-    // Use the full, concatenated sequence for playback
+
+    for (let step = 0; step < numInterpolationSteps; step++) {
+        let alpha = step / (numInterpolationSteps - 1);
+        let interpolatedZ = slerp(z1, z2, alpha);
+
+        // Select a chord from the progression based on the current step
+        let chord = chordProgression[step % chordProgression.length];
+
+        // Decode the interpolated latent vector to a sequence with the selected chord
+        let decodedSeq = await music_vae.decode(interpolatedZ, temperature, { chordProgression: [chord] });
+        let sequence = decodedSeq[0]; // Assuming decode returns an array of sequences
+
+        // Process and add each note to fullSequence
+        sequence.notes.forEach(note => {
+            let offset = fullSequence.totalQuantizedSteps;
+            let transposedNote = {
+                ...note,
+                quantizedStartStep: note.quantizedStartStep + offset,
+                quantizedEndStep: note.quantizedEndStep + offset
+            };
+            fullSequence.notes.push(transposedNote);
+        });
+
+        fullSequence.totalQuantizedSteps += sequence.totalQuantizedSteps;
+    }
     generatedSequence = JSON.parse(JSON.stringify(fullSequence));
-    playGeneratedSequenceSoundFont(fullSequence)
-    // Display replay-button and download link
+
+    // Use the full, concatenated sequence for playback
+    hideSvgLoader();
+    playGeneratedSequenceSoundFont(fullSequence);
     displayControls();
 }
 
+function slerp(z1, z2, alpha) {
+    const z1Norm = tf.norm(z1);
+    const z2Norm = tf.norm(z2);
+
+    const omega = tf.acos(tf.sum(tf.mul(tf.div(z1, z1Norm), tf.div(z2, z2Norm))));
+    const sinOmega = tf.sin(omega);
+
+    const z1Scaled = tf.mul(tf.sin(tf.mul(1 - alpha, omega)), tf.div(z1, sinOmega));
+    const z2Scaled = tf.mul(tf.sin(tf.mul(alpha, omega)), tf.div(z2, sinOmega));
+
+    return tf.add(z1Scaled, z2Scaled);
+}
+
 function replayMultiTrackSequence() {
-    let sequence= JSON.parse(JSON.stringify(generatedSequence));
+    let sequence = JSON.parse(JSON.stringify(generatedSequence));
     playGeneratedSequenceSoundFont(sequence, true) // should no longer be normalized
 }
 
