@@ -165,3 +165,16 @@ select {
   display: inline-block;
   margin: 5px;
 }
+
+#player-btn-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Optional, based on your layout needs */
+  }
+  
+  .button-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2px; /* Adjust as needed */
+  }

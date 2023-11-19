@@ -40,10 +40,23 @@
       </svg>
     </div>
 
-    <button id="stop-button" style="display:none;">Stop Sequence</button>
-    <button id="generateMusic" style="display:none;">Generate Music</button>
-    <button id="replay-button" style="display: none;">Replay Generated Sequence</button>
-    <button id="download-link" style="display: none;">Download Generated Sequence</button>
+    <div id="player-btn-container">
+      <div class="button-row">
+        <button id="stop-button" style="display:none;">Stop</button>
+        <button id="replay-button" style="display: none;">Replay</button>
+        <button id="loop-button" style="display:none;">
+          <img src="public/assets/loop.png" alt="Loop" style="width: 24px; height: 24px;">
+      </button>
+
+
+      </div>
+      <div class="button-row">
+        <button id="generateMusic" style="display:none;">Generate Music</button>
+        <button id="download-link" style="display: none;">Download Generated Sequence</button>
+      </div>
+    </div>
+
+    
 
     <div id="AI-Control-Panel">
       <!-- Checkpoint and Initialize Model Group -->

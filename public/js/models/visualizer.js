@@ -6,6 +6,8 @@ const soundFontUrl = instrumentConfig['soundFontUrl'];
 const soundFontData = instrumentConfig['soundFontData'];
 let player = null;
 let activeInstrument;
+let isLooping = false;
+
 
 function initializeVisualizerAndPlayer(sequence) {
     // Initialize the visualizer with the sequence
@@ -67,7 +69,6 @@ function normalizeSequence(sequence, shouldNormalize = true) {
 
 function playGeneratedSequenceSoundFont(generatedSeq, shouldNormalize = true) {
     stopPlayer();
-    let BPM = instrumentConfig['bpm'];
     generatedSeq.notes.forEach(note => {
         note.velocity = 127;  // Max velocity
     });
@@ -82,10 +83,26 @@ function playGeneratedSequenceSoundFont(generatedSeq, shouldNormalize = true) {
         });
     }
     initializeVisualizerAndPlayer(generatedSeq);
+    let BPM = instrumentConfig['bpm'];
     player.setTempo(BPM);
-    // Start the player
-    console.log(generatedSeq);
-    player.start(generatedSeq);
+    // Set the isLooping variable based on the loop button's state
+    isLooping = instrumentConfig['loopSequence'];
+    // Check if the player is not already playing
+    if (!player.isPlaying()) {
+        playSequence(generatedSeq)
+    }
+}
+
+function playSequence(generatedSeq) {
+    let BPM = instrumentConfig['bpm'];
+    player.setTempo(BPM);
+    
+        player.start(generatedSeq).then(() => {
+            // After the sequence has finished playing, check if we should loop
+            if (instrumentConfig.loopSequence) {
+                playSequence(generatedSeq);
+            }
+        });
 }
 
 function setInstrumentNumber(instrumentName) {

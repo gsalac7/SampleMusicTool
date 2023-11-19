@@ -84,6 +84,8 @@ function playGenerativeSequence() {
     // display replay-button and download link
     document.getElementById('replay-button').style.display = 'inline-block';
     document.getElementById('download-link').style.display = 'inline-block';
+    document.getElementById('loop-button').style.display = 'inline-block';
+    document.getElementById('stop-button').style.display = 'inline-block';
 }
 
 // Function to choose the next pitch based on the current pitch and a Markov chain

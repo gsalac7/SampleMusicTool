@@ -50,6 +50,7 @@ async function generateMusicRNNSequence() {
         document.getElementById('replay-button').style.display = 'inline-block';
         document.getElementById('download-link').style.display = 'inline-block';
         document.getElementById('stop-button').style.display = 'inline-block';
+        document.getElementById('loop-button').style.display = 'inline-block';
     }
 }
 

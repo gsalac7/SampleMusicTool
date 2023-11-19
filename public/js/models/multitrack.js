@@ -30,6 +30,7 @@ function disposeMultiTrackModel() {
         document.getElementById('replay-button').style.display = 'none';
         document.getElementById('download-link').style.display = 'none';
         document.getElementById('stop-button').style.display = 'none';
+        document.getElementById('loop-button').style.display = 'none';
     }
 }
 
@@ -138,6 +139,7 @@ async function generateMultiTrackSequence() {
     document.getElementById('replay-button').style.display = 'inline-block';
     document.getElementById('download-link').style.display = 'inline-block';
     document.getElementById('stop-button').style.display = 'inline-block';
+    document.getElementById('loop-button').style.display = 'inline-block';
 }
 
 function replayMultiTrackSequence() {

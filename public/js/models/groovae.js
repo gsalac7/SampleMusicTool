@@ -1,5 +1,5 @@
 import * as mm from '@magenta/music';
-import { playGeneratedSequenceSoundFont, clearVisualizer } from './visualizer';
+import { playGeneratedSequenceSoundFont, clearVisualizer} from './visualizer';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
 import { hideLoader, showNotification } from '../util/controlsManager';
 import { sampleSequences } from './configs/sample_sequences';
@@ -53,6 +53,7 @@ async function generateGroovaeSequence() {
         document.getElementById('replay-button').style.display = 'inline-block';
         document.getElementById('download-link').style.display = 'inline-block';
         document.getElementById('stop-button').style.display = 'inline-block';
+        document.getElementById('loop-button').style.display = 'inline-block';
     }
 }
 

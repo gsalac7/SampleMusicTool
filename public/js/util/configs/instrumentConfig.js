@@ -10,6 +10,7 @@ export const instrumentConfig = {
     chordMelodySeq: "",
     seedSequence: "",
     numBars: "",
+    loopSequence: false,
     soundFontUrl: path.join(__dirname, '/public/sounds/soundfont'), 
     soundFontData: {
         "name": "sgm_plus",

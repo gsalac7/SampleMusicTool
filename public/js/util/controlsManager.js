@@ -37,6 +37,7 @@ export function initializeControls() {
     initSampleSequencer();
     initModelControl();
     initializationButtonListener();
+    initLoopButton();
 }
 
 const modelConfig = {
@@ -449,6 +450,21 @@ function removeEventListenersFromButtons() {
             if (exportButton) {
                 exportButton.removeEventListener('click', model.exportCallback);
             }
+        }
+    });
+}
+
+function initLoopButton() {
+    let loopBtn = document.getElementById("loop-button")
+    loopBtn.addEventListener('click', function() {
+        if (instrumentConfig['loopSequence'] == true) {
+            instrumentConfig['loopSequence'] = false; 
+            console.log(instrumentConfig['loopSequence'])
+            this.classList.remove('active');
+        } else if (instrumentConfig['loopSequence'] == false) {
+            instrumentConfig['loopSequence'] = true;
+            console.log(instrumentConfig['loopSequence'])
+            this.classList.add('active');
         }
     });
 }

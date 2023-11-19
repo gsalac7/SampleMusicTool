@@ -1,5 +1,5 @@
 import * as mm from '@magenta/music';
-import { playGeneratedSequenceSoundFont, clearVisualizer } from './visualizer';
+import { playGeneratedSequenceSoundFont, clearVisualizer} from './visualizer';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
 import { hideLoader, showNotification } from '../util/controlsManager';
 
@@ -45,14 +45,13 @@ async function generateMusicVAESequence() {
   let temperature = instrumentConfig['temperature'];
   generatedSequence = await music_vae.sample(1, temperature);
   let sequence = JSON.parse(JSON.stringify(generatedSequence[0]));
-  sequence['model'] = 'MusicVAE';
   if (sequence) {
-    console.log("MusicVAE is executing this");
     playGeneratedSequenceSoundFont(sequence);
     // display replay-button and download link
     document.getElementById('replay-button').style.display = 'inline-block';
     document.getElementById('download-link').style.display = 'inline-block';
     document.getElementById('stop-button').style.display = 'inline-block';
+    document.getElementById('loop-button').style.display = 'inline-block';
   }
 }
 

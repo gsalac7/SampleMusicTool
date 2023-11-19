@@ -15,7 +15,6 @@ let NUM_REPS = 4;
 async function initializeChordModel(checkpoint) {
     instrumentConfig['currentModel'] = "chordImprov";
     rnnModel = new mm.MusicRNN(checkpoint);
-
     try {
         await rnnModel.initialize();
         console.log('Model initialized');
@@ -94,6 +93,7 @@ async function generateChordSequence() {
     document.getElementById('replay-button').style.display = 'inline-block';
     document.getElementById('download-link').style.display = 'inline-block';
     document.getElementById('stop-button').style.display = 'inline-block';
+    document.getElementById('loop-button').style.display = 'inline-block';
   }
 }
 
@@ -126,6 +126,7 @@ function disposeChordModel() {
     document.getElementById('replay-button').style.display = 'none';
     document.getElementById('download-link').style.display = 'none';
     document.getElementById('stop-button').style.display = 'none';
+    document.getElementById('loop-button').style.display = 'none';
   }
 }
 

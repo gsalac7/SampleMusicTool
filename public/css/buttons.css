@@ -63,3 +63,11 @@ button:focus {
 #stop-button:focus {
     box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.5); /* Red glow for focus */
 }
+#loop-button svg {
+    fill: #000; /* Change the color as needed */
+}
+
+
+#loop-button.active {
+    background-color: green; /* Change to the color you want when active */
+}
