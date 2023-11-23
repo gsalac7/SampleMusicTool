@@ -1,5 +1,6 @@
 import Nexus from 'nexusui';
 import { Midi } from '@tonejs/midi';
+import { instrumentConfig } from './configs/instrumentConfig';
 
 const sounds = {
     0: new Audio('./public/sounds/drum-kits/electronic/kick.mp3'),
@@ -116,7 +117,7 @@ function exportDrumMIDI() {
     const noteDuration = 60000 / currentBpm / 4;  // Duration of a 16th note at current BPM
 
     // Assuming each row corresponds to a different MIDI note number
-    const rowToMIDINoteMap = [36, 38, 42, 46, 49, 51]; // Adjust based on your setup
+    const rowToMIDINoteMap = [36, 38, 42, 46, 49, 51]; 
 
     for (let row = 0; row < sequencer.matrix.pattern.length; row++) {
         for (let column = 0; column < sequencer.matrix.pattern[row].length; column++) {

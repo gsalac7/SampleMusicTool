@@ -110,7 +110,7 @@ function slerp(z1, z2, alpha) {
 
 function replayMultiTrackSequence() {
     let sequence = JSON.parse(JSON.stringify(generatedSequence));
-    playGeneratedSequenceSoundFont(sequence, true) // should no longer be normalized
+    playGeneratedSequenceSoundFont(sequence, true) 
 }
 
 async function exportMultiTrackSequence() {

@@ -1,6 +1,6 @@
 import * as Nexus from 'nexusui';
 import { toggleRecording, exportMIDI } from './recordingManager';
-import { toggleLoop, exportDrumMIDI} from './drumManager';
+import { toggleLoop, exportDrumMIDI, setBPMSequencer} from './drumManager';
 import { replayMusicRNNSequence, exportMusicRNNSequence, initializeRNNModel, generateMusicRNNSequence, setSeedSequence, readSeedMidi, disposeRNNModel } from '../models/music_rnn';
 import { initializeMusicVaeModel, generateMusicVAESequence, replayMusicVAESequence, exportMusicVAESequence, disposeVAEModel } from '../models/music_vae';
 import { initializeChordModel, generateChordSequence, replayChordSequence, exportChordSequence, disposeChordModel } from '../models/chord_improv';
@@ -462,6 +462,7 @@ function initBPMSlider() {
         document.getElementById('bpm-value').textContent = value.toFixed(1);
         // Set the instrument Config BPM
         instrumentConfig['bpm'] = value;
+        setBPMSequencer(value);
     });
 }
 

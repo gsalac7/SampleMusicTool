@@ -5,7 +5,7 @@ let sequence = {
     notes: [],
     totalQuantizedSteps: 0,
     quantizationInfo: { stepsPerQuarter: 4 },
-    tempos: [{ time: 0, qpm: 60 }],
+    tempos: [{ time: 0, qpm: 120 }],
     timeSignatures: [{ time: 0, numerator: 4, denominator: 4 }],
 };
 let currentStep = 0;
@@ -82,14 +82,16 @@ function exportMIDI() {
 
         // Add a track to the MIDI file
         const track = midi.addTrack();
+        const secondsPerBeat = 60 / 120; // For BPM = 120
+        const quantizedStepDuration = secondsPerBeat / 4; // Dividing by 4 because there are four 16th notes in a beat
 
         // Iterate over recorded notes and add them to the track
         sequence.notes.forEach(note => {
             // You might need to adjust the parameters here based on how your notes are recorded
             track.addNote({
                 midi: note.pitch,
-                time: note.quantizedStartStep * 0.5, // Assuming 0.5 seconds per step, adjust as necessary
-                duration: (note.quantizedEndStep - note.quantizedStartStep) * 0.5 // Adjust time unit as necessary
+                time: note.quantizedStartStep * quantizedStepDuration, // Assuming 0.5 seconds per step, adjust as necessary
+                duration: (note.quantizedEndStep - note.quantizedStartStep) * quantizedStepDuration // Adjust time unit as necessary
             });
         });
 
