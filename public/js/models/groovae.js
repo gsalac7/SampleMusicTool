@@ -45,16 +45,18 @@ async function generateGroovaeSequence() {
     const z = await music_vae.encode([seedSequence]);
     // Decode the latent representation to generate a drum sequence
     generatedSequence = await music_vae.decode(z, temperature, undefined, 4);
+    let sequence = JSON.parse(JSON.stringify(generatedSequence[0]));
     if (generatedSequence) {
         hideSvgLoader();
-        playGeneratedSequenceSoundFont(generatedSequence[0])
+        playGeneratedSequenceSoundFont(sequence)
         // display replay-button and download link
         displayControls();
     }
 }
 
 function replayGroovaeSequence() {
-    playGeneratedSequenceSoundFont(generatedSequence[0], false) // should no longer be normalized
+    let sequence = JSON.parse(JSON.stringify(generatedSequence[0]));
+    playGeneratedSequenceSoundFont(sequence) // should no longer be normalized
 }
 
 function readSampleMidi(file) {

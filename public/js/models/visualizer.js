@@ -60,6 +60,7 @@ function displayControls() {
 function normalizeSequence(sequence, shouldNormalize = true) {
     if (!shouldNormalize) return;
     sequence.notes.forEach(note => {
+        note.velocity = 127;  // Max velocity
         if (note.isDrum) {
             note.program = setInstrumentNumber('percussion');  // Instrument #9 for drums
             delete note.isDrum;  // Remove the isDrum attribute
