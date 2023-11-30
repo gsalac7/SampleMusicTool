@@ -1,6 +1,7 @@
 import * as mm from '@magenta/music';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
-import { playGeneratedSequenceDefault, playGeneratedSequenceSoundFont } from './visualizer';
+import { clearVisualizer, playGeneratedSequenceSoundFont, displayControls } from './visualizer';
+import { hideLoader, showError, showNotification, hideSvgLoader, showSvgLoader } from '../util/controlsManager';
 
 let rnnModel;
 let generatedSequence;
@@ -11,18 +12,24 @@ let STEPS_PER_PROG = 4 * STEPS_PER_CHORD;
 // Number of times to repeat chord progression.
 let NUM_REPS = 4;
 
-// initialize the AI Model with chord improv
-function initializeChordModel(checkpoint) {
-  instrumentConfig['currentModel'] = "chordImprov";
-  rnnModel = new mm.MusicRNN(checkpoint);
-  rnnModel.initialize().then(function () {
-    console.log('Model initialized');
-  }).catch(function (error) {
-    console.error('Failed to initialize model:', error);
-  });
+async function initializeChordModel(checkpoint) {
+    instrumentConfig['currentModel'] = "chordImprov";
+    rnnModel = new mm.MusicRNN(checkpoint);
+    try {
+        await rnnModel.initialize();
+        console.log('Model initialized');
+        hideLoader();
+        showNotification("Chord Model Initialized");
+        document.getElementById('generateMusic').style.display = 'inline-block';
+    } catch (error) {
+        console.error('Failed to initialize model:', error);
+        showError("Failed to initialize model");
+
+    }
 }
 
 async function generateChordSequence() {
+  showSvgLoader();
   const chords = [
     document.getElementById('chordInput1').value,
     document.getElementById('chordInput2').value,
@@ -30,7 +37,20 @@ async function generateChordSequence() {
     document.getElementById('chordInput4').value
   ].filter(Boolean);;
 
-  const steps = 4; // Replace with your specific steps per quarter
+  if (chords.length === 0) {
+    showError("Please enter at least one chord to generate a Melodic progression");
+    hideSvgLoader();
+    return;
+  }
+
+  const steps = instrumentConfig['stepsPerQuarter']; 
+
+  if (!steps) {
+    showError("Please select the number of steps per quarter note in the dropdown");
+    hideSvgLoader();
+    return;
+  }
+
   const temperature = instrumentConfig['temperature']; // Replace with your specific temperature
   const length = STEPS_PER_PROG + (NUM_REPS - 1) * STEPS_PER_PROG - 1;
 
@@ -43,11 +63,10 @@ async function generateChordSequence() {
     totalQuantizedSteps: 1
   };
 
-  console.log("Generated sequence with Temperature: " + temperature + " and Length: " + length + " and Steps: " + steps);
-  generatedSequence = await rnnModel.continueSequence(initialSeq, length, temperature, chords);
+  const genSequence = await rnnModel.continueSequence(initialSeq, length, temperature, chords);
 
   // Add the continuation to the original sequence
-  generatedSequence.notes.forEach((note) => {
+  genSequence.notes.forEach((note) => {
     note.quantizedStartStep += 1;
     note.quantizedEndStep += 1;
     initialSeq.notes.push(note);
@@ -58,8 +77,6 @@ async function generateChordSequence() {
   // Determine the steps for each chord based on how many chords there are
   const stepsPerChord = STEPS_PER_PROG / roots.length;
 
-  console.log("Steps Per Chord: " + stepsPerChord);
-
   // Add the bass progression
   for (let i = 0; i < NUM_REPS; i++) {
     for (let j = 0; j < roots.length; j++) {
@@ -69,8 +86,6 @@ async function generateChordSequence() {
 
       // Add the bass note for the current chord
       initialSeq.notes.push({
-        instrument: 1,
-        program: 32,
         pitch: 36 + roots[j], // Add the correct bass note for the chord
         quantizedStartStep: startStep,
         quantizedEndStep: endStep
@@ -80,39 +95,17 @@ async function generateChordSequence() {
 
   // Set total sequence length
   initialSeq.totalQuantizedSteps = STEPS_PER_PROG * NUM_REPS;
+  generatedSequence = initialSeq;
 
-  if (initialSeq) {
-    playGeneratedSequenceDefault(initialSeq);
-    generatedSequence = initialSeq;
-    //playGeneratedSequenceSoundFont(initialSeq, false);
+  if (generatedSequence) {
+    //playGeneratedSequenceDefault(initialSeq);
+    hideSvgLoader();
+    playGeneratedSequenceSoundFont(generatedSequence, true);
+
     // Display replay-button and download link
-    document.getElementById('replay-button').style.display = 'inline-block';
-    document.getElementById('download-link').style.display = 'inline-block';
+    displayControls();
   }
 }
-// Check chords for validity and highlight invalid chords.
-const checkChords = () => {
-  const chords = [
-    document.getElementById('chordInput1').value,
-    document.getElementById('chordInput2').value,
-    document.getElementById('chordInput3').value,
-    document.getElementById('chordInput4').value
-  ];
-
-  const isGood = (chord) => {
-    if (!chord) {
-      return false;
-    }
-    try {
-      mm.chords.ChordSymbols.pitches(chord);
-      return true;
-    }
-    catch (e) {
-      return false;
-    }
-  }
-}
-
 
 async function exportChordSequence() {
   const midiBytes = mm.sequenceProtoToMidi(generatedSequence);
@@ -130,16 +123,17 @@ async function exportChordSequence() {
 }
 
 function replayChordSequence() {
-  playGeneratedSequenceDefault(generatedSequence);
+  playGeneratedSequenceSoundFont(generatedSequence, false);
 }
 
 function disposeChordModel() {
   if (rnnModel) {
+    clearVisualizer();
     console.log("Disposing Chord RNN Model");
     rnnModel.dispose();
     instrumentConfig['currentModel'] = ''
+    generatedSequence = null;
   }
 }
-
 
 export { generateChordSequence, initializeChordModel, disposeChordModel, exportChordSequence, replayChordSequence };

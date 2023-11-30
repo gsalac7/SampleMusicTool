@@ -44,3 +44,30 @@ button:focus {
     background-color: #007BFF;  /* Highlighted color when selected */
     color: white;  /* Text color when selected */
 }
+
+#stop-button {
+    background-color: #b43535; /* Lighter red background for stop button */ 
+    /* Other properties are inherited from the general button styles */
+}
+
+#stop-button:hover {
+    background-color: darkred; /* Darker red when hovered */
+    transform: scale(1.05); /* Keep the scaling effect */
+}
+
+#stop-button:active {
+    background-color: maroon; /* Even darker red when clicked */
+    transform: scale(1); /* Reset scale on click */
+}
+
+#stop-button:focus {
+    box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.5); /* Red glow for focus */
+}
+#loop-button svg {
+    fill: #000; /* Change the color as needed */
+}
+
+
+#loop-button.active {
+    background-color: green; /* Change to the color you want when active */
+}

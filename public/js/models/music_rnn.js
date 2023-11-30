@@ -1,46 +1,62 @@
 import * as mm from '@magenta/music';
 import { seedSequences } from './configs/seed_sequences';
-import { playGeneratedSequenceSoundFont } from './visualizer';
+import { playGeneratedSequenceSoundFont, clearVisualizer, displayControls } from './visualizer';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
+import { hideLoader, hideSvgLoader, showError, showNotification, showSvgLoader } from '../util/controlsManager';
 
 let rnnModel;
 let generatedSequence;
 let seedSequence;
 
 // initialize the AI Model
-function initializeRNNModel(checkpoint) {
+async function initializeRNNModel(checkpoint) {
     instrumentConfig['currentModel'] = "MusicRNN";
     rnnModel = new mm.MusicRNN(checkpoint);
-    rnnModel.initialize().then(function () {
-        alert("MusicRNN Model Initialized");
+
+    try {
+        await rnnModel.initialize();
         console.log('Model initialized');
-    }).catch(function (error) {
+        hideLoader();
+        showNotification("MusicRNN Model Initialized");
+        document.getElementById('generateMusic').style.display = 'inline-block';
+    } catch (error) {
         console.error('Failed to initialize model:', error);
-    });
+        showError("Failed to initialize model");
+    }
 }
 
 // Generate sequence specific for RNN model
 async function generateMusicRNNSequence() {
+    showSvgLoader();
     let length = instrumentConfig['length']; 
+    if (!length) {
+        showError("Please select the length of the sequence in the dropdown");
+        hideSvgLoader();
+        return;
+    }
     let steps = instrumentConfig['stepsPerQuarter']; 
+    if (!steps) {
+        showError("Please select the number of steps per quarter note in the dropdown");
+        hideSvgLoader();
+        return;
+    }
     let temperature = instrumentConfig['temperature'];
-    seedSequence = seedSequences['majorScaleUp'];
+    // If no seed Sequence is present default to what is in the dropdown
+    if (!seedSequence) {
+        seedSequence = seedSequences['majorScaleUp'];
+    }
     // Normalize the Tempo
     seedSequence.tempos.forEach((tempo) => {
         tempo.qpm = 120; // Set to your desired tempo
     });
 
-
-    console.log("Generated sequence with Temperature: " + temperature + " and Length: " + length + " and Steps: " + steps);
-
     const quantizedSeq = mm.sequences.quantizeNoteSequence(seedSequence, steps);
     generatedSequence = await rnnModel.continueSequence(quantizedSeq, length, temperature);
-    console.log("Model musicRNN Sequence: " + JSON.stringify(generatedSequence));
     if (generatedSequence) {
+        hideSvgLoader();
         playGeneratedSequenceSoundFont(generatedSequence, false);
         // display replay-button and download link
-        document.getElementById('replay-button').style.display = 'inline-block';
-        document.getElementById('download-link').style.display = 'inline-block';
+        displayControls();
     }
 }
 
@@ -48,7 +64,7 @@ function replayMusicRNNSequence() {
     playGeneratedSequenceSoundFont(generatedSequence, false);
 }
 
-function readMidi(file) {
+function readSeedMidi(file) {
     if (file) {
         const reader = new FileReader();
         reader.onload = async (event) => {
@@ -57,14 +73,17 @@ function readMidi(file) {
             const noteSequence = await mm.midiToSequenceProto(midi);
             // Use noteSequence as your seed
             seedSequence = noteSequence;
+            console.log("Setting this as seedSequence: " + seedSequence)
         };
         reader.readAsArrayBuffer(file);
     }
 }
 function disposeRNNModel() {
     if (rnnModel) {
+        clearVisualizer();
         rnnModel.dispose();
         instrumentConfig['currentModel'] = '';
+        generatedSequence = null;
     }
 }
 
@@ -92,7 +111,7 @@ export {
     initializeRNNModel,
     generateMusicRNNSequence,
     setSeedSequence,
-    readMidi,
+    readSeedMidi,
     exportMusicRNNSequence,
     replayMusicRNNSequence
 };

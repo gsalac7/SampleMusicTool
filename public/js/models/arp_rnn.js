@@ -1,105 +1,95 @@
 import * as mm from '@magenta/music';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
-import { playGeneratedSequenceSoundFont } from './visualizer';
-import { note } from 'tonal';
+import { playGeneratedSequenceSoundFont, clearVisualizer, displayControls } from './visualizer';
+import { hideLoader, showNotification, showError, hideSvgLoader, showSvgLoader } from '../util/controlsManager';
 
 let rnnModel;
 let generatedSequence;
 
-// initialize the AI Model with chord improv
-function initializeArpModel(checkpoint) {
-  instrumentConfig['currentModel'] = "ArpRNN";
-  rnnModel = new mm.MusicRNN(checkpoint);
-  rnnModel.initialize().then(function () {
-    console.log('Arp Model initialized');
-  }).catch(function (error) {
-    console.error('Failed to initialize model:', error);
-  });
+async function initializeArpModel(checkpoint) {
+    instrumentConfig['currentModel'] = "ArpRNN";
+    rnnModel = new mm.MusicRNN(checkpoint);
+
+    try {
+        await rnnModel.initialize();
+        console.log('Arp Model initialized');
+        hideLoader();
+        showNotification("Arp Model Initialized");
+        document.getElementById('generateMusic').style.display = 'inline-block';
+    } catch (error) {
+        console.error('Failed to initialize model:', error);
+        showError("Failed to initialize model");
+    }
 }
 
 async function generateArpSequence() {
+  showSvgLoader();
   let temperature = instrumentConfig['temperature'];
   let chord = instrumentConfig['arpChord'];
-  let note = noteToPitch(chord);
 
-  const quantizedSeq= {
-    quantizationInfo: { stepsPerQuarter: 4 },
-    notes: [{pitch: note, quantizedStartStep: 0, quantizedEndStep: 1}],
-    totalQuantizedSteps: 1
+  if (!chord) {
+    showError("Please select a chord to generate an arpeggio");
+    hideSvgLoader();
+    return;
+  }
+
+  let stepsPerQuarter = instrumentConfig['stepsPerQuarter']; // Assuming this is set correctly in your config
+  if (!stepsPerQuarter) {
+    showError("Please select the number of steps per quarter note in the dropdown");
+    hideSvgLoader();
+    return;
+  }
+
+  const stepsPerBar = 4 * stepsPerQuarter; // 4 beats in a bar for 4/4 time signature
+  const barLength = instrumentConfig['numBars']; 
+
+  if (!barLength) {
+    showError("Please select the number of bars in the dropdown");
+    hideSvgLoader();
+    return;
+  }
+  const totalSteps = stepsPerBar * barLength; // Total steps for one bar
+
+  const quantizedSeq = {
+    quantizationInfo: { stepsPerQuarter: stepsPerQuarter },
+    notes: [],
+    totalQuantizedSteps: totalSteps
   };
 
-  generatedSequence = await rnnModel.continueSequence(quantizedSeq, 20, temperature, [chord]);
-  let normalizedSequence= extendSequence(generatedSequence, chord);
+  // Generate a one-bar sequence
+  let generatedSeq = await rnnModel.continueSequence(quantizedSeq, totalSteps, temperature, [chord]);
 
-  if (generatedSequence) {
-    // Normalize to an arpeggiated sequence
-    console.log(normalizedSequence)
-    playGeneratedSequenceSoundFont(normalizedSequence, false);
-    // display replay-button and download link
-    document.getElementById('replay-button').style.display = 'inline-block';
-    document.getElementById('download-link').style.display = 'inline-block';
+  // Loop the generated sequence 4 times
+  let loopedSequence = loopSequence(generatedSeq, 4);
+  loopedSequence['model'] = 'ArpRNN';
+
+  if (loopedSequence) {
+    hideSvgLoader();
+    playGeneratedSequenceSoundFont(loopedSequence, false);
+    generatedSequence = JSON.parse(JSON.stringify(loopedSequence));
+    displayControls();
   }
 }
 
-function noteToPitch(note, octave = 4) {
-  const noteMap = {
-    'C': 0,
-    'Cm': 0,
-    'C#': 1,
-    'Db': 1,
-    'Dm': 1,
-    'D': 2,
-    'D#': 3,
-    'Eb': 3,
-    'Em': 3,
-    'E': 4,
-    'F': 5,
-    'Fm': 5,
-    'F#': 6,
-    'Gb': 6,
-    'G': 7,
-    'Gm': 7,
-    'G#': 8,
-    'Ab': 8,
-    'A': 9,
-    'Am': 9,
-    'A#': 10,
-    'Bb': 10,
-    'B': 11,
-    'Bm': 11
+function loopSequence(sequence, times) {
+  let loopedSequence = {
+    ...sequence,
+    notes: []
   };
 
-  return 12 * (octave + 1) + noteMap[note.toUpperCase()];
-}
-
-function extendSequence(generatedSequence) {
-  // Create an empty array to hold the extended notes
-  let extendedNotes = [];
-
-  // Convert totalQuantizedSteps to a number
-  let totalSteps = Number(generatedSequence.totalQuantizedSteps);
-
-  // Loop to repeat the notes 4 times
-  for (let i = 0; i < 4; i++) {
-    // Adjust each note's start and end steps and add to extendedNotes
-    generatedSequence.notes.forEach(originalNote => {
-      let note = {...originalNote};
-      note.quantizedStartStep = Number(originalNote.quantizedStartStep) + i * totalSteps;
-      note.quantizedEndStep = Number(originalNote.quantizedEndStep) + i * totalSteps;
-      extendedNotes.push(note);
+  for (let i = 0; i < times; i++) {
+    sequence.notes.forEach(note => {
+      let clonedNote = { ...note, quantizedStartStep: note.quantizedStartStep + i * sequence.totalQuantizedSteps, quantizedEndStep: note.quantizedEndStep + i * sequence.totalQuantizedSteps };
+      loopedSequence.notes.push(clonedNote);
     });
   }
 
-  // Replace the original notes array with the extended one
-  generatedSequence.notes = extendedNotes;
-
-  // Update totalQuantizedSteps to reflect the repetition
-  generatedSequence.totalQuantizedSteps = String(totalSteps * 4);
-
-  return generatedSequence;
+  loopedSequence.totalQuantizedSteps = sequence.totalQuantizedSteps * times;
+  return loopedSequence;
 }
 
 async function exportArpSequence() {
+  console.log(generatedSequence);
   const midiBytes = mm.sequenceProtoToMidi(generatedSequence);
   const midiBlob = new Blob([new Uint8Array(midiBytes)], { type: 'audio/midi' });
 
@@ -120,9 +110,11 @@ function replayArpSequence() {
 
 function disposeArpModel() {
   if (rnnModel) {
+    clearVisualizer();
     console.log("Disposing arp RNN Model");
     rnnModel.dispose();
     instrumentConfig['currentModel'] = ''
+    generatedSequence = null;
   }
 }
 

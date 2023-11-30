@@ -1,0 +1,89 @@
+.loader-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75); /* Darker and more transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* High z-index to be on top */
+}
+
+.loader {
+  border: 4px solid rgba(255, 255, 255, 0.2); /* Lighter grey for a subtler look */
+  border-top: 4px solid #ffffff; /* White for contrast */
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.notification-banner {
+  position: fixed;
+  top: -50px; /* Start off-screen */
+  left: 0;
+  width: 100%;
+  background-color: #4CAF50; /* Green background */
+  color: white;
+  text-align: center;
+  padding: 10px 0;
+  z-index: 1001; /* Above other elements */
+  transition: top 0.5s, visibility 0.5s; /* Smooth slide-down and visibility transition */
+  visibility: hidden; /* Start as hidden */
+}
+
+.notification-banner.show {
+  top: 0; /* Slide down to show */
+  visibility: visible; /* Make visible */
+}
+
+.error-banner {
+  position: fixed;
+  top: -50px; /* Start off-screen */
+  left: 0;
+  width: 100%;
+  background-color: #b73e2e; /* Red background */
+  color: white;
+  text-align: center;
+  padding: 10px 0;
+  z-index: 1001; /* Above other elements */
+  transition: top 0.5s, visibility 0.5s; /* Smooth slide-down and visibility transition */
+  visibility: hidden; /* Start as hidden */
+}
+
+.error-banner.show {
+  top: 0; /* Slide down to show */
+  visibility: visible; /* Make visible */
+}
+
+
+#svg-wrapper {
+    position: relative; /* Ensures that the loader is positioned relative to the svg-wrapper */
+}
+
+.loader-container {
+    position: absolute; /* Changed from fixed to absolute */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.75); /* Dark background for contrast */
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* High z-index to be on top */
+}
+.loader-text {
+    margin-top: 20px; /* Space between loader and text */
+    color: #ffffff; /* White color for readability */
+    font-size: 20px; /* Adjust size as needed */
+    font-weight: bold;
+}

@@ -5,13 +5,19 @@ function pitchToNote(pitch) {
     return notes[note] + octave;
 }
 
+const path = require('path');
+
 function getSample(instrument) {
     let instrumentObj = {};
+    // Assuming this code runs in a Node.js context and not directly in the browser
     for (let pitch = 21; pitch <= 108; pitch++) {
         let note = pitchToNote(pitch);
-        instrumentObj[note] = `../SampleMusicTool/public/sounds/soundfont/${instrument}/p${pitch}_v127.mp3`;
+        // Construct the path relative to the current file location
+        let soundPath = path.join(__dirname, `/public/sounds/soundfont/${instrument}/p${pitch}_v127.mp3`);
+        instrumentObj[note] = soundPath;
     }
-    return instrumentObj
+    return instrumentObj;
 }
+
 
 export { getSample }

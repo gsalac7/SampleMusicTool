@@ -11,7 +11,7 @@
     justify-content: center;
 }
 
-#AI-Control-Panel > div {
+#AI-Control-Panel>div {
     width: calc(50% - 10px);
     display: flex;
     flex-direction: column;
@@ -23,25 +23,27 @@
     margin-bottom: 3px;
 }
 
-#AI-Control-Panel select, 
+#AI-Control-Panel select,
 #AI-Control-Panel input {
     padding: 6px;
     border: none;
     border-radius: 5px;
-    box-sizing: border-box; 
+    box-sizing: border-box;
     width: 90%;
     max-width: 300px;
 }
 
-#AI-Control-Panel > div > label,
-#AI-Control-Panel > div > select,
-#AI-Control-Panel > div > input,
-#AI-Control-Panel > div > button,
-#AI-Control-Panel > div > span,
-#AI-Control-Panel > div > p {
-  display: inline-block;
-  margin: 5px;
+
+#AI-Control-Panel>div>label,
+#AI-Control-Panel>div>select,
+#AI-Control-Panel>div>input,
+#AI-Control-Panel>div>button,
+#AI-Control-Panel>div>span,
+#AI-Control-Panel>div>p {
+    display: inline-block;
+    margin: 5px;
 }
+
 /* MIDI Upload styles */
 
 #midi-upload {
@@ -67,20 +69,39 @@ input[type="file"]::file-selector-button {
     vertical-align: middle;
 }
 
-/* Checkpoints styles */
-/* ...existing styles... */
+#clear-midi {
+    display: none;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    font-size: 16px;
+    /* Adjust size as needed */
+    color: #707070;
+    /* Adjust color as needed */
+    line-height: 1;
+    padding: 0 5px;
+}
 
+#clear-midi:hover {
+    color: #000000;
+    /* Change color on hover for better visibility */
+}
+
+/* Checkpoints styles */
 #checkpoint-group {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;  /* Adjust this value to control spacing */
+    gap: 10px;
+    /* Adjust this value to control spacing */
 }
 
 /* If you want to specifically reduce the spacing between label and dropdown or description, you can target them like this */
 #checkpoint-selector label,
 #checkpoint-description p {
-    margin-bottom: 5px;  /* Adjust this value */
+    display: block;
+    margin-bottom: 5px;
+    /* Adjust this value */
 }
 
 
@@ -90,9 +111,9 @@ input[type="file"]::file-selector-button {
     gap: 10px;
 }
 
-#checkpoint-selector {
+select {
     flex: 1.2;
-    background-color: #2C3E50;
+    background-color: #34495E;
     padding: 10px;
     border-radius: 5px;
     color: white;
@@ -110,7 +131,8 @@ input[type="file"]::file-selector-button {
     margin: 0;
 }
 
-#checkpoint-select {
+#checkpoint-select,
+#arp-select {
     width: 100%;
     padding: 8px;
     border: none;
@@ -118,4 +140,59 @@ input[type="file"]::file-selector-button {
     margin: 5px 0;
     color: white;
     background-color: #34495E;
+}
+
+
+#Arp-Controls>div,
+#Extender-Controls>div,
+#Chord-Melody-Controls>div {
+    width: 100%;
+    /* Full width of the parent */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Center items within each div */
+    margin: 5px;
+}
+
+#Arp-Controls label,
+#Extender-Controls label,
+#Chord-Melody-Controls label {
+    margin-bottom: 3px;
+}
+
+#Arp-Controls select,
+#Extender-Controls,
+#Chord-Melody-Controls select {
+    padding: 6px;
+    border: none;
+    border-radius: 5px;
+    box-sizing: border-box;
+    width: 90%;
+    max-width: 300px;
+}
+
+#Arp-Controls>div>label,
+#Arp-Controls>div>select,
+#Extender-Controls>div>label,
+#Extender-Controls>div>select,
+#Chord-Melody-Controls>div>label,
+#Chord-Melody-Controls>div>select {
+    display: inline-block;
+    margin: 5px;
+}
+
+#player-btn-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* Optional, based on your layout needs */
+}
+
+.button-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2px;
+    /* Adjust as needed */
 }

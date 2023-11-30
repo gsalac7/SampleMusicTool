@@ -1,62 +1,64 @@
 import * as mm from '@magenta/music';
-import { playGeneratedSequenceSoundFont, playGeneratedSequenceDefault } from './visualizer';
+import { playGeneratedSequenceSoundFont, clearVisualizer, displayControls} from './visualizer';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
+import { hideLoader, hideSvgLoader, showNotification, showSvgLoader } from '../util/controlsManager';
 
 let music_vae;
 let generatedSequence;
-let numSequences = 1;
-let player = "soundfont";
+let shouldNormalize;
 
-function initializeMusicVaeModel(checkpoint) {
-  instrumentConfig['currentModel'] = "MusicVAE";
-  music_vae = new mm.MusicVAE(checkpoint);
-  music_vae.initialize().then(function () {
-    alert("MusicVAE Model Initialized")
-    console.log('Model initialized');
-  }).catch(function (error) {
-    console.error('Failed to initialize model:', error);
-  });
+async function initializeMusicVaeModel(checkpoint) {
+    instrumentConfig['currentModel'] = "MusicVAE";
+    music_vae = new mm.MusicVAE(checkpoint);
 
-  if (checkpoint.includes('multi')) {
-    player = "default"
-  }
+    try {
+        await music_vae.initialize();
+        console.log('Model initialized');
+        hideLoader();
+        showNotification("MusicVAE Model initialized Successfully!");
+        document.getElementById('generateMusic').style.display = 'inline-block';
+    } catch (error) {
+        console.error('Failed to initialize model:', error);
+    }
+
+    shouldNormalize = checkpoint.includes("trio") || checkpoint.includes('multi') || 
+                      checkpoint.includes('drum') || checkpoint.includes("groove");
 }
 
 function disposeVAEModel() {
   if (music_vae) {
+    clearVisualizer();
     music_vae.dispose();
     instrumentConfig['currentModel'] = '';
+    generatedSequence = null;
   }
 }
 
 async function generateMusicVAESequence() {
+  showSvgLoader();
   let temperature = instrumentConfig['temperature'];
-  let chords = ['C'];
-  console.log("Generating with chords: " + chords + " and temperature: " + temperature)
   generatedSequence = await music_vae.sample(1, temperature);
-  if (generatedSequence) {
-    if (player == "soundfont") {
-      playGeneratedSequenceSoundFont(generatedSequence[0])
-    } else {
-      playGeneratedSequenceDefault(generatedSequence[0]);
-    }
-    // display replay-button and download link
-    document.getElementById('replay-button').style.display = 'inline-block';
-    document.getElementById('download-link').style.display = 'inline-block';
+  let sequence = JSON.parse(JSON.stringify(generatedSequence[0]));
+  if (sequence) {
+    hideSvgLoader();
+    playGeneratedSequenceSoundFont(sequence);
+    displayControls();
   }
 }
 
 function replayMusicVAESequence() {
-  if (player == "default") {
-    playGeneratedSequenceDefault(generatedSequence[0])
-  } else {
-    playGeneratedSequenceSoundFont(generatedSequence[0], false) // should no longer be normalized
-  }
+  let sequence = JSON.parse(JSON.stringify(generatedSequence[0]));
+  playGeneratedSequenceSoundFont(sequence, shouldNormalize);
 }
 
 async function exportMusicVAESequence() {
-  const midiBytes = mm.sequenceProtoToMidi(generatedSequence[0]);
-  const midiBlob = new Blob([new Uint8Array(midiBytes)], { type: 'audio/midi' });
+  // Assign program 9 to all notes
+  let sequence = JSON.parse(JSON.stringify(generatedSequence[0]));
+  sequence.notes.forEach(note => {
+      note.velocity=127;
+  });
+  const midiBytes = mm.sequenceProtoToMidi(sequence);
+  const midiBlob = new Blob([new Uint8Array(midiBytes)], { type: 'audio/midi-file' });
 
   // Create a download link and append it to the document
   const downloadLink = document.createElement('a');

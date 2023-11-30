@@ -1,14 +1,17 @@
+const path = require('path');
 export const instrumentConfig = {
-    keyPressed: false,
     temperature: 1.0,
-    stepsPerQuarter: 4,
-    length: 50,
+    stepsPerQuarter: "",
+    length: "",
     bpm: 120,
     currentModel: "",
     checkpoint: "",
     arpChord: "",
     chordMelodySeq: "",
-    soundFontUrl: "../SampleMusicTool/public/sounds/soundfont",
+    seedSequence: "",
+    numBars: "",
+    loopSequence: false,
+    soundFontUrl: path.join(__dirname, '/public/sounds/soundfont'), 
     soundFontData: {
         "name": "sgm_plus",
         "instruments": {
@@ -22,7 +25,9 @@ export const instrumentConfig = {
             "7": "acoustic_grand_piano",
             "8": "synth_drum",
             "9": "percussion",
-            "10": "pad_3_polysynth"
+            "10": "pad_3_polysynth",
+            "11": "synthstrings_1",
+            "12": "electric_piano_1"
         }
     }
 }

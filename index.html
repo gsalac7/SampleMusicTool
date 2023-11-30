@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="public/css/controlPanel.css">
   <link rel="stylesheet" href="public/css/piano.css">
   <link rel="stylesheet" href="public/css/sequencer.css">
+  <link rel="stylesheet" href="public/css/loader.css">
 </head>
 
 <body>
@@ -20,24 +21,57 @@
   </div>
 
   <div class="responsive-container">
-    <div id="svg-wrapper">
-      <svg id="svg-container">
-        <!-- Your SVG content here -->
-      </svg>
+    <div id="loader" class="loader-container" style="display: none;">
+      <div class="loader"></div>
     </div>
 
-    <button id="generateMusic">Generate Music</button>
-    <button id="replay-button" style="display: none;">Replay Generated Sequence</button>
-    <button id="download-link" style="display: none;">Download Generated Sequence</button>
+    <!-- Add this inside the body tag, preferably right after the opening body tag for the notification banner -->
+    <div id="notificationBanner" class="notification-banner" style="display: none;">
+      <p id="notificationMessage">Model initialized successfully!</p>
+    </div>
+
+    <div id="errorBanner" class="error-banner" style="display: none;">
+      <p id="errorMessage">Model Failed Initialization</p>
+    </div>
+
+<div id="svg-wrapper">
+    <div class="loader-container" id="svg-loader" style="display:none">
+        <div class="loader"></div>
+        <div class="loader-text">Music Generating...</div>
+        <!-- Additional content for loader if needed -->
+    </div>
+    <svg id="svg-container">
+        <!-- Your SVG content here -->
+    </svg>
+</div>
+
+
+    <div id="player-btn-container">
+      <div class="button-row">
+        <button id="stop-button" style="display:none;">Stop</button>
+        <button id="replay-button" style="display: none;">Replay</button>
+        <button id="loop-button" style="display:none;">
+          <img src="public/assets/loop.png" alt="Loop" style="width: 24px; height: 24px;">
+        </button>
+
+
+      </div>
+      <div class="button-row">
+        <button id="generateMusic" style="display:none;">Generate Music</button>
+        <button id="download-link" style="display: none;">Download Generated Sequence</button>
+      </div>
+    </div>
+
+
 
     <div id="AI-Control-Panel">
       <!-- Checkpoint and Initialize Model Group -->
 
       <div id="checkpoint-group">
         <div id="checkpoint-selector">
-          <label for="checkpoint-select">Checkpoints:</label>
+          <label for="checkpoint-select">Models:</label>
           <select id="checkpoint-select">
-            <option value="checkpoint1" data-description="Description for checkpoint 1"></option>
+            <option value="" disabled selected>Select a Model to initialize</option>
             <!-- Add more options as necessary -->
           </select>
         </div>
@@ -50,7 +84,7 @@
       </div>
 
 
-      <!-- Seed Selector -->
+      <!-- Seed Selector For use of Melody Extender-->
       <div id="seed-selector" style="display:none">
         <label for="seed-select">Seed Sequence:</label>
         <select id="seed-select">
@@ -61,59 +95,117 @@
           <option value="maryHadALittleLamb">Mary Had a Little Lamb</option>
           <option value="fourChordProgression">Four Chord Progression</option>
         </select>
-
-        <!-- Upload MIDI as Seed Sequence -->
+        <!-- Upload MIDI as Sample Sequence -->
         <div id="midi-upload">
-          <label for="midiFile">Or upload your own MIDI to use:</label>
-          <input type="file" id="midiFile" accept=".midi, .mid">
-          <span id="midi-filename"></span>
+          <label for="midiSeedFile">Or upload your own MIDI to use as a seed:</label>
+          <input type="file" id="midiSeedFile" accept=".midi, .mid">
+          <span id="midiSeed-filename"></span>
         </div>
       </div>
 
-      <!-- ARP Chord Selector -->
-      <div id="Arp-Chord-Selector" style="display:none">
-        <label for="chordInput">Enter a chord to create an arpeggiated sequence: </label>
-        <input type="text" id="chordInput" placeholder="e.g., C">
+      <!-- Sample Selector for use of Groovae-->
+      <div id="sample-selector" style="display:none">
+        <label for="seed-select">Sample Sequence:</label>
+        <select id="seed-select">
+          <option value="majorScaleUp">Major Scale</option>
+          <option value="complexMelody">Complex Melody</option>
+        </select>
+        <!-- Upload MIDI as Sample Sequence -->
+        <div id="midi-upload">
+          <label for="midiSampleFile">Or upload your own MIDI to use:</label>
+          <input type="file" id="midiSampleFile" accept=".midi, .mid">
+          <span id="midiSample-filename"></span>
+        </div>
       </div>
 
       <!-- Chord Selector Improv Melody-->
-      <div id="Chord-Melody-Selector" style="display:none">
-        <label for="chordInput">Enter a Chord Progression to improvise over: </label>
-        <input type="text" id="chordInput1" placeholder="e.g., C">
-        <input type="text" id="chordInput2" placeholder="e.g., C">
-        <input type="text" id="chordInput3" placeholder="e.g., C">
-        <input type="text" id="chordInput4" placeholder="e.g., C">
+      <div id="Chord-Melody-Controls" style="display:none">
+          <label for="chordInput">Enter a Chord Progression to improvise over: </label>
+          <input type="text" id="chordInput1" placeholder="e.g., C">
+          <input type="text" id="chordInput2" placeholder="e.g., C">
+          <input type="text" id="chordInput3" placeholder="e.g., C">
+          <input type="text" id="chordInput4" placeholder="e.g., C">
+        <!-- Steps per Quarter Dropdown -->
+        <div id="steps-chord-selector">
+          <label for="steps-chord-select">Steps per Quarter:</label>
+          <select id="steps-chord-select">
+            <option value="" disabled selected>Select Steps per Quarter</option>
+            <option value="2">2</option>
+            <option value="4">4</option>
+            <option value="8">8</option>
+            <option value="16">16</option>
+          </select>
+        </div>
+      </div>
+      <!-- Specific Controls for the Melody Extender-->
+      <div id="Extender-Controls" style="display:none">
+        <!-- Length Input -->
+        <div id="length-selector">
+          <label for="length-select">Length:</label>
+          <select id="length-select">
+            <option value="" disabled selected>Select Length</option>
+            <option value="16">16</option>
+            <option value="32">32</option>
+            <option value="64">64</option>
+          </select>
+        </div>
+        <!-- Steps per Quarter Dropdown -->
+        <div id="steps-melody-selector">
+          <label for="steps-melody-select">Steps per Quarter:</label>
+          <select id="steps-melody-select">
+            <option value="" disabled selected>Select Steps per Quarter</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="4">4</option>
+            <option value="8">8</option>
+          </select>
+        </div>
       </div>
 
-      <!-- Temperature Slider -->
-      <div id="temp-slider-container">
-        <label>Temperature: </label>
-        <span id="temp-value">1.0</span>
-        <div id="temp-slider"></div>
-      </div>
-      <!-- BPM Slider -->
-      <div id="bpm-slider-container">
-        <label>BPM: </label>
-        <span id="bpm-value">120</span>
-        <div id="bpm-slider"></div>
+      <!-- Specific Controls for the Arpeggiator-->
+      <div id="Arp-Controls" style="display:none">
+        <!-- ARP Chord Selector -->
+        <div id="Arp-Chord-Selector">
+          <label for="chordInput">Enter a chord to create an arpeggiated sequence: </label>
+          <input type="text" id="chordInput" placeholder="e.g., C">
+        </div>
+        <!-- Bar Length-->
+        <div id="bar-selector">
+          <label for="bar-select">Number of Bars:</label>
+          <select id="bar-select">
+            <option value="" disabled selected>Select Bar Length:</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+          </select>
+        </div>
+        <!-- Steps per Quarter Dropdown -->
+        <div id="steps-selector">
+          <label for="steps-select">Steps per Quarter:</label>
+          <select id="steps-select">
+            <option value="" disabled selected>Select Steps per Quarter</option>
+            <option value="2">2</option>
+            <option value="4">4</option>
+            <option value="8">8</option>
+            <option value="16">16</option>
+          </select>
+        </div>
       </div>
 
-      <!-- Length Input -->
-      <div id="length-input-container">
-        <label for="length-input">Length:</label>
-        <input type="number" id="length-input" min="1" placeholder="Enter length" value="50">
+      <div id="Model-Controls">
+        <!-- Temperature Slider -->
+        <div id="temp-slider-container">
+          <label>Temperature: </label>
+          <span id="temp-value">1.0</span>
+          <div id="temp-slider"></div>
+        </div>
+        <!-- BPM Slider -->
+        <div id="bpm-slider-container">
+          <label>BPM: </label>
+          <span id="bpm-value">120</span>
+          <div id="bpm-slider"></div>
+        </div>
       </div>
 
-      <!-- Steps per Quarter Dropdown -->
-      <div id="steps-selector">
-        <label for="steps-select">Steps per Quarter:</label>
-        <select id="steps-select">
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="4">4</option>
-          <option value="8">8</option>
-        </select>
-      </div>
       <div id="control-panel">
         <label for="instrument-select">Choose an instrument:</label>
         <select id="instrument-select">
@@ -121,6 +213,8 @@
           <option value="synth_bass_1">Synth Bass</option>
           <option value="acoustic_guitar_steel">Steel Guitar</option>
           <option value="distortion_guitar">DistortionGuitar</option>
+          <option value="synthstrings_1">Synth Strings</option>
+          <option value="electric_piano_1">Electric Piano</option>
           <option value="marimba">Marimba</option>
           <!-- Add other synth options here -->
         </select>
@@ -130,25 +224,13 @@
       <!-- Generate keys for the piano here -->
     </div>
     <button id="toggleRecording" class="recording-button">Record</button>
+    <button id="exportMidi" class="export-button">Export Recorded Sequence</button>
     <div id="sequencer-container">
       <div id="sequencer"></div>
     </div>
     <button id="play-button">Play</button>
+    <button id="exportDrumMidi" class="export-drum-button">Export Drum Sequence</button>
     <div id="bpmDial"></div>
-
-    <label for="bars">Number of Bars:</label>
-    <input type="number" id="bars" name="bars" min="1" max="8" value="4">
-
-    <label for="beatsPerBar">Beats Per Bar:</label>
-    <select id="beatsPerBar" name="beatsPerBar">
-      <option value="2">2</option>
-      <option value="3">3</option>
-      <option value="4" selected>4</option>
-    </select>
-
-    <button id="updateSequencer">Update Sequencer</button>
-
-
   </div>
   <script src="./dist/renderer.bundle.js"></script>
   <script type="module" src="public/js/main.js"></script>
