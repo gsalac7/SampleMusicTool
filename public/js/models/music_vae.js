@@ -8,7 +8,6 @@ let generatedSequence;
 let shouldNormalize;
 
 async function initializeMusicVaeModel(checkpoint) {
-    clearVisualizer();
     instrumentConfig['currentModel'] = "MusicVAE";
     music_vae = new mm.MusicVAE(checkpoint);
 
