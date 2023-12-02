@@ -302,6 +302,7 @@ function initializationButtonListener() {
             document.getElementById('seed-selector').style.display = 'none';
             document.getElementById('sample-selector').style.display = 'none';
             document.getElementById('Chord-Melody-Controls').style.display = 'block';
+            document.getElementById('Extender-Controls').style.display = 'none';
             document.getElementById('Arp-Controls').style.display = 'none';
             const chordField = document.getElementById('chordInput');
             if (chordField) {
