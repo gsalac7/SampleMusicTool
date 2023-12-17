@@ -1,7 +1,7 @@
 import * as mm from '@magenta/music';
 import { playGeneratedSequenceSoundFont, clearVisualizer, displayControls} from './visualizer';
 import { instrumentConfig } from '../util/configs/instrumentConfig';
-import { hideLoader, showNotification, hideSvgLoader, showSvgLoader } from '../util/controlsManager';
+import { hideLoader, showError, showNotification, hideSvgLoader, showSvgLoader } from '../util/controlsManager';
 import { sampleSequences } from './configs/sample_sequences';
 
 let music_vae;
@@ -41,10 +41,24 @@ async function generateGroovaeSequence() {
     seedSequence.tempos.forEach((tempo) => {
         tempo.qpm = 120; // Set to your desired tempo
     });
+    try {
+        // Encode the melodic sequence into a latent representation
+        const z = await music_vae.encode([seedSequence]);
+        // Decode the latent representation to generate a drum sequence
+        generatedSequence = await music_vae.decode(z, temperature, undefined, 4);
+    } catch (error) {
+        showError(error.message);
+        hideSvgLoader();
+        return
+    }
     // Encode the melodic sequence into a latent representation
     const z = await music_vae.encode([seedSequence]);
     // Decode the latent representation to generate a drum sequence
     generatedSequence = await music_vae.decode(z, temperature, undefined, 4);
+    // set volume to max
+    generatedSequence[0].notes.forEach(note => {
+        note.velocity = 127;
+    });
     let sequence = JSON.parse(JSON.stringify(generatedSequence[0]));
     if (generatedSequence) {
         hideSvgLoader();

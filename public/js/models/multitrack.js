@@ -35,7 +35,7 @@ async function generateMultiTrackSequence() {
     showSvgLoader();
     const temperature = instrumentConfig['temperature'];
     const numInterpolationSteps = 4;
-    const Z_DIM = 256; // Adjust based on your model's requirements
+    const Z_DIM = 256; 
 
     let fullSequence = {
         notes: [],
@@ -61,7 +61,6 @@ async function generateMultiTrackSequence() {
         hideSvgLoader();
         return 
     }
-
 
     for (let step = 0; step < numInterpolationSteps; step++) {
         let alpha = step / (numInterpolationSteps - 1);
